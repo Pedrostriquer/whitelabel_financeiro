@@ -19,7 +19,7 @@ export default function EcommerceHeader() {
     // --- FIM DA LÓGICA ---
 
     // Variável estática para simular o login
-    const loginStatus = 1; // 1 = Logado, 2 = Deslogado
+    const loginStatus = 2; // 1 = Logado, 2 = Deslogado
 
     useEffect(() => {
         function handleClickOutside(event) {
