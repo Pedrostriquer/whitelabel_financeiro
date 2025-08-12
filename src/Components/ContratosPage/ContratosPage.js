@@ -1,227 +1,298 @@
-import React, { useState, useRef } from 'react';
-import style from './ContratosPageStyle.js';
-import Loader from '../Loader/Loader'; 
+import React, { useState, useRef, useEffect } from "react";
+import style from "./ContratosPageStyle.js";
+import Loader from "../Loader/Loader";
+import { useAuth } from "../../Context/AuthContext.js";
+import contractServices from "../../dbServices/contractServices.js";
+import verificationCodeService from "../../dbServices/verificationCodeService.js";
+import SelectionStep from "./SelectionStep.js";
+import ConfigurationStep from "./ConfigurationStep.js";
+import UserContracts from "../UserContracts/UserContracts.js";
+import VerificationModal from "./VerificationModal.js";
+import platformServices from "../../dbServices/platformServices.js";
+import { useNavigate } from "react-router-dom";
 
-// Estilos globais para a animação do Loader
 const GlobalStyles = () => (
-    <style>{`
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    `}</style>
+  <style>{`
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  `}</style>
 );
 
 export default function ContratosPage() {
-    const [step, setStep] = useState('selection');
-    const [selectedContract, setSelectedContract] = useState(null);
-    const [termsAccepted, setTermsAccepted] = useState(false);
-    const [paymentMethod, setPaymentMethod] = useState('PIX');
-    const [isLoading, setIsLoading] = useState(false);
-    
-    const contractRef = useRef();
+  const [step, setStep] = useState("selection");
+  const [selectedContract, setSelectedContract] = useState(null);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("PIX");
+  const [isLoading, setIsLoading] = useState(false);
+  const [withGem, setWithGem] = useState(false);
+  const { token, user } = useAuth();
+  const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
+  const [userContracts, setUserContracts] = useState([]);
+  const [filteredContracts, setFilteredContracts] = useState([]);
+  const [filterId, setFilterId] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const contractRef = useRef();
+  const [sidebarItems, setSidebarItems] = useState([]);
+  const [loadingSidebar, setLoadingSidebar] = useState(false);
+  const navigate = useNavigate();
 
-    const handleGenerateProposal = (valor, duracao) => {
-        setIsLoading(true);
-        setTimeout(() => {
-            const valorNumerico = parseFloat(valor);
-            const duracaoNumerica = parseInt(duracao, 10);
-            if (isNaN(valorNumerico) || isNaN(duracaoNumerica)) {
-                alert("Por favor, insira valores válidos.");
-                setIsLoading(false);
-                return;
-            }
-            const lucroBase = 200;
-            const lucroPorValor = (valorNumerico / 1000) * 10;
-            const lucroPorTempo = (duracaoNumerica / 12) * 20;
-            const simulatedContract = {
-                nome: 'Contrato Simulado',
-                lucro: lucroBase + lucroPorValor + lucroPorTempo,
-                saque: 60,
-                duracaoMeses: duracaoNumerica,
-                preco: valorNumerico,
-            };
-            setSelectedContract(simulatedContract);
-            setStep('configuration');
-            setIsLoading(false);
-        }, 500);
+  const fetchSidebarConfig = async () => {
+    try {
+      const items = await platformServices.getSidebarConfig(token);
+
+      // Verifica se existe um item "Contratos" com avaliable: true
+      const hasContratosAvailable = items.some(
+        item => item.name === "Contratos" && item.avaliable === true
+      );
+
+      if (!hasContratosAvailable) {
+        navigate("/"); // Redireciona para a página inicial
+        return;
+      }
+
+      const filteredItems = items.filter((item) => item.avaliable === true);
+      const formattedItems = filteredItems.map((item) => ({
+        name: item.name,
+        icon: item.icon,
+        path: item.route,
+      }));
+
+      setSidebarItems(formattedItems);
+    } catch (error) {
+      console.error("Error loading sidebar config:", error);
+      // Fallback padrão - verifica se "Contratos" está no fallback
+      const fallbackItems = [
+        { name: "Dashboard", icon: "fa-solid fa-house", path: "/dashboard" },
+        {
+          name: "Contratos",
+          icon: "fa-solid fa-file-signature",
+          path: "/contratos",
+        },
+        { name: "Wallet", icon: "fa-solid fa-wallet", path: "/wallet" },
+      ];
+      
+      const hasContratosInFallback = fallbackItems.some(
+        item => item.name === "Contratos"
+      );
+
+      if (!hasContratosInFallback) {
+        navigate("/");
+        return;
+      }
+
+      setSidebarItems(fallbackItems);
+    } finally {
+      setLoadingSidebar(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSidebarConfig();
+  }, [token, navigate]); 
+
+  useEffect(() => {
+    const fetchUserContracts = async () => {
+      if (!token) return;
+      setIsLoading(true);
+      try {
+        const contracts = await contractServices.obterContratosDoUsuario(token);
+        setUserContracts(contracts);
+        setFilteredContracts(contracts);
+      } catch (error) {
+        console.error("Error fetching user contracts:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
+    fetchUserContracts();
+  }, [token]);
 
-    const handleGenerateContract = () => {
-        setIsLoading(true);
-        setTimeout(() => {
-            setStep('generated');
-            setIsLoading(false);
-        }, 500);
-    };
+  useEffect(() => {
+    let filtered = userContracts;
+    if (filterId) {
+      filtered = filtered.filter((contract) =>
+        contract.id.toString().includes(filterId)
+      );
+    }
+    if (filterStatus) {
+      filtered = filtered.filter(
+        (contract) => contract.status === parseInt(filterStatus, 10)
+      );
+    }
+    setFilteredContracts(filtered);
+  }, [filterId, filterStatus, userContracts]);
 
-    const handlePrint = () => {
-        const printContent = contractRef.current.innerHTML;
-        const originalContent = document.body.innerHTML;
-        const pageTitle = "Contrato de Compra e Venda";
-        document.body.innerHTML = `<html><head><title>${pageTitle}</title></head><body>${printContent}</body></html>`;
-        window.print();
-        document.body.innerHTML = originalContent;
-        window.location.reload();
-    };
+  const handleGenerateProposal = async (valor, duracao) => {
+    setIsLoading(true);
+    try {
+      const valorNumerico = parseFloat(valor);
+      const duracaoNumerica = parseInt(duracao, 10);
+      if (isNaN(valorNumerico) || isNaN(duracaoNumerica)) {
+        alert("Por favor, insira um valor e uma duração válidos.");
+        return;
+      }
+      const simulation = await contractServices.simularContrato(token, {
+        amount: valorNumerico,
+        months: duracaoNumerica,
+        withGem,
+      });
+      const formattedContract = {
+        nome: "Contrato de Investimento",
+        lucro: simulation.monthlyPercentage,
+        monthlyPercentage: simulation.monthlyPercentage,
+        saque: 60,
+        duracaoMeses: duracaoNumerica,
+        preco: valorNumerico,
+        finalAmount: simulation.finalAmount,
+        monthlyGain: simulation.monthlyGain,
+        totalGain: simulation.totalGain,
+      };
+      setSelectedContract(formattedContract);
+      setStep("configuration");
+    } catch (error) {
+      console.error("Erro ao gerar proposta:", error);
+      alert("Erro ao simular contrato. Tente novamente.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    return (
-        <div style={style.contratosPageContainer}>
-            <GlobalStyles />
-            {isLoading && <Loader />}
-            {step === 'selection' && <SelectionStep onGenerateProposal={handleGenerateProposal} />}
-            {step === 'configuration' && (
-                <ConfigurationStep
-                    contract={selectedContract}
-                    onGenerateContract={handleGenerateContract}
-                    onBack={() => { setStep('selection'); setSelectedContract(null); }}
-                />
-            )}
-            {step === 'generated' && (
-                <ConfigurationStep
-                    contract={selectedContract}
-                    onGenerateContract={handleGenerateContract}
-                    onBack={() => { setStep('selection'); setSelectedContract(null); }}
-                    showGeneratedContract={true}
-                    termsAccepted={termsAccepted}
-                    setTermsAccepted={setTermsAccepted}
-                    paymentMethod={paymentMethod}
-                    setPaymentMethod={setPaymentMethod}
-                    contractRef={contractRef}
-                    onPrint={handlePrint}
-                />
-            )}
-        </div>
-    );
-}
+  const handleProceedToGeneratedView = () => {
+    if (!selectedContract) {
+      alert("Nenhum contrato selecionado para gerar.");
+      return;
+    }
+    setStep("generated");
+  };
 
-const SelectionStep = ({ onGenerateProposal }) => {
-    const [investValue, setInvestValue] = useState(100);
-    const [duration, setDuration] = useState(12);
-    const [isHovered, setIsHovered] = useState(false);
+  const handlePrint = () => {
+    const printContent = contractRef.current.innerHTML;
+    const originalContent = document.body.innerHTML;
+    const pageTitle = "Contrato de Compra e Venda";
+    document.body.innerHTML = `<html><head><title>${pageTitle}</title></head><body>${printContent}</body></html>`;
+    window.print();
+    document.body.innerHTML = originalContent;
+    window.location.reload();
+  };
 
-    const btnStyle = {...style.btnGerarProposta, ...(isHovered ? style.btnGerarPropostaHover : {})};
+  const handleBackToSelection = () => {
+    setStep("selection");
+    setSelectedContract(null);
+  };
 
-    return (
-        <div style={style.selectionStepWrapper}>
-            <h1 style={style.pageTitle}>Simule seu Contrato</h1>
-            <p style={style.pageSubtitle}>Invista em contratos de minérios e saque seus lucros todo mês. Comece agora a planejar seu futuro financeiro conosco!</p>
-            <div style={style.simulationSection}>
-                <h2 style={style.simulationSectionH2}>Faça uma simulação!</h2>
-                <div style={style.simulationInputs}>
-                    <div style={style.inputWrapper}>
-                        <label style={style.inputWrapperLabel}>Quanto você está disposto a investir? (mín. R$100)</label>
-                        <input type="number" min="100" value={investValue} onChange={e => setInvestValue(e.target.value)} style={style.simulationInput} />
-                    </div>
-                    <div style={style.inputWrapper}>
-                        <label style={style.inputWrapperLabel}>Qual o tempo do contrato?</label>
-                        <div style={style.inputWithAddon}>
-                            <input type="number" min="1" value={duration} onChange={e => setDuration(e.target.value)} style={{...style.simulationInput, ...style.inputInGroup}} />
-                            <span style={style.inputAddon}>meses</span>
-                        </div>
-                    </div>
-                </div>
-                <button 
-                    style={btnStyle}
-                    onClick={() => onGenerateProposal(investValue, duration)}
-                    onMouseEnter={() => setIsHovered(true)}
-                    onMouseLeave={() => setIsHovered(false)}
-                >
-                    Gerar Proposta
-                </button>
-            </div>
-        </div>
-    );
-};
+  const handleOpenVerificationModal = async () => {
+    if (!termsAccepted) {
+      alert("Você precisa aceitar os termos do contrato para continuar.");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      await verificationCodeService.enviarCodigoDeVerificacao(token);
+      setIsVerificationModalOpen(true);
+    } catch (error) {
+      console.error("Erro ao enviar código de verificação:", error);
+      const errorMessage = error.response?.data?.message || "Não foi possível enviar o código de verificação. Tente novamente.";
+      alert(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-const ConfigurationStep = ({ contract, onGenerateContract, onBack, showGeneratedContract, ...props }) => {
-    const valorTotal = contract.preco;
-    const lucroTotal = valorTotal * (contract.lucro / 100);
-    const lucroMensal = contract.duracaoMeses > 0 ? lucroTotal / contract.duracaoMeses : 0;
-    const valorizacaoMes = valorTotal > 0 ? (lucroMensal / valorTotal) * 100 : 0;
-    const valorizacaoAno = valorizacaoMes * 12;
+  const handleBuyContract = async (verificationCode) => {
+    if (!selectedContract) {
+      alert("Erro: Nenhuma proposta de contrato para comprar.");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const contractData = {
+        clientId: user.id,
+        amount: selectedContract.preco,
+        months: selectedContract.duracaoMeses,
+        withGem,
+        description: "Contrato criado via plataforma",
+        allowWithdraw: true,
+        paymentMethod: paymentMethod,
+        verificationCode: verificationCode,
+      };
+      const createdContract = await contractServices.criarContrato(
+        token,
+        contractData
+      );
+      
+      setIsVerificationModalOpen(false);
+      alert(`Contrato #${createdContract.id} criado com sucesso! Prossiga para o pagamento.`);
 
-    return (
-        <div style={style.configurationPage}>
-            <button onClick={onBack} style={style.contractsBackButton}><i className="fa-solid fa-arrow-left"></i> Voltar</button>
-            <h1 style={style.pageTitle}>Proposta do Contrato</h1>
-            <table style={style.summaryTable}>
-                <thead>
-                    <tr>
-                        <th style={style.summaryTableHeaderCell}>Valor do Contrato</th>
-                        <th style={style.summaryTableHeaderCell}>Duração</th>
-                        <th style={style.summaryTableHeaderCell}>Lucro Mensal</th>
-                        <th style={style.summaryTableHeaderCell}>Lucro Total</th>
-                        <th style={style.summaryTableHeaderCell}>Valorização % (Mês)</th>
-                        <th style={style.summaryTableHeaderCell}>Valorização % (Ano)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style={style.summaryTableCell}>R$ {valorTotal.toFixed(2).replace('.', ',')}</td>
-                        <td style={style.summaryTableCell}>{contract.duracaoMeses} meses</td>
-                        <td style={style.summaryTableCell}>R$ {lucroMensal.toFixed(2).replace('.', ',')}</td>
-                        <td style={{...style.summaryTableCell, ...style.lucroTotalCell}}>R$ {lucroTotal.toFixed(2).replace('.', ',')}</td>
-                        <td style={style.summaryTableCell}>{valorizacaoMes.toFixed(2)}%</td>
-                        <td style={style.summaryTableCell}>{valorizacaoAno.toFixed(2)}%</td>
-                    </tr>
-                </tbody>
-            </table>
-            <button style={style.btnGerarContrato} onClick={onGenerateContract}>Gerar Contrato</button>
-            {showGeneratedContract && <GeneratedContract contract={contract} total={valorTotal} {...props} />}
-        </div>
-    );
-};
+      const contracts = await contractServices.obterContratosDoUsuario(token);
+      setUserContracts(contracts);
+      handleBackToSelection();
 
-const GeneratedContract = ({ contract, total, termsAccepted, setTermsAccepted, paymentMethod, setPaymentMethod, contractRef, onPrint }) => (
-    <div style={style.generatedContractWrapper}>
-        <h2>Contrato Gerado</h2>
-        <div ref={contractRef} style={style.contractTextBox}>
-            <h3>Contrato de Compra e Venda</h3>
-            <p><strong>Partes Contratantes:</strong></p>
-            <p>Vendedor: Codinglab Web Dev, CPF: 12.345.678/0001-99</p>
-            <p>Comprador: [Nome do Cliente], CPF: [CPF do Cliente]</p>
-            <br />
-            <p><strong>Detalhes do Produto:</strong></p>
-            <p>Produto: {contract.nome}</p>
-            <p>Quantidade: 1</p>
-            <p>Valor Unitário: R$ {contract.preco.toFixed(2).replace('.', ',')}</p>
-            <p><strong>Valor Total: R$ {total.toFixed(2).replace('.', ',')}</strong></p>
-            <br />
-            <p><strong>Duração e Condições do Contrato:</strong></p>
-            <p>Duração do Investimento: {contract.duracaoMeses} meses</p>
-            <p>O valor investido valorizará em {contract.lucro.toFixed(0)}% ao longo do período.</p>
-            <br />
-            <p><strong>Assinaturas:</strong></p>
-            <div style={style.assinaturas}>
-                <p>_________________________<br />Assinatura do Vendedor</p>
-                <p>_________________________<br />Assinatura do Comprador</p>
-            </div>
-        </div>
-        <div style={style.contractActions}>
-            <button style={style.btnImprimir} onClick={onPrint}>Imprimir Contrato</button>
-            <button style={style.btnPagarContrato}>Pagar Contrato</button>
-        </div>
-        <div style={style.termsCheckbox}>
-            <input type="checkbox" id="terms" checked={termsAccepted} onChange={e => setTermsAccepted(e.target.checked)} style={style.termsCheckboxInput} />
-            <label htmlFor="terms">Eu concordo com os termos do contrato</label>
-        </div>
-        <div style={style.paymentSection}>
-            <h3 style={style.paymentSectionH3}>Selecione o método de pagamento</h3>
-            <div style={style.paymentOptions}>
-                {['PIX', 'BOLETO', 'CARTÃO DE CRÉDITO'].map(method => {
-                    const isActive = paymentMethod === method;
-                    const optionStyle = {...style.paymentOption, ...(isActive ? style.paymentOptionActive : {})};
-                    const iconStyle = {...style.paymentOptionIcon, ...(isActive ? style.paymentOptionIconActive : {})};
-                    
-                    return (
-                        <button key={method} style={optionStyle} onClick={() => setPaymentMethod(method)}>
-                            <i className={`fa-solid ${isActive ? 'fa-circle-check' : 'fa-circle'}`} style={iconStyle}></i>
-                            {method}
-                        </button>
-                    );
-                })}
-            </div>
-        </div>
+    } catch (error) {
+      console.error("Erro ao realizar a compra do contrato:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        "Ocorreu um erro ao comprar o contrato. Verifique o código e tente novamente.";
+      alert(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div style={style.contratosPageContainer}>
+      <GlobalStyles />
+      {isLoading && !isVerificationModalOpen && <Loader />}
+
+      {step === "selection" && (
+        <>
+          <SelectionStep
+            onGenerateProposal={handleGenerateProposal}
+            withGem={withGem}
+            setWithGem={setWithGem}
+          />
+          <UserContracts
+            contracts={filteredContracts}
+            filterId={filterId}
+            setFilterId={setFilterId}
+            filterStatus={filterStatus}
+            setFilterStatus={setFilterStatus}
+          />
+        </>
+      )}
+
+      {step === "configuration" && (
+        <ConfigurationStep
+          contract={selectedContract}
+          onGenerateContract={handleProceedToGeneratedView}
+          onBack={handleBackToSelection}
+          user={user}
+        />
+      )}
+
+      {step === "generated" && (
+        <ConfigurationStep
+          contract={selectedContract}
+          handleBuy={handleOpenVerificationModal}
+          onBack={handleBackToSelection}
+          showGeneratedContract={true}
+          termsAccepted={termsAccepted}
+          setTermsAccepted={setTermsAccepted}
+          paymentMethod={paymentMethod}
+          setPaymentMethod={setPaymentMethod}
+          contractRef={contractRef}
+          onPrint={handlePrint}
+          user={user}
+        />
+      )}
+
+      <VerificationModal
+        isOpen={isVerificationModalOpen}
+        onClose={() => setIsVerificationModalOpen(false)}
+        onSubmit={handleBuyContract}
+        isLoading={isLoading}
+      />
     </div>
-);
+  );
+}

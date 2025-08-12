@@ -1,0 +1,98 @@
+import React, { useState } from "react";
+import style from "./LoginStyle";
+import { useAuth } from "../../Context/AuthContext";
+
+export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const { login } = useAuth();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!email || !password) {
+      alert("Por favor, preencha todos os campos.");
+      return;
+    }
+    await login(email, password);
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  return (
+    <div style={style.loginPage}>
+      <div style={style.loginContainer}>
+        <div style={style.infoPanel}>
+          <h1 style={style.infoTitle}>Seu Dashboard</h1>
+          <p style={style.infoSubtitle}>
+            Acesse sua conta para visualizar insights, gerenciar contratos e
+            acompanhar seu progresso financeiro.
+          </p>
+        </div>
+
+        <div style={style.formPanel}>
+          <form style={style.form} onSubmit={handleSubmit}>
+            <h2 style={style.formTitle}>Bem-vindo de volta!</h2>
+            <p style={style.formSubtitle}>
+              Por favor, insira seus dados para continuar.
+            </p>
+
+            <div style={style.inputGroup}>
+              <i className="fa-solid fa-envelope" style={style.inputIcon}></i>
+              <input
+                type="email"
+                placeholder="Email"
+                style={style.input}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div style={style.inputGroup}>
+              <i className="fa-solid fa-lock" style={style.inputIcon}></i>
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Senha"
+                style={style.input}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <i
+                className={`fa-solid ${
+                  showPassword ? "fa-eye-slash" : "fa-eye"
+                }`}
+                style={style.passwordToggleIcon}
+                onClick={togglePasswordVisibility}
+              ></i>
+            </div>
+
+            <div style={style.optionsRow}>
+              <label style={style.checkboxContainer}>
+                <input type="checkbox" style={style.checkbox} />
+                Lembrar-me
+              </label>
+              <a href="/forgot-password" style={style.forgotPassword}>
+                Esqueci a senha
+              </a>
+            </div>
+
+            <button type="submit" style={style.submitButton}>
+              Entrar
+            </button>
+
+            <p style={style.signupLink}>
+              Não tem uma conta?{" "}
+              <a href="/register" style={style.signupLinkA}>
+                Cadastre-se
+              </a>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,113 +1,349 @@
-import React, { useState } from "react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
-import style from './DashboardStyle.js';
-import DashboardGrafico from './DashboardGrafico';
-import DashboardPieChart from './DashboardPieChart';
-import DataTable from './DataTable';
+// /src/Components/Dashboard/Dashboard.js
 
-// REMOVA O COMPONENTE GlobalStyles DAQUI
-// const GlobalStyles = () => ( ... );
+import React, { useEffect, useState } from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  LabelList,
+} from "recharts";
+import style from "./DashboardStyle.js";
+import DashboardGrafico from "./DashboardGrafico";
+import DashboardPieChart from "./DashboardPieChart";
+import DataTable from "./DataTable";
+import UserContracts from "../UserContracts/UserContracts.js"
+import clientServices from "../../dbServices/clientServices.js";
+import { useAuth } from "../../Context/AuthContext.js";
+import formatServices from "../../formatServices/formatServices.js";
+import moneyService from "../../dbServices/moneyService.js";
+import contractServices from "../../dbServices/contractServices.js";
+import extractServices from "../../dbServices/extractServices.js";
 
 const pieChartData = [
-  { name: 'Contrato A', value: 400 }, { name: 'Contrato B', value: 300 },
-  { name: 'Contrato C', value: 300 }, { name: 'Contrato D', value: 200 },
+  { name: "Contrato A", value: 400 },
+  { name: "Contrato B", value: 300 },
+  { name: "Contrato C", value: 300 },
+  { name: "Contrato D", value: 200 },
 ];
 const topContractsData = [
-    { name: 'Contrato A', value: 2300 }, { name: 'Contrato B', value: 2200 },
-    { name: 'Contrato D', value: 2000 }, { name: 'Contrato G', value: 1700 },
-    { name: 'Contrato F', value: 1100 },
+  { name: "Contrato A", value: 2300 },
+  { name: "Contrato B", value: 2200 },
+  { name: "Contrato D", value: 2000 },
+  { name: "Contrato G", value: 1700 },
+  { name: "Contrato F", value: 1100 },
 ];
 const supervisorData = [
-    { name: 'Julio', value: 7000 }, { name: 'Gustavo', value: 5200 },
-    { name: 'Kaua', value: 2900 }, { name: 'Estevan', value: 2000 },
+  { name: "Julio", value: 7000 },
+  { name: "Gustavo", value: 5200 },
+  { name: "Kaua", value: 2900 },
+  { name: "Estevan", value: 2000 },
 ];
 
-const formatValue = (value) => `R$ ${(value).toFixed(2)} `.replace('.', ',');
+const formatValue = (value) => `R$ ${value.toFixed(2)} `.replace(".", ",");
 
 const HorizontalBarChart = ({ data, title }) => (
-    <div style={{ marginTop: '20px', textAlign: 'left' }}>
-        <h4 style={{ margin: '0 0 15px 0', fontWeight: '500', color: '#333' }}>{title}</h4>
-        <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={data} layout="vertical" margin={{ top: 5, right: 50, left: 0, bottom: 5 }}>
-                <XAxis type="number" hide />
-                <YAxis type="category" dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#555', fontSize: 14 }} width={100} />
-                <Tooltip cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }} contentStyle={{ backgroundColor: 'white', border: '1px solid #ddd' }} />
-                <Bar dataKey="value" fill="#007bff" radius={[0, 5, 5, 0]}>
-                    <LabelList dataKey="value" position="right" formatter={formatValue} style={{ fill: '#333', fontSize: 14 }} />
-                </Bar>
-            </BarChart>
-        </ResponsiveContainer>
-    </div>
+  <div style={{ marginTop: "20px", textAlign: "left" }}>
+    <h4 style={{ margin: "0 0 15px 0", fontWeight: "500", color: "#333" }}>
+      {title}
+    </h4>
+    <ResponsiveContainer width="100%" height={200}>
+      <BarChart
+        data={data}
+        layout="vertical"
+        margin={{ top: 5, right: 50, left: 0, bottom: 5 }}
+      >
+        <XAxis type="number" hide />
+        <YAxis
+          type="category"
+          dataKey="name"
+          axisLine={false}
+          tickLine={false}
+          tick={{ fill: "#555", fontSize: 14 }}
+          width={100}
+        />
+        <Tooltip
+          cursor={{ fill: "rgba(0, 0, 0, 0.05)" }}
+          contentStyle={{ backgroundColor: "white", border: "1px solid #ddd" }}
+        />
+        <Bar dataKey="value" fill="#007bff" radius={[0, 5, 5, 0]}>
+          <LabelList
+            dataKey="value"
+            position="right"
+            formatter={formatValue}
+            style={{ fill: "#333", fontSize: 14 }}
+          />
+        </Bar>
+      </BarChart>
+    </ResponsiveContainer>
+  </div>
 );
 
-export default function Dashboard(){
-    const [activeIndex, setActiveIndex] = useState(null);
-    const [isPieHovered, setIsPieHovered] = useState(false);
+export default function Dashboard() {
+  const [activeIndex, setActiveIndex] = useState(null);
+  const [isPieHovered, setIsPieHovered] = useState(false);
+  const [dolarRate, setDolarRate] = useState(1);
+  const [walletInfo, setWalletInfo] = useState({
+    totalBalance: 0,
+    totalAvaliableBalance: 0,
+    totalEarned: 0,
+    totalWithdraw: 0,
+    totalInvested: 0,
+    totalLeftToEarn: 0,
+  });
+  const [userContracts, setUserContracts] = useState([]);
+  const [filteredContracts, setFilteredContracts] = useState([]);
+  const [extracts, setExtracts] = useState([]);
 
-    const defaultContract = pieChartData.reduce((prev, current) => (prev.value > current.value) ? prev : current);
+  // ✨ ESTADOS PARA OS FILTROS DO USERCONTRACTS ✨
+  const [filterId, setFilterId] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
 
-    const onPieEnter = (_, index) => { setActiveIndex(index); };
-    const onPieLeave = () => { setActiveIndex(null); };
+  const { token } = useAuth();
+  const defaultContract = pieChartData.reduce((prev, current) =>
+    prev.value > current.value ? prev : current
+  );
 
-    const lucrosData = [ { idCompra: 'A4', lucroObtido: '59.000,00', saldoDisponivel: '59.000,00' }];
-    const extratosData = [ { id: 'E1', tipo: 'Compra', data: '29/01/2025 06:21:18', valor: 'R$590.000,00' }, { id: 'E2', tipo: 'Crédito', data: '29/01/2025 08:36:37', valor: 'R$80.000,00' }, { id: 'E4', tipo: 'Indicação', data: '29/01/2025 18:54:45', valor: 'R$80.000,00' }];
-    const contratosData = [ { idCompra: 'A4', nome: 'Modelo 01', dataDaCompra: '30/01/2025 01:52:18', dataDoTermino: '29/01/2026 22:52:18', totalInvestido: 'R$72.000,00', lucroObtido: 'R$59.000,00', libDoSaque: '---', status: 'Valorizando' }];
-    const lucrosColumns = [ { key: 'idCompra', label: 'ID COMPRA' }, { key: 'lucroObtido', label: 'LUCRO OBTIDO' }, { key: 'saldoDisponivel', label: 'SALDO DISPONÍVEL' }];
-    const extratosColumns = [ { key: 'id', label: 'ID' }, { key: 'tipo', label: 'TIPO' }, { key: 'data', label: 'DATA' }, { key: 'valor', label: 'VALOR' }];
-    const contratosColumns = [ { key: 'idCompra', label: 'ID COMPRA' }, { key: 'nome', label: 'Nome' }, { key: 'dataDaCompra', label: 'Data da Compra' }, { key: 'dataDoTermino', label: 'Data da Término' }, { key: 'totalInvestido', label: 'Total Investido' }, { key: 'lucroObtido', label: 'Lucro Obtido' }, { key: 'libDoSaque', label: 'Lib. Do Saque' }, { key: 'status', label: 'Status' }];
+  const onPieEnter = (_, index) => {
+    setActiveIndex(index);
+  };
+  const onPieLeave = () => {
+    setActiveIndex(null);
+  };
 
-    const pieChartStyle = {...style.dashboardPiechart, ...(isPieHovered ? style.dashboardPiechartHover : {})};
-    const expandedContentStyle = {...style.expandedContent, ...(isPieHovered ? style.expandedContentVisible : {})};
+  const lucrosColumns = [
+    { key: "id", label: "ID" },
+    { key: "totalIncome", label: "LUCRO OBTIDO", function: formatServices.formatCurrencyBR },
+    { key: "currentIncome", label: "SALDO DISPONÍVEL", function: formatServices.formatCurrencyBR },
+  ];
 
-    return(
-        <div style={style.bodyDashboard}>
-            {/* REMOVA A CHAMADA <GlobalStyles /> DAQUI */}
-            <div style={style.containerDashboard}>
-                <div style={style.dashboardRow}>
-                    <div style={style.dashboardCard}><div style={style.dashboardCardHeader}><h3 style={style.cardHeaderH3}>VALOR TOTAL DE INVESTIMENTOS</h3><i className="fa-solid fa-gear" style={style.cardHeaderIcon}></i></div><div style={style.dashboardCardValue}>R$72.000,00</div><div style={style.dashboardCardSecondaryValue}>US$12.286,69</div><div style={style.dashboardCardFooter}><i className="fa-solid fa-arrow-up" style={style.cardFooterIcon}></i><span>TOTAL VALUE OF INVESTMENTS.</span></div></div>
-                    <div style={style.dashboardCard}><div style={style.dashboardCardHeader}><h3 style={style.cardHeaderH3}>LUCRO TOTAL OBTIDO</h3><i className="fa-solid fa-gear" style={style.cardHeaderIcon}></i></div><div style={style.dashboardCardValue}>R$59.000,00</div><div style={style.dashboardCardSecondaryValue}>US$10.068,26</div><div style={style.dashboardCardFooter}><i className="fa-solid fa-arrow-up" style={style.cardFooterIcon}></i><span>TOTAL VALUE OF PROFIT.</span></div></div>
-                    <div style={style.dashboardCard}><div style={style.dashboardCardHeader}><h3 style={style.cardHeaderH3}>LUCRO A RECEBER</h3><i className="fa-solid fa-gear" style={style.cardHeaderIcon}></i></div><div style={style.dashboardCardValue}>R$13.000,00</div><div style={style.dashboardCardSecondaryValue}>US$2.218,43</div><div style={style.dashboardCardFooter}><i className="fa-solid fa-arrow-up" style={style.cardFooterIcon}></i><span>ACCOUNTS RECEIVABLE.</span></div></div>
-                    <div style={style.dashboardCard}><div style={style.dashboardCardHeader}><h3 style={style.cardHeaderH3}>DISPONÍVEL PARA SAQUE</h3><i className="fa-solid fa-gear" style={style.cardHeaderIcon}></i></div><div style={style.dashboardCardValue}>R$70.000,00</div><div style={style.dashboardCardSecondaryValue}>US$11.945,39</div><div style={style.dashboardCardFooter}><i className="fa-solid fa-arrow-up" style={style.cardFooterIcon}></i><span>Increase in Equity.</span></div></div>
-                </div>
+  const extratosColumns = [
+    { key: "description", label: "Descrição" },
+    { key: "dateCreated", label: "Data", function: formatServices.formatData },
+    { key: "amount", label: "VALOR", function: formatServices.formatCurrencyBR },
+  ];
 
-                <div style={style.dashboardRow}>
-                    <div style={style.dashboardGrafico}>
-                        <h3 style={style.chartTitle}>Vendas da Empresa</h3>
-                        <div style={style.chartContainer}><DashboardGrafico /></div>
-                    </div>
-                    
-                    <div style={style.dashboardPiechartWrapper}>
-                        <div 
-                            style={pieChartStyle}
-                            onMouseEnter={() => setIsPieHovered(true)}
-                            onMouseLeave={() => setIsPieHovered(false)}
-                        >
-                            <h3 style={style.chartTitle}>Tipos de Contratos</h3>
-                            <div style={style.chartContainer}>
-                                <DashboardPieChart 
-                                    data={pieChartData}
-                                    activeIndex={activeIndex}
-                                    onPieEnter={onPieEnter}
-                                    onPieLeave={onPieLeave}
-                                    defaultLabel={defaultContract}
-                                />
-                            </div>
-                            <div style={expandedContentStyle}>
-                                <HorizontalBarChart data={topContractsData} title="Margem TOP 5 Contratos" />
-                                <HorizontalBarChart data={supervisorData} title="Margem por Vendedor" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+  const pieChartStyle = {
+    ...style.dashboardPiechart,
+    ...(isPieHovered ? style.dashboardPiechartHover : {}),
+  };
+  const expandedContentStyle = {
+    ...style.expandedContent,
+    ...(isPieHovered ? style.expandedContentVisible : {}),
+  };
 
-                <div style={{...style.dashboardRow, ...style.dashboardRowStretch}}>
-                    <div style={style.dashboardCol}><DataTable title="LUCROS DISPONÍVEL POR CONTRATO" columns={lucrosColumns} data={lucrosData}/></div>
-                    <div style={style.dashboardCol}><DataTable title="EXTRATOS DA CONTA" columns={extratosColumns} data={extratosData}><i className="fa-solid fa-cog" style={style.dataTableControlsIcon}></i></DataTable></div>
-                </div>
-                <div style={style.dashboardRow}>
-                    <div style={style.dashboardColFull}><DataTable title="Tabela de Contratos" columns={contratosColumns} data={contratosData}/></div>
-                </div>
+  const fetchWalletData = async () => {
+    if (!token) return;
+    try {
+      const walletData = await clientServices.informacoesCarteira(token);
+      setWalletInfo({
+        totalBalance: walletData.totalBalance || 0,
+        totalAvaliableBalance: walletData.totalAvaliableBalance || 0,
+        totalIncome: walletData.totalIncome || 0,
+        totalWithdraw: walletData.totalWithdraw || 0,
+        totalInvested: walletData.totalInvested || 0,
+        totalLeftToEarn: walletData.totalLeftToEarn || 0,
+      });
+    } catch (error) {
+      console.error("Erro ao buscar dados da carteira:", error);
+    }
+  };
+
+  const fetchDolarRate = async () => {
+    try {
+      const rate = await moneyService.getDolarRate();
+      setDolarRate(rate);
+    } catch (error) {
+      console.error("Erro ao obter cotação do dólar:", error);
+    }
+  };
+
+  const fetchUserContracts = async () => {
+    if (!token) return;
+    try {
+      const contracts = await contractServices.obterContratosDoUsuario(token);
+      setUserContracts(contracts);
+    } catch (error) {
+      console.error("Error fetching user contracts:", error);
+    }
+  };
+
+  const fetchUserExtract = async () => {
+    if (!token) return;
+    try {
+      const extracts = await extractServices.getExtracts(token);
+      setExtracts(extracts);
+    } catch (error) {
+      console.error("Error fetching user extracts:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchWalletData();
+    fetchDolarRate();
+    fetchUserContracts();
+    fetchUserExtract();
+  }, [token]);
+
+  // ✨ LÓGICA DE FILTRAGEM PARA O USERCONTRACTS ✨
+  useEffect(() => {
+    let contractsToFilter = [...userContracts];
+    if (filterId) {
+      contractsToFilter = contractsToFilter.filter(c => 
+        c.id.toString().includes(filterId)
+      );
+    }
+    if (filterStatus) {
+      contractsToFilter = contractsToFilter.filter(c => 
+        c.status.toString() === filterStatus
+      );
+    }
+    setFilteredContracts(contractsToFilter);
+  }, [userContracts, filterId, filterStatus]);
+
+  return (
+    <div style={style.bodyDashboard}>
+      <div style={style.containerDashboard}>
+        <div style={style.dashboardRow}>
+          <div style={style.dashboardCard}>
+            <div style={style.dashboardCardHeader}>
+              <h3 style={style.cardHeaderH3}>VALOR TOTAL DE INVESTIMENTOS</h3>
+              <i className="fa-solid fa-gear" style={style.cardHeaderIcon}></i>
             </div>
+            <div style={style.dashboardCardValue}>
+              R${formatServices.formatCurrencyBR(walletInfo.totalInvested)}
+            </div>
+            <div style={style.dashboardCardSecondaryValue}>
+              US$ {formatServices.formatCurrencyBR(walletInfo.totalInvested / dolarRate)}
+            </div>
+            <div style={style.dashboardCardFooter}>
+              <i className="fa-solid fa-arrow-up" style={style.cardFooterIcon}></i>
+              <span>TOTAL VALUE OF INVESTMENTS.</span>
+            </div>
+          </div>
+          <div style={style.dashboardCard}>
+            <div style={style.dashboardCardHeader}>
+              <h3 style={style.cardHeaderH3}>LUCRO TOTAL OBTIDO</h3>
+              <i className="fa-solid fa-gear" style={style.cardHeaderIcon}></i>
+            </div>
+            <div style={style.dashboardCardValue}>
+              R${formatServices.formatCurrencyBR(walletInfo.totalIncome)}
+            </div>
+            <div style={style.dashboardCardSecondaryValue}>
+              US$ {formatServices.formatCurrencyBR(walletInfo.totalIncome / dolarRate)}
+            </div>
+            <div style={style.dashboardCardFooter}>
+              <i className="fa-solid fa-arrow-up" style={style.cardFooterIcon}></i>
+              <span>TOTAL VALUE OF PROFIT.</span>
+            </div>
+          </div>
+          <div style={style.dashboardCard}>
+            <div style={style.dashboardCardHeader}>
+              <h3 style={style.cardHeaderH3}>LUCRO A RECEBER</h3>
+              <i className="fa-solid fa-gear" style={style.cardHeaderIcon}></i>
+            </div>
+            <div style={style.dashboardCardValue}>
+              R${formatServices.formatCurrencyBR(walletInfo.totalLeftToEarn)}
+            </div>
+            <div style={style.dashboardCardSecondaryValue}>
+              US$ {formatServices.formatCurrencyBR(walletInfo.totalLeftToEarn / dolarRate)}
+            </div>
+            <div style={style.dashboardCardFooter}>
+              <i className="fa-solid fa-arrow-up" style={style.cardFooterIcon}></i>
+              <span>ACCOUNTS RECEIVABLE.</span>
+            </div>
+          </div>
+          <div style={style.dashboardCard}>
+            <div style={style.dashboardCardHeader}>
+              <h3 style={style.cardHeaderH3}>DISPONÍVEL PARA SAQUE</h3>
+              <i className="fa-solid fa-gear" style={style.cardHeaderIcon}></i>
+            </div>
+            <div style={style.dashboardCardValue}>
+              R$ {formatServices.formatCurrencyBR(walletInfo.totalAvaliableBalance)}
+            </div>
+            <div style={style.dashboardCardSecondaryValue}>
+              US$ {formatServices.formatCurrencyBR(walletInfo.totalAvaliableBalance / dolarRate)}
+            </div>
+            <div style={style.dashboardCardFooter}>
+              <i className="fa-solid fa-arrow-up" style={style.cardFooterIcon}></i>
+              <span>Increase in Equity.</span>
+            </div>
+          </div>
         </div>
-    )
+
+        <div style={style.dashboardRow}>
+          <div style={style.dashboardGrafico}>
+            <h3 style={style.chartTitle}>Vendas da Empresa</h3>
+            <div style={style.chartContainer}>
+              <DashboardGrafico />
+            </div>
+          </div>
+          <div style={style.dashboardPiechartWrapper}>
+            <div
+              style={pieChartStyle}
+              onMouseEnter={() => setIsPieHovered(true)}
+              onMouseLeave={() => setIsPieHovered(false)}
+            >
+              <h3 style={style.chartTitle}>Tipos de Contratos</h3>
+              <div style={style.chartContainer}>
+                <DashboardPieChart
+                  data={pieChartData}
+                  activeIndex={activeIndex}
+                  onPieEnter={onPieEnter}
+                  onPieLeave={onPieLeave}
+                  defaultLabel={defaultContract}
+                />
+              </div>
+              <div style={expandedContentStyle}>
+                <HorizontalBarChart
+                  data={topContractsData}
+                  title="Margem TOP 5 Contratos"
+                />
+                <HorizontalBarChart
+                  data={supervisorData}
+                  title="Margem por Vendedor"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ ...style.dashboardRow, ...style.dashboardRowStretch }}>
+          <div style={style.dashboardCol}>
+            <DataTable
+              title="LUCROS DISPONÍVEL POR CONTRATO"
+              columns={lucrosColumns}
+              data={userContracts}
+            />
+          </div>
+          <div style={style.dashboardCol}>
+            <DataTable
+              title="EXTRATOS DA CONTA"
+              columns={extratosColumns}
+              data={extracts}
+            >
+              <i
+                className="fa-solid fa-cog"
+                style={style.dataTableControlsIcon}
+              ></i>
+            </DataTable>
+          </div>
+        </div>
+
+        <div style={style.dashboardRow}>
+          <div style={style.dashboardColFull}>
+            <UserContracts
+              contracts={filteredContracts}
+              filterId={filterId}
+              setFilterId={setFilterId}
+              filterStatus={filterStatus}
+              setFilterStatus={setFilterStatus}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

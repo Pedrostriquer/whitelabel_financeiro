@@ -1,0 +1,155 @@
+// /src/Components/Contratos/ContractDetailPageStyle.js
+
+const colors = {
+    primary: '#007bff',
+    success: '#28a745',
+    info: '#17a2b8',
+    danger: '#dc3545',
+    background: '#f8f9fa',
+    white: '#fff',
+    textDark: '#333',
+    textLight: '#555',
+    border: '#e9ecef',
+    shadow: 'rgba(0, 0, 0, 0.08)',
+};
+
+const style = {
+    page: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: '40px 20px',
+        backgroundColor: colors.background,
+    },
+    container: {
+        width: '100%',
+        maxWidth: '900px',
+    },
+    header: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '30px',
+    },
+    title: {
+        fontSize: '2.5rem',
+        fontWeight: 700,
+        color: colors.textDark,
+        margin: 0,
+    },
+    statusBadge: { 
+        padding: '8px 18px', 
+        borderRadius: '20px', 
+        fontSize: '1rem', 
+        fontWeight: 'bold', 
+        color: colors.white
+    },
+    detailsGrid: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+        gap: '25px',
+        marginBottom: '30px',
+    },
+    metricCard: {
+        backgroundColor: colors.white,
+        padding: '25px',
+        borderRadius: '12px',
+        border: `1px solid ${colors.border}`,
+        boxShadow: `0 4px 12px ${colors.shadow}`,
+    },
+    metricLabel: {
+        fontSize: '0.9rem',
+        color: colors.textLight,
+        marginBottom: '8px',
+        display: 'block',
+        fontWeight: 500,
+    },
+    metricValue: {
+        fontSize: '1.8rem',
+        fontWeight: 700,
+        color: colors.textDark,
+    },
+    actionsPanel: {
+        backgroundColor: colors.white,
+        padding: '30px',
+        borderRadius: '12px',
+        border: `1px solid ${colors.border}`,
+        boxShadow: `0 4px 12px ${colors.shadow}`,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px',
+    },
+    actionsTitle: {
+        fontSize: '1.5rem',
+        fontWeight: 600,
+        color: colors.textDark,
+        margin: '0 0 10px 0',
+        textAlign: 'center',
+    },
+    actionButton: {
+        padding: '15px 25px',
+        fontSize: '1rem',
+        fontWeight: 'bold',
+        border: 'none',
+        borderRadius: '8px',
+        cursor: 'pointer',
+        transition: 'all 0.3s',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '10px',
+    },
+    reinvestButton: { backgroundColor: colors.success, color: colors.white },
+    downloadButton: { backgroundColor: colors.info, color: colors.white },
+    toggleContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '15px',
+        backgroundColor: '#f8f9fa',
+        borderRadius: '8px',
+    },
+    toggleLabel: {
+        fontWeight: 600,
+        color: colors.textDark,
+    },
+    switch: {
+        position: 'relative',
+        display: 'inline-block',
+        width: '60px',
+        height: '34px',
+    },
+    switchInput: {
+        opacity: 0,
+        width: 0,
+        height: 0,
+    },
+    slider: {
+        position: 'absolute',
+        cursor: 'pointer',
+        top: 0, left: 0, right: 0, bottom: 0,
+        backgroundColor: '#ccc',
+        transition: '.4s',
+        borderRadius: '34px',
+    },
+    sliderBefore: {
+        position: 'absolute',
+        content: '""',
+        height: '26px',
+        width: '26px',
+        left: '4px',
+        bottom: '4px',
+        backgroundColor: 'white',
+        transition: '.4s',
+        borderRadius: '50%',
+    },
+    backLink: {
+        display: 'inline-block',
+        marginTop: '30px',
+        fontWeight: 600,
+        color: colors.primary,
+        textDecoration: 'none'
+    },
+};
+
+export default style;

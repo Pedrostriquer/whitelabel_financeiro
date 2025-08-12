@@ -23,7 +23,6 @@ const style = {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: '70vh',
     },
     simulationSection: {
         background: 'white',
@@ -63,6 +62,37 @@ const style = {
         borderRadius: '8px',
         fontSize: '1rem',
     },
+    simulationSelect: {
+        flex: 1,
+        padding: '15px',
+        border: '1px solid #ddd',
+        borderRadius: '8px',
+        fontSize: '1rem',
+        appearance: 'none',
+        backgroundColor: '#fff',
+        cursor: 'pointer',
+        backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'right 15px center',
+        backgroundSize: '12px auto',
+    },
+    checkboxWrapper: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: '20px',
+    },
+    checkboxInput: {
+        marginRight: '10px',
+        width: '18px',
+        height: '18px',
+        cursor: 'pointer',
+    },
+    checkboxLabel: {
+        fontSize: '1rem',
+        color: '#555',
+        cursor: 'pointer',
+    },
     btnGerarProposta: {
         padding: '15px 30px',
         backgroundColor: '#007bff',
@@ -71,7 +101,7 @@ const style = {
         borderRadius: '8px',
         fontSize: '1rem',
         cursor: 'pointer',
-        marginTop: '10px',
+        marginTop: '25px',
         transition: 'background-color 0.2s',
     },
     btnGerarPropostaHover: {
@@ -81,7 +111,7 @@ const style = {
         display: 'flex',
         alignItems: 'center',
     },
-    inputAddon: { // Estilo para o 'span'
+    inputAddon: {
         padding: '15px',
         backgroundColor: '#f0f2f5',
         border: '1px solid #ddd',
@@ -90,18 +120,54 @@ const style = {
         color: '#555',
         fontWeight: 500,
     },
-    inputInGroup: { // Estilo para o input dentro do grupo
+    inputInGroup: {
         borderRadius: '8px 0 0 8px',
         borderRight: 'none',
     },
-
-    // Etapa 2: Configuração
+    
+    // ... (O restante dos estilos para as Etapas 2 e 3 permanecem os mesmos)
+    rulesSection: {
+        marginTop: '60px',
+        width: '100%',
+        maxWidth: '800px',
+    },
+    rulesTitle: {
+        fontSize: '1.5rem',
+        color: '#444',
+        marginBottom: '25px',
+    },
+    rulesTable: {
+        width: '100%',
+        borderCollapse: 'collapse',
+        marginTop: '20px',
+        boxShadow: '0 4px 15px rgba(0,0,0,0.08)',
+        borderRadius: '12px',
+        overflow: 'hidden',
+    },
+    rulesTableTh: {
+        backgroundColor: '#f8f9fa',
+        padding: '15px',
+        textAlign: 'left',
+        fontWeight: 600,
+        color: '#333',
+        borderBottom: '2px solid #e9ecef',
+    },
+    rulesTableTd: {
+        padding: '15px',
+        textAlign: 'left',
+        borderBottom: '1px solid #e9ecef',
+        color: '#555',
+        background: '#fff',
+    },
+    rulesTableTrLastChildTd: {
+        borderBottom: 'none',
+    },
     configurationPage: { 
         display: 'flex', 
         flexDirection: 'column', 
         alignItems: 'center', 
     },
-    contractsBackButton: { // Nome único para evitar conflitos
+    contractsBackButton: {
         alignSelf: 'flex-start', 
         background: '#f0f2f5', 
         border: '1px solid #ddd', 
@@ -150,8 +216,6 @@ const style = {
         fontSize: '1rem', 
         cursor: 'pointer', 
     },
-
-    // Etapa 3: Contrato Gerado
     generatedContractWrapper: { 
         width: '100%', 
         maxWidth: '800px', 

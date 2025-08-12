@@ -9,7 +9,7 @@ const style = {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        zIndex: 2000,
+        zIndex: 99,
     },
     loaderSpinner: {
         width: '50px',

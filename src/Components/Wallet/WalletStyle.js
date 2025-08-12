@@ -14,7 +14,6 @@ const style = {
         flexDirection: 'column',
         gap: '20px',
     },
-    // Estilo do Cartão de Crédito principal (sem pseudo-elementos)
     creditCard: {
         background: 'linear-gradient(45deg, #1d2b64, #4e63d6)',
         color: 'white',

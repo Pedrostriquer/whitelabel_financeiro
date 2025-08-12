@@ -1,3 +1,5 @@
+// /src/Components/Dashboard/DashboardStyle.js
+
 const style = {
     // Geral
     bodyDashboard: {
@@ -148,6 +150,7 @@ const style = {
     },
     dashboardColFull: {
         flex: 1,
+        overflow: 'auto', // Adiciona scroll se o conteúdo (nossa tabela) for maior que o container
     },
 
     // DataTable.js
@@ -248,6 +251,7 @@ const style = {
         justifyContent: 'center',
         paddingTop: '20px',
         marginTop: 'auto',
+        gap: 10,
     },
     pageButton: {
         width: '32px',
@@ -260,6 +264,8 @@ const style = {
         color: '#555',
         cursor: 'pointer',
         fontWeight: 500,
+        border: "none",
+        boxShadow: "2px 2px 3px rgba(0,0,0,0.3)"
     },
     pageButtonActive: {
         backgroundColor: '#f0f2f5',
