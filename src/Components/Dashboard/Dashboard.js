@@ -1,5 +1,3 @@
-// /src/Components/Dashboard/Dashboard.js
-
 import React, { useEffect, useState } from "react";
 import {
   BarChart,
@@ -14,7 +12,7 @@ import style from "./DashboardStyle.js";
 import DashboardGrafico from "./DashboardGrafico";
 import DashboardPieChart from "./DashboardPieChart";
 import DataTable from "./DataTable";
-import UserContracts from "../UserContracts/UserContracts.js"
+import UserContracts from "../UserContracts/UserContracts.js";
 import clientServices from "../../dbServices/clientServices.js";
 import { useAuth } from "../../Context/AuthContext.js";
 import formatServices from "../../formatServices/formatServices.js";
@@ -96,8 +94,8 @@ export default function Dashboard() {
   const [userContracts, setUserContracts] = useState([]);
   const [filteredContracts, setFilteredContracts] = useState([]);
   const [extracts, setExtracts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // ✨ ESTADOS PARA OS FILTROS DO USERCONTRACTS ✨
   const [filterId, setFilterId] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
 
@@ -135,7 +133,10 @@ export default function Dashboard() {
   };
 
   const fetchWalletData = async () => {
-    if (!token) return;
+    if (!token) {
+        setIsLoading(false);
+        return;
+    };
     try {
       const walletData = await clientServices.informacoesCarteira(token);
       setWalletInfo({
@@ -148,6 +149,8 @@ export default function Dashboard() {
       });
     } catch (error) {
       console.error("Erro ao buscar dados da carteira:", error);
+    } finally {
+        setIsLoading(false);
     }
   };
 
@@ -187,16 +190,15 @@ export default function Dashboard() {
     fetchUserExtract();
   }, [token]);
 
-  // ✨ LÓGICA DE FILTRAGEM PARA O USERCONTRACTS ✨
   useEffect(() => {
     let contractsToFilter = [...userContracts];
     if (filterId) {
-      contractsToFilter = contractsToFilter.filter(c => 
+      contractsToFilter = contractsToFilter.filter(c =>
         c.id.toString().includes(filterId)
       );
     }
     if (filterStatus) {
-      contractsToFilter = contractsToFilter.filter(c => 
+      contractsToFilter = contractsToFilter.filter(c =>
         c.status.toString() === filterStatus
       );
     }
@@ -212,12 +214,18 @@ export default function Dashboard() {
               <h3 style={style.cardHeaderH3}>VALOR TOTAL DE INVESTIMENTOS</h3>
               <i className="fa-solid fa-gear" style={style.cardHeaderIcon}></i>
             </div>
-            <div style={style.dashboardCardValue}>
-              R${formatServices.formatCurrencyBR(walletInfo.totalInvested)}
-            </div>
-            <div style={style.dashboardCardSecondaryValue}>
-              US$ {formatServices.formatCurrencyBR(walletInfo.totalInvested / dolarRate)}
-            </div>
+            {isLoading ? (
+                <div style={style.dashboardCardValue}>Carregando...</div>
+            ) : (
+                <>
+                    <div style={style.dashboardCardValue}>
+                    R${formatServices.formatCurrencyBR(walletInfo.totalInvested)}
+                    </div>
+                    <div style={style.dashboardCardSecondaryValue}>
+                    US$ {formatServices.formatCurrencyBR(walletInfo.totalInvested / dolarRate)}
+                    </div>
+                </>
+            )}
             <div style={style.dashboardCardFooter}>
               <i className="fa-solid fa-arrow-up" style={style.cardFooterIcon}></i>
               <span>TOTAL VALUE OF INVESTMENTS.</span>
@@ -228,12 +236,18 @@ export default function Dashboard() {
               <h3 style={style.cardHeaderH3}>LUCRO TOTAL OBTIDO</h3>
               <i className="fa-solid fa-gear" style={style.cardHeaderIcon}></i>
             </div>
-            <div style={style.dashboardCardValue}>
-              R${formatServices.formatCurrencyBR(walletInfo.totalIncome)}
-            </div>
-            <div style={style.dashboardCardSecondaryValue}>
-              US$ {formatServices.formatCurrencyBR(walletInfo.totalIncome / dolarRate)}
-            </div>
+            {isLoading ? (
+                <div style={style.dashboardCardValue}>Carregando...</div>
+            ) : (
+                <>
+                    <div style={style.dashboardCardValue}>
+                    R${formatServices.formatCurrencyBR(walletInfo.totalIncome)}
+                    </div>
+                    <div style={style.dashboardCardSecondaryValue}>
+                    US$ {formatServices.formatCurrencyBR(walletInfo.totalIncome / dolarRate)}
+                    </div>
+                </>
+            )}
             <div style={style.dashboardCardFooter}>
               <i className="fa-solid fa-arrow-up" style={style.cardFooterIcon}></i>
               <span>TOTAL VALUE OF PROFIT.</span>
@@ -244,12 +258,18 @@ export default function Dashboard() {
               <h3 style={style.cardHeaderH3}>LUCRO A RECEBER</h3>
               <i className="fa-solid fa-gear" style={style.cardHeaderIcon}></i>
             </div>
-            <div style={style.dashboardCardValue}>
-              R${formatServices.formatCurrencyBR(walletInfo.totalLeftToEarn)}
-            </div>
-            <div style={style.dashboardCardSecondaryValue}>
-              US$ {formatServices.formatCurrencyBR(walletInfo.totalLeftToEarn / dolarRate)}
-            </div>
+            {isLoading ? (
+                <div style={style.dashboardCardValue}>Carregando...</div>
+            ) : (
+                <>
+                    <div style={style.dashboardCardValue}>
+                    R${formatServices.formatCurrencyBR(walletInfo.totalLeftToEarn)}
+                    </div>
+                    <div style={style.dashboardCardSecondaryValue}>
+                    US$ {formatServices.formatCurrencyBR(walletInfo.totalLeftToEarn / dolarRate)}
+                    </div>
+                </>
+            )}
             <div style={style.dashboardCardFooter}>
               <i className="fa-solid fa-arrow-up" style={style.cardFooterIcon}></i>
               <span>ACCOUNTS RECEIVABLE.</span>
@@ -260,12 +280,18 @@ export default function Dashboard() {
               <h3 style={style.cardHeaderH3}>DISPONÍVEL PARA SAQUE</h3>
               <i className="fa-solid fa-gear" style={style.cardHeaderIcon}></i>
             </div>
-            <div style={style.dashboardCardValue}>
-              R$ {formatServices.formatCurrencyBR(walletInfo.totalAvaliableBalance)}
-            </div>
-            <div style={style.dashboardCardSecondaryValue}>
-              US$ {formatServices.formatCurrencyBR(walletInfo.totalAvaliableBalance / dolarRate)}
-            </div>
+            {isLoading ? (
+                <div style={style.dashboardCardValue}>Carregando...</div>
+            ) : (
+                <>
+                    <div style={style.dashboardCardValue}>
+                    R$ {formatServices.formatCurrencyBR(walletInfo.totalAvaliableBalance)}
+                    </div>
+                    <div style={style.dashboardCardSecondaryValue}>
+                    US$ {formatServices.formatCurrencyBR(walletInfo.totalAvaliableBalance / dolarRate)}
+                    </div>
+                </>
+            )}
             <div style={style.dashboardCardFooter}>
               <i className="fa-solid fa-arrow-up" style={style.cardFooterIcon}></i>
               <span>Increase in Equity.</span>

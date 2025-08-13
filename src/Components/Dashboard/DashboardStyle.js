@@ -1,7 +1,4 @@
-// /src/Components/Dashboard/DashboardStyle.js
-
 const style = {
-    // Geral
     bodyDashboard: {
         width: '100%',
         minHeight: '100vh',
@@ -26,8 +23,6 @@ const style = {
     dashboardRowStretch: {
         alignItems: 'stretch',
     },
-
-    // Cards
     dashboardCard: {
         flex: 1,
         background: 'white',
@@ -81,8 +76,6 @@ const style = {
         marginRight: '5px',
         color: '#5cb85c',
     },
-
-    // Gráficos
     dashboardGrafico: {
         background: 'white',
         borderRadius: '8px',
@@ -150,10 +143,8 @@ const style = {
     },
     dashboardColFull: {
         flex: 1,
-        overflow: 'auto', // Adiciona scroll se o conteúdo (nossa tabela) for maior que o container
+        overflow: 'auto',
     },
-
-    // DataTable.js
     dataTableContainer: {
         backgroundColor: 'white',
         padding: '20px',
