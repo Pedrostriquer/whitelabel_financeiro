@@ -17,6 +17,7 @@ export default function Sidebar({ navItems = [], loading = false }) {
   };
 
   function abreviarNome(nomeCompleto) {
+    if(!nomeCompleto) return ""
     const partes = nomeCompleto.trim().split(/\s+/);
     const primeiroNome = partes[0];
     if (primeiroNome.length <= 10) {
@@ -27,6 +28,7 @@ export default function Sidebar({ navItems = [], loading = false }) {
   }
 
   function siglaNome(nome) {
+    if(!nome) return ""
     const partes = nome.trim().split(/\s+/);
     const primeiro = partes[0][0].toUpperCase();
     const ultimo = partes.length > 1 ? partes[partes.length - 1][0].toUpperCase() : '';

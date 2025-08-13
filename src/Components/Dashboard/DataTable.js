@@ -5,6 +5,12 @@ export default function DataTable({ title, columns, data, children }) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
 
+  if (!Array.isArray(data)) {
+    console.error("DataTable: 'data' prop must be an array");
+    return <div>No data available</div>;
+  }
+  
+
   const getStatusStyle = (statusValue) => {
     const statusClean = statusValue;
     if (statusClean === 2) {

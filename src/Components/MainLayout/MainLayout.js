@@ -15,28 +15,26 @@ export default function MainLayout() {
 
   const fetchSidebarConfig = async () => {
     try {
-      const items = await platformServices.getSidebarConfig(token);
-
+      setLoadingSidebar(true);
+      const response = await platformServices.getSidebarConfig(token);
+      
+      // Ensure response is an array before filtering
+      const items = Array.isArray(response) ? response : [];
+      
       const filteredItems = items.filter((item) => item.avaliable === true);
-
       const formattedItems = filteredItems.map((item) => ({
         name: item.name,
         icon: item.icon,
         path: item.route,
       }));
-
+  
       setSidebarItems(formattedItems);
-      console.log("Items from API:", items);
-      console.log("Filtered items:", formattedItems);
     } catch (error) {
       console.error("Error loading sidebar config:", error);
+      // Fallback items
       setSidebarItems([
         { name: "Dashboard", icon: "fa-solid fa-house", path: "/dashboard" },
-        {
-          name: "Contratos",
-          icon: "fa-solid fa-file-signature",
-          path: "/contratos",
-        },
+        { name: "Contratos", icon: "fa-solid fa-file-signature", path: "/contratos" },
         { name: "Wallet", icon: "fa-solid fa-wallet", path: "/wallet" },
       ]);
     } finally {
