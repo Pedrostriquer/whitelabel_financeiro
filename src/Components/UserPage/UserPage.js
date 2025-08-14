@@ -174,7 +174,7 @@ export default function UserPage() {
               onChange={handleChange}
             />
             <InfoField
-              label="Data de Nascimento"
+              label="Data de Nascimento/Data de Abertura"
               value={formData.birthDate}
               name="birthDate"
               isEditing={isEditing}
