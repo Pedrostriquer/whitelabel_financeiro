@@ -208,6 +208,10 @@ export default function Dashboard() {
   return (
     <div style={style.bodyDashboard}>
       <div style={style.containerDashboard}>
+        <div style={style.headerRow}>
+          <img src="/img/logo.png" alt="Gemas Brilhantes Logo" style={style.headerLogo} />
+          {/* <h2 style={style.headerTitle}>Bem vindo a sua plataforma Gemas Brilhantes</h2> */}
+        </div>
         <div style={style.dashboardRow}>
           <div style={style.dashboardCard}>
             <div style={style.dashboardCardHeader}>

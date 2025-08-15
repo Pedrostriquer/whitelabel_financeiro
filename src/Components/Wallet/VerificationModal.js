@@ -41,7 +41,7 @@ const VerificationModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
         <div style={style.modalContent} onClick={(e) => e.stopPropagation()}>
           <div style={style.modalHeader}>
             <i className="fa-solid fa-shield-halved" style={style.modalIcon}></i>
-            <h3 style={style.modalTitle}>Confirme sua Compra</h3>
+            <h3 style={style.modalTitle}>Confirme seu Saque</h3>
           </div>
           <form onSubmit={handleSubmit}>
             <div style={style.modalBody}>

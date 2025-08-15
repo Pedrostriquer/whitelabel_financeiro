@@ -36,6 +36,7 @@ const style = {
         alignItems: 'center',
         position: 'relative',
         paddingBottom: '20px',
+        cursor: "pointer"
     },
     sidebarLogo: {
         minWidth: '60px',

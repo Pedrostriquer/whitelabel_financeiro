@@ -35,6 +35,7 @@ export default function Login() {
 
         <div style={style.formPanel}>
           <form style={style.form} onSubmit={handleSubmit}>
+            <img src="/img/logo.png" alt="Logo" style={style.logo} />
             <h2 style={style.formTitle}>Bem-vindo de volta!</h2>
             <p style={style.formSubtitle}>
               Por favor, insira seus dados para continuar.
@@ -63,9 +64,7 @@ export default function Login() {
                 required
               />
               <i
-                className={`fa-solid ${
-                  showPassword ? "fa-eye-slash" : "fa-eye"
-                }`}
+                className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
                 style={style.passwordToggleIcon}
                 onClick={togglePasswordVisibility}
               ></i>

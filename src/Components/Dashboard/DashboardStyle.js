@@ -15,6 +15,21 @@ const style = {
         flexDirection: 'column',
         gap: '20px',
     },
+    headerRow: {
+        display: 'flex',
+        alignItems: 'center',
+        // marginBottom: '20px',
+    },
+    headerLogo: {
+        height: '50px',
+        marginRight: '15px',
+    },
+    headerTitle: {
+        color: '#333',
+        fontWeight: 500,
+        fontSize: '1.5rem',
+        margin: 0,
+    },
     dashboardRow: {
         display: 'flex',
         gap: '20px',
