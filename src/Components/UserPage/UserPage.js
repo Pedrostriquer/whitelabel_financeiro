@@ -168,7 +168,7 @@ export default function UserPage() {
             />
             <InfoField
               label="CPF/CNPJ"
-              value={formData.cpfCnpj}
+              value={formData.cpfCnpj}  
               name="cpfCnpj"
               isEditing={isEditing}
               onChange={handleChange}

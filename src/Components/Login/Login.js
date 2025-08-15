@@ -5,6 +5,7 @@ import { useAuth } from "../../Context/AuthContext";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
 
@@ -14,7 +15,7 @@ export default function Login() {
       alert("Por favor, preencha todos os campos.");
       return;
     }
-    await login(email, password);
+    await login(email, password, rememberMe);
   };
 
   const togglePasswordVisibility = () => {
@@ -72,7 +73,12 @@ export default function Login() {
 
             <div style={style.optionsRow}>
               <label style={style.checkboxContainer}>
-                <input type="checkbox" style={style.checkbox} />
+                <input
+                  type="checkbox"
+                  style={style.checkbox}
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
                 Lembrar-me
               </label>
               <a href="/forgot-password" style={style.forgotPassword}>

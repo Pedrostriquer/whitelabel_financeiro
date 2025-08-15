@@ -9,73 +9,129 @@ const API_URL = process.env.REACT_APP_BASE_ROUTE;
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(sessionStorage.getItem("authToken"));
+  const [token, setToken] = useState(
+    localStorage.getItem("authToken") || sessionStorage.getItem("authToken")
+  );
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { startLoading, stopLoading } = useLoad();
 
-  useEffect(() => {
-    if (token) {
-      sessionStorage.setItem("authToken", token);
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    } else {
-      sessionStorage.removeItem("authToken");
-      delete axios.defaults.headers.common["Authorization"];
-    }
-  }, [token]);
+  const logout = () => {
+    setUser(null);
+    setToken(null);
+    sessionStorage.removeItem("authToken");
+    sessionStorage.removeItem("refreshToken");
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("refreshToken");
+    delete axios.defaults.headers.common["Authorization"];
+    navigate("/login");
+  };
 
   useEffect(() => {
-    const validateToken = async () => {
+    const initializeAuth = async () => {
       if (token) {
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         try {
-          const response = await axios.get(`${API_URL}client/me`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          const response = await axios.get(`${API_URL}client/me`);
           setUser(response.data);
         } catch (error) {
-          console.error("Sessão inválida, fazendo logout.");
-          setToken(null);
-          setUser(null);
+          console.error("Token inválido ou expirado na inicialização.");
+          logout();
         }
       }
       setIsLoading(false);
     };
-    validateToken();
+    initializeAuth();
   }, []);
 
-  const login = async (email, password) => {
+  useEffect(() => {
+    const responseInterceptor = axios.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        const originalRequest = error.config;
+        if (error.response?.status === 401 && !originalRequest._retry) {
+          originalRequest._retry = true;
+          const refreshToken =
+            localStorage.getItem("refreshToken") ||
+            sessionStorage.getItem("refreshToken");
+
+          if (!refreshToken) {
+            logout();
+            return Promise.reject(error);
+          }
+
+          try {
+            const response = await axios.post(`${API_URL}auth/refresh`, {
+              refreshToken,
+            });
+            const { token: newAccessToken, refreshToken: newRefreshToken } =
+              response.data;
+
+            setToken(newAccessToken);
+            axios.defaults.headers.common[
+              "Authorization"
+            ] = `Bearer ${newAccessToken}`;
+            originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+
+            if (localStorage.getItem("refreshToken")) {
+              localStorage.setItem("authToken", newAccessToken);
+              localStorage.setItem("refreshToken", newRefreshToken);
+            } else {
+              sessionStorage.setItem("authToken", newAccessToken);
+              sessionStorage.setItem("refreshToken", newRefreshToken);
+            }
+
+            return axios(originalRequest);
+          } catch (refreshError) {
+            console.error("Não foi possível renovar o token:", refreshError);
+            logout();
+            return Promise.reject(refreshError);
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axios.interceptors.response.eject(responseInterceptor);
+    };
+  }, [navigate]);
+
+  const login = async (email, password, rememberMe = false) => {
     try {
       startLoading();
       const response = await axios.post(`${API_URL}auth/login/client`, {
         email,
         password,
+        rememberMe,
       });
       const { token: newToken, refreshToken } = response.data;
 
       setToken(newToken);
-      sessionStorage.setItem("refreshToken", refreshToken);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
 
-      const userResponse = await axios.get(`${API_URL}client/me`, {
-        headers: { Authorization: `Bearer ${newToken}` },
-      });
-      console.log(userResponse.data)
+      if (rememberMe) {
+        localStorage.setItem("authToken", newToken);
+        localStorage.setItem("refreshToken", refreshToken);
+        sessionStorage.removeItem("authToken");
+        sessionStorage.removeItem("refreshToken");
+        console.log(response)
+      } else {
+        sessionStorage.setItem("authToken", newToken);
+        sessionStorage.setItem("refreshToken", refreshToken);
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("refreshToken");
+      }
+
+      const userResponse = await axios.get(`${API_URL}client/me`);
       setUser(userResponse.data);
-      startLoading();
       navigate("/dashboard");
-
     } catch (error) {
       console.error("Falha no login:", error);
       alert("Email ou senha inválidos!");
     } finally {
       stopLoading();
     }
-  };
-
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    sessionStorage.removeItem("refreshToken");
-    navigate("/login");
   };
 
   const value = {
