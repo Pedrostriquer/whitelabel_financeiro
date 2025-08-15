@@ -18,25 +18,29 @@ export default function MainLayout() {
       setLoadingSidebar(true);
       const response = await platformServices.getSidebarConfig(token);
       
-      // Ensure response is an array before filtering
       const items = Array.isArray(response) ? response : [];
       
       const filteredItems = items.filter((item) => item.avaliable === true);
+
+      // ATUALIZE ESTE MAPEAMENTO 👇
       const formattedItems = filteredItems.map((item) => ({
         name: item.name,
         icon: item.icon,
         path: item.route,
+        // Garante que os subitens também sejam filtrados e formatados
+        subItems: item.subItems
+          ?.filter(sub => sub.avaliable === true)
+          .map(sub => ({
+            name: sub.name,
+            icon: sub.icon,
+            path: sub.route,
+          })) || [], // Retorna um array vazio se não houver subitens
       }));
   
       setSidebarItems(formattedItems);
     } catch (error) {
       console.error("Error loading sidebar config:", error);
-      // Fallback items
-      setSidebarItems([
-        { name: "Dashboard", icon: "fa-solid fa-house", path: "/dashboard" },
-        { name: "Contratos", icon: "fa-solid fa-file-signature", path: "/contratos" },
-        { name: "Wallet", icon: "fa-solid fa-wallet", path: "/wallet" },
-      ]);
+      // ... (fallback)
     } finally {
       setLoadingSidebar(false);
     }

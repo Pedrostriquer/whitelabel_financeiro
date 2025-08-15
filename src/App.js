@@ -1,5 +1,3 @@
-// App.js (Completo e atualizado)
-
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import Dashboard from "./Components/Dashboard/Dashboard";
@@ -22,21 +20,12 @@ import RedefinePassword from "./Components/RedefinePassword/RedefinePassword";
 import ContractDetailPage from "./Components/ContractDetailPage/ContractDetailPage";
 import WithdrawalDetailPage from "./Components/WithdrawalDetailPage/WithdrawalDetailPage";
 import ExtratosPage from "./Components/ExtractPage/ExtractPage";
+import MyGeanCashesPage from "./Components/MyGeanCashesPage/MyGeanCashesPage";
 
-const handleRoutesAvaliable = (name) => {
-  switch (name) {
-    case "Dashboard":
-      return <Route path="dashboard" element={<Dashboard />} />;
-    case "Wallet":
-      return <Route path="wallet" element={<Dashboard />} />;
-    case "Extrato":
-      return <Route path="extract" element={<ExtratosPage />} />;
-    case "Contratos":
-      return <Route path="contratos" element={<ExtratosPage />} />;
-    default:
-      break;
-  }
-};
+// TODO: Crie e importe os componentes para as novas páginas de GeinCash
+// import GeinCashPage from "./Components/GeinCash/GeinCashPage";
+// import GeinCashNew from "./Components/GeinCash/GeinCashNew";
+// import MyGeinCashes from "./Components/GeinCash/MyGeinCashes";
 
 function App() {
   return (
@@ -46,13 +35,11 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />{" "}
-            {/* Rota para solicitar */}
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route
               path="/redefine-password"
               element={<RedefinePassword />}
-            />{" "}
-            {/* Rota que vem do email */}
+            />
             <Route element={<ProtectedRoute />}>
               <Route element={<MainLayout />}>
                 <Route index element={<Navigate to="/dashboard" />} />
@@ -66,6 +53,14 @@ function App() {
                 <Route path="contratos" element={<ContratosPage />} />
                 <Route path="ecommerce" element={<EcommercePage />} />
                 <Route path="extract" element={<ExtratosPage />} />
+
+                {/* == ROTAS ADICIONADAS PARA GEINCASH E SEUS SUBITENS == */}
+                {/* Lembre-se de substituir o `element` pelo seu componente correto */}
+                <Route path="gemcash" element={<ContratosPage />} />
+                <Route path="gemcash/new" element={<ContratosPage />} />
+                <Route path="gemcash/my-gem-cashes" element={<MyGeanCashesPage />} />
+                {/* ======================================================= */}
+
                 {/* sidebar end routes */}
 
                 <Route path="product/:id" element={<ProductDetailPage />} />

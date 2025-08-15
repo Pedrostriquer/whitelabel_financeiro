@@ -8,35 +8,81 @@ const style = {
         gridTemplateColumns: '1fr 2fr',
         gap: '20px',
         marginBottom: '20px',
+        alignItems: 'stretch',
     },
     walletMainActions: {
         display: 'flex',
         flexDirection: 'column',
         gap: '20px',
     },
-    creditCard: {
-        background: 'linear-gradient(45deg, #1d2b64, #4e63d6)',
-        color: 'white',
-        borderRadius: '20px',
-        padding: '25px',
+    infoPanelContainer: {
+        background: 'white',
+        color: '#333',
+        borderRadius: '12px',
+        boxShadow: '0 6px 12px rgba(0, 0, 0, 0.08)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        height: '250px',
-        position: 'relative',
-        boxShadow: '0 15px 30px rgba(0, 0, 0, 0.2)',
-        transition: 'transform 0.4s ease-out, box-shadow 0.4s ease-out',
-        transformStyle: 'preserve-3d',
+        flexGrow: 1,
+        padding: '20px',
     },
-    creditCardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-    chip: { width: '50px', height: '40px', background: 'linear-gradient(135deg, #ffe699, #f7d16a)', borderRadius: '6px' },
-    cardLabel: { fontSize: '0.7rem', opacity: 0.7, textTransform: 'uppercase', display: 'block', marginBottom: '5px' },
-    cardName: { fontSize: '1.1rem', fontWeight: 500, display: 'block', marginBottom: '15px' },
-    cardNumber: { fontFamily: "'Courier New', Courier, monospace", fontSize: '1.2rem', fontWeight: 500, letterSpacing: '2px', display: 'block' },
-    creditCardFooter: { display: 'flex', justifyContent: 'space-between', marginTop: '15px' },
-    cardInfo: { fontSize: '0.8rem', fontWeight: 500 },
-    
-    // Estilos dos botões de ação
+    infoPanelHeader: {
+        display: 'flex',
+        alignItems: 'center',
+        fontSize: '0.9rem',
+        fontWeight: '600',
+        color: '#334155',
+        textTransform: 'uppercase',
+        borderBottom: '1px solid #f0f2f5',
+        paddingBottom: '15px',
+    },
+    infoPanelIcon: {
+        marginRight: '10px',
+        color: '#007bff',
+    },
+    infoPanelBody: {
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        gap: '12px',
+    },
+    infoPanelRow: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    infoPanelLabel: {
+        fontSize: '0.9rem',
+        color: '#6c757d',
+    },
+    infoPanelValue: {
+        fontSize: '0.9rem',
+        fontWeight: '600',
+        color: '#334155',
+        textAlign: 'right',
+    },
+    infoPanelFooter: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderTop: '1px solid #f0f2f5',
+        paddingTop: '15px',
+    },
+    infoPanelStatus: {
+        padding: '5px 12px',
+        borderRadius: '6px',
+        fontSize: '0.8rem',
+        fontWeight: '700',
+    },
+    infoPanelStatusOpen: {
+        backgroundColor: '#d4edda',
+        color: '#155724',
+    },
+    infoPanelStatusClosed: {
+        backgroundColor: '#f8d7da',
+        color: '#721c24',
+    },
     actionButtons: {
         display: 'flex',
         flexDirection: 'column',
@@ -55,14 +101,17 @@ const style = {
     btnSaqueHover: { backgroundColor: '#218838', transform: 'translateY(-2px)', boxShadow: '0 4px 10px rgba(0,0,0,0.1)'},
     btnReinvestir: { backgroundColor: '#007bff', color: 'white' },
     btnReinvestirHover: { backgroundColor: '#0056b3', transform: 'translateY(-2px)', boxShadow: '0 4px 10px rgba(0,0,0,0.1)'},
-    
-    // Coluna da Direita (Info Blocks)
+    infoBlocks: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 10,
+        justifyContent: 'space-between',
+    },
     infoBlock: {
         backgroundColor: 'white',
-        padding: '20px',
-        borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-        marginBottom: '20px',
+        padding: '25px',
+        borderRadius: '12px',
+        boxShadow: '0 6px 12px rgba(0, 0, 0, 0.08)',
     },
     infoBlockTitle: {
         margin: '0 0 20px 0',
@@ -78,8 +127,6 @@ const style = {
     infoLabel: { fontSize: '0.8rem', color: '#6c757d', textTransform: 'uppercase' },
     infoValueUsd: { fontSize: '0.9rem', color: '#6c757d', display: 'block', marginTop: '5px' },
     infoValueBrl: { fontSize: '1.5rem', color: '#343a40', fontWeight: 600, display: 'block' },
-
-    // Notificação e Tabela de Saques
     saqueNotification: {
         textAlign: 'center',
         marginBottom: '20px',
@@ -95,8 +142,6 @@ const style = {
         boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
         overflow: 'hidden',
     },
-
-    // Estilos para o CONTEÚDO dos Modais
     modalHeader: {
         display: 'flex', justifyContent: 'center', alignItems: 'center',
         textAlign: 'center', position: 'relative', padding: '20px 0',

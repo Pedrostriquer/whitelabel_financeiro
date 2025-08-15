@@ -1,13 +1,12 @@
-// Definindo as "variáveis" como constantes para reutilização
 const colors = {
-    primary: '#0d2a57',
+    primary: '#122C4F',
     activeBg: '#2a4a7d',
     text: '#e0e0e0',
     logoText: '#fff',
 };
 
 const dimensions = {
-    expanded: '260px',
+    expanded: '350px',
     collapsed: '88px',
     transitionSpeed: '0.3s',
 };
@@ -23,7 +22,7 @@ const style = {
         display: 'flex',
         flexDirection: 'column',
         transition: `width ${dimensions.transitionSpeed} ease`,
-        zIndex: 100, // Garante que a sidebar fique acima do conteúdo
+        zIndex: 100,
     },
     sidebarExpanded: {
         width: dimensions.expanded,
@@ -56,6 +55,7 @@ const style = {
         marginLeft: '10px',
         opacity: 1,
         transition: `opacity ${dimensions.transitionSpeed} ease`,
+        whiteSpace: 'nowrap', // Impede que o texto quebre linha durante a animação
     },
     sidebarTitleCollapsed: {
         opacity: 0,
@@ -86,13 +86,36 @@ const style = {
         border: 'none',
         cursor: 'pointer',
         fontSize: '0.8rem',
-        zIndex: 101, // Garante que o botão fique acima de TUDO
+        zIndex: 101,
     },
     navLinks: {
         listStyle: 'none',
         padding: 0,
         margin: '20px 0',
         flexGrow: 1,
+        overflow: 'hidden', // Previne qualquer vazamento durante a transição
+    },
+    subMenu: {
+        listStyle: 'none',
+        paddingLeft: '20px', // Apenas o padding lateral fixo
+        paddingTop: 0,
+        paddingBottom: 0,
+        margin: 0,
+        overflow: 'hidden', // Essencial para a animação funcionar
+        backgroundColor: 'rgba(0,0,0,0.15)',
+        borderRadius: '6px',
+        maxHeight: '0', // Começa fechado
+        transition: 'max-height 0.3s ease-in-out, padding-top 0.3s ease-in-out, padding-bottom 0.3s ease-in-out', // Animação suave
+    },
+    subMenuOpen: {
+        maxHeight: '500px', // Um valor alto o suficiente para caber todos os itens
+        paddingTop: '10px', // Adiciona padding vertical quando aberto
+        paddingBottom: '10px',
+    },
+    subMenuItem: {
+        height: '45px',
+        paddingLeft: '10px',
+        marginBottom: '5px', // Espaçamento entre subitens
     },
     navLink: {
         display: 'flex',
@@ -104,7 +127,7 @@ const style = {
         marginBottom: '10px',
         transition: `background-color ${dimensions.transitionSpeed} ease`,
     },
-    navLinkActive: { // Estilo para hover ou link ativo
+    navLinkActive: {
         backgroundColor: colors.activeBg,
         color: colors.logoText,
     },

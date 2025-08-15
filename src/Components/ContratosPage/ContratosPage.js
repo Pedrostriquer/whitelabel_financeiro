@@ -44,11 +44,11 @@ export default function ContratosPage() {
 
       // Verifica se existe um item "Contratos" com avaliable: true
       const hasContratosAvailable = items.some(
-        item => item.name === "Contratos" && item.avaliable === true
+        item => item.name === "GemCash" && item.avaliable === true
       );
 
       if (!hasContratosAvailable) {
-        navigate("/"); // Redireciona para a página inicial
+        navigate("/"); 
         return;
       }
 

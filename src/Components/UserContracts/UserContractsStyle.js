@@ -7,11 +7,12 @@ const style = {
         color: '#333',
         marginBottom: '25px',
         textAlign: 'center',
+        width: "100%",
     },
     userContractsSection: {
         // marginTop: '60px',
         width: '100%',
-        maxWidth: '1200px',
+        // maxWidth: '1200px',
         marginLeft: 'auto',
         marginRight: 'auto',
         display: 'flex',

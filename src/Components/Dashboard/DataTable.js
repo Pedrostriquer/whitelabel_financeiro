@@ -106,7 +106,7 @@ export default function DataTable({ title, columns, data, children }) {
         <div style={style.dataTableControls}>{children}</div>
       </div>
 
-      <div style={style.dataTableFilters}>
+      {/* <div style={style.dataTableFilters}>
         <div style={style.filterBox}>
           <span>Cresc.</span>
           <i
@@ -121,7 +121,7 @@ export default function DataTable({ title, columns, data, children }) {
             style={style.filterBoxIcon}
           ></i>
         </div>
-      </div>
+      </div> */}
 
       <div style={style.tableWrapper}>
         <table style={style.dataTable}>
