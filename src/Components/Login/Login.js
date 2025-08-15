@@ -7,6 +7,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false); // Estado de loading
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
@@ -15,7 +16,12 @@ export default function Login() {
       alert("Por favor, preencha todos os campos.");
       return;
     }
-    await login(email, password, rememberMe);
+    setLoading(true); // Ativa o loading
+    try {
+      await login(email, password, rememberMe);
+    } finally {
+      setLoading(false); // Desativa o loading
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -50,6 +56,7 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={loading}
               />
             </div>
 
@@ -62,6 +69,7 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={loading}
               />
               <i
                 className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
@@ -77,6 +85,7 @@ export default function Login() {
                   style={style.checkbox}
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
+                  disabled={loading}
                 />
                 Lembrar-me
               </label>
@@ -85,8 +94,12 @@ export default function Login() {
               </a>
             </div>
 
-            <button type="submit" style={style.submitButton}>
-              Entrar
+            <button
+              type="submit"
+              style={loading ? { ...style.submitButton, ...style.submitButtonLoading } : style.submitButton}
+              disabled={loading}
+            >
+              {loading ? <i className="fa-solid fa-spinner" style={style.spinner}></i> : "Entrar"}
             </button>
 
             <p style={style.signupLink}>
