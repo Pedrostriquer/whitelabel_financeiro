@@ -346,7 +346,7 @@ export default function Wallet() {
                   style={totalSaqueBtnStyle}
                   onMouseEnter={() => setIsTotalSaqueHovered(true)}
                   onMouseLeave={() => setIsTotalSaqueHovered(false)}
-                  onClick={() => setSaqueAmount(0)}
+                  onClick={() => setSaqueAmount(walletInfo.totalAvaliableBalance.toFixed(2))}
                 >
                   TOTAL
                 </button>
@@ -402,7 +402,6 @@ export default function Wallet() {
                 onMouseEnter={() => setIsTotalReinvestHovered(true)}
                 onMouseLeave={() => setIsTotalReinvestHovered(false)}
                 onClick={() => {
-                  // Implemente a lógica para preencher com o valor total disponível
                   document.getElementById("reinvest-input").value =
                     walletInfo.totalAvaliableBalance;
                 }}

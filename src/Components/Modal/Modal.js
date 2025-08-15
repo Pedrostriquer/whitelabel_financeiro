@@ -25,6 +25,7 @@ export default function Modal({ isOpen, onClose, children }) {
 
     const closeBtnStyle = {
         ...style.modalCloseBtn,
+        cursor: "pointer",
         ...(isCloseHovered ? style.modalCloseBtnHover : {})
     };
 
@@ -39,7 +40,7 @@ export default function Modal({ isOpen, onClose, children }) {
                     onMouseEnter={() => setIsCloseHovered(true)}
                     onMouseLeave={() => setIsCloseHovered(false)}
                 >
-                    <i className="fa-solid fa-arrow-left"></i>
+                    <i onClick={onClose} className="fa-solid fa-arrow-left"></i>
                 </button>
                 {children}
             </div>
