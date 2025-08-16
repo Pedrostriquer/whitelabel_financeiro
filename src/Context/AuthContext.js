@@ -10,7 +10,7 @@ const API_URL = process.env.REACT_APP_BASE_ROUTE;
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(
-    localStorage.getItem("authToken") || sessionStorage.getItem("authToken")
+    localStorage.getItem("authTokenAdmin") || sessionStorage.getItem("authTokenAdmin")
   );
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
@@ -19,10 +19,10 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     setToken(null);
-    sessionStorage.removeItem("authToken");
-    sessionStorage.removeItem("refreshToken");
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("refreshToken");
+    sessionStorage.removeItem("authTokenAdmin");
+    sessionStorage.removeItem("refreshTokenAdmin");
+    localStorage.removeItem("authTokenAdmin");
+    localStorage.removeItem("refreshTokenAdmin");
     delete axios.defaults.headers.common["Authorization"];
     navigate("/login");
   };
@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
       if (token) {
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         try {
-          const response = await axios.get(`${API_URL}client/me`);
+          const response = await axios.get(`${API_URL}admin/me`);
           setUser(response.data);
         } catch (error) {
           console.error("Token inválido ou expirado na inicialização.");
@@ -52,8 +52,8 @@ export const AuthProvider = ({ children }) => {
         if (error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
           const refreshToken =
-            localStorage.getItem("refreshToken") ||
-            sessionStorage.getItem("refreshToken");
+            localStorage.getItem("refreshTokenAdmin") ||
+            sessionStorage.getItem("refreshTokenAdmin");
 
           if (!refreshToken) {
             logout();
@@ -73,12 +73,12 @@ export const AuthProvider = ({ children }) => {
             ] = `Bearer ${newAccessToken}`;
             originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
 
-            if (localStorage.getItem("refreshToken")) {
-              localStorage.setItem("authToken", newAccessToken);
-              localStorage.setItem("refreshToken", newRefreshToken);
+            if (localStorage.getItem("refreshTokenAdmin")) {
+              localStorage.setItem("authTokenAdmin", newAccessToken);
+              localStorage.setItem("refreshTokenAdmin", newRefreshToken);
             } else {
-              sessionStorage.setItem("authToken", newAccessToken);
-              sessionStorage.setItem("refreshToken", newRefreshToken);
+              sessionStorage.setItem("authTokenAdmin", newAccessToken);
+              sessionStorage.setItem("refreshTokenAdmin", newRefreshToken);
             }
 
             return axios(originalRequest);
@@ -100,7 +100,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password, rememberMe = false) => {
     try {
       startLoading();
-      const response = await axios.post(`${API_URL}auth/login/client`, {
+      const response = await axios.post(`${API_URL}auth/login/admin`, {
         email,
         password,
         rememberMe,
@@ -111,19 +111,19 @@ export const AuthProvider = ({ children }) => {
       axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
 
       if (rememberMe) {
-        localStorage.setItem("authToken", newToken);
-        localStorage.setItem("refreshToken", refreshToken);
-        sessionStorage.removeItem("authToken");
-        sessionStorage.removeItem("refreshToken");
+        localStorage.setItem("authTokenAdmin", newToken);
+        localStorage.setItem("refreshTokenAdmin", refreshToken);
+        sessionStorage.removeItem("authTokenAdmin");
+        sessionStorage.removeItem("refreshTokenAdmin");
         console.log(response)
       } else {
-        sessionStorage.setItem("authToken", newToken);
-        sessionStorage.setItem("refreshToken", refreshToken);
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("refreshToken");
+        sessionStorage.setItem("authTokenAdmin", newToken);
+        sessionStorage.setItem("refreshTokenAdmin", refreshToken);
+        localStorage.removeItem("authTokenAdmin");
+        localStorage.removeItem("refreshTokenAdmin");
       }
 
-      const userResponse = await axios.get(`${API_URL}client/me`);
+      const userResponse = await axios.get(`${API_URL}admin/me`);
       setUser(userResponse.data);
       navigate("/dashboard");
     } catch (error) {

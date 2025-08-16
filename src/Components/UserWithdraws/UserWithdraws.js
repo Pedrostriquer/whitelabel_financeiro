@@ -7,8 +7,8 @@ import formatServices from "../../formatServices/formatServices";
 
 const STATUS_MAP = {
   1: { text: "Pendente", styleKey: "statusPendente" },
-  2: { text: "Processando", styleKey: "statusProcessando" },
-  3: { text: "Pago", styleKey: "statusPago" },
+  2: { text: "Pago", styleKey: "statusPago" },
+  3: { text: "Processando", styleKey: "statusProcessando" },
   4: { text: "Cancelado", styleKey: "statusRecusado" },
   5: { text: "Recusado", style: { backgroundColor: "#dc3545" } },
 };
