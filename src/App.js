@@ -51,7 +51,6 @@ function App() {
                 <Route path="ordens-compra" element={<OrdensCompra />} />
                 <Route path="contratos" element={<ContratosPage />} />
                 <Route path="ecommerce" element={<EcommercePage />} />
-                <Route path="extract" element={<ExtratosPage />} />
 
                 {/* == ROTAS ADICIONADAS PARA GEINCASH E SEUS SUBITENS == */}
                 {/* Lembre-se de substituir o `element` pelo seu componente correto */}
@@ -59,6 +58,8 @@ function App() {
                 <Route path="gemcash/new" element={<ContratosPage />} />
                 <Route path="gemcash/my-gem-cashes" element={<MyGeanCashesPage />} />
                 <Route path="gemcash/solicitation" element={<Wallet />} />
+                <Route path="gemcash/extract" element={<ExtratosPage />} />
+
                 {/* ======================================================= */}
 
                 {/* sidebar end routes */}

@@ -41,9 +41,13 @@ const contractServices = {
 
   simularContrato: async (token, data) => {
     try {
-      const response = await axios.post(`${BASE_ROUTE}contract/simulate`, data, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.post(
+        `${BASE_ROUTE}contract/simulate`,
+        data,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       return response.data;
     } catch (error) {
       console.error("Erro ao simular contrato:", error);
@@ -89,9 +93,12 @@ const contractServices = {
 
   obterMesesDisponiveis: async (token) => {
     try {
-      const response = await axios.get(`${BASE_ROUTE}contract/rules/available-months`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        `${BASE_ROUTE}contract/rules/available-months`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       return response.data || []; // Garante que retorna array vazio se não houver dados
     } catch (error) {
       console.error("Erro ao obter meses disponíveis:", error);
@@ -101,12 +108,20 @@ const contractServices = {
 
   atualizarAutoReinvestimento: async (token, contractId, autoReinvestState) => {
     try {
-      const response = await axios.patch(`${BASE_ROUTE}contract/${contractId}/auto-reinvest`, autoReinvestState, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      // --- ALTERAÇÃO AQUI ---
+      // O valor booleano agora é enviado dentro de um objeto, como o backend espera.
+      const body = { autoReinvestState: autoReinvestState };
+
+      const response = await axios.patch(
+        `${BASE_ROUTE}contract/${contractId}/auto-reinvest`,
+        body, // Usando o objeto 'body'
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       return response.data;
     } catch (error) {
       console.error("Erro ao atualizar auto-reinvestimento:", error);

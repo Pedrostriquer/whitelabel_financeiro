@@ -1,132 +1,231 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import style from "./ContratosPageStyle";
 import contractServices from "../../dbServices/contractServices";
 import { useAuth } from "../../Context/AuthContext";
 import formatServices from "../../formatServices/formatServices";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
-const SelectionStep = ({ onGenerateProposal, withGem, setWithGem }) => {
-  const [investValue, setInvestValue] = useState("");
+const SkeletonLoader = () => (
+  <div style={style.skeletonWrapper}>
+    <div style={{ ...style.skeletonLine, width: "80%" }}></div>
+    <div style={{ ...style.skeletonLine, width: "60%" }}></div>
+    <hr style={style.summaryDivider} />
+    <div style={{ ...style.skeletonLine, width: "70%" }}></div>
+    <div
+      style={{
+        ...style.skeletonLine,
+        width: "90%",
+        height: "2rem",
+        marginTop: "10px",
+      }}
+    ></div>
+  </div>
+);
+
+const ValueDisplay = ({ label, value, isCurrency = false }) => (
+  <div style={style.summaryItem}>
+    <span style={style.summaryLabel}>{label}</span>
+    <span style={style.summaryValue}>
+      {isCurrency
+        ? formatServices.formatCurrencyBR(value)
+        : `${value.toFixed(2)}%`}
+    </span>
+  </div>
+);
+
+const SelectionStep = ({
+  onSimulationChange,
+  onProceed,
+  withGem,
+  setWithGem,
+  simulationResult,
+}) => {
+  const [investValue, setInvestValue] = useState(5000);
   const [duration, setDuration] = useState("");
-  const [isHovered, setIsHovered] = useState(false);
   const [availableMonths, setAvailableMonths] = useState([]);
-  const [contractSettings, setContractSettings] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMonths, setIsLoadingMonths] = useState(true);
+  const [isSimulating, setIsSimulating] = useState(false);
   const { token } = useAuth();
 
+  const handleValueChange = (e) => {
+    let value = e.target.value.replace(/\D/g, "");
+    let numericValue = Number(value) / 100;
+    if (numericValue >= 10000000) numericValue = 999999999.99;
+    setInvestValue(numericValue);
+  };
+
+  const formattedValue = new Intl.NumberFormat("pt-BR", {
+    minimumFractionDigits: 2,
+  }).format(investValue);
+
   useEffect(() => {
-    if (!token) return;
-  
-    const fetchInitialData = async () => {
-      setIsLoading(true);
+    const fetchMonths = async () => {
+      if (!token) return;
+      setIsLoadingMonths(true);
       try {
-        const [monthsResponse, settingsResponse] = await Promise.all([
-          contractServices.obterMesesDisponiveis(token),
-          contractServices.getContractSettings(token)
-        ]);
-        
-        // Garantir que monthsResponse é um array válido
-        const months = Array.isArray(monthsResponse) ? monthsResponse : [];
-        setAvailableMonths(months);
-        
-        // Definir o primeiro mês como valor padrão apenas se houver meses disponíveis
-        if (months.length > 0) {
+        const months = await contractServices.obterMesesDisponiveis(token);
+        if (Array.isArray(months) && months.length > 0) {
+          setAvailableMonths(months);
           setDuration(months[0].toString());
         }
-  
-        setContractSettings(settingsResponse);
-        if (settingsResponse && settingsResponse.minimumValue) {
-          setInvestValue(settingsResponse.minimumValue.toString());
-        }
-  
       } catch (error) {
-        console.error("Failed to fetch initial contract data:", error);
+        console.error("Failed to fetch available months:", error);
       } finally {
-        setIsLoading(false);
+        setIsLoadingMonths(false);
       }
     };
-  
-    fetchInitialData();
+    fetchMonths();
   }, [token]);
 
-  const btnStyle = {
-    ...style.btnGerarProposta,
-    ...(isHovered ? style.btnGerarPropostaHover : {}),
-  };
+  const handleSimulateClick = useCallback(async () => {
+    if (!token || !duration || investValue < 1000) {
+      onSimulationChange(null);
+      return;
+    }
+    setIsSimulating(true);
+    try {
+      const simulation = await contractServices.simularContrato(token, {
+        amount: investValue,
+        months: Number(duration),
+        withGem,
+      });
+      onSimulationChange(simulation);
+    } catch (error) {
+      console.error("Erro ao simular:", error);
+    } finally {
+      setIsSimulating(false);
+    }
+  }, [token, investValue, duration, withGem, onSimulationChange]);
+
+  useEffect(() => {
+    onSimulationChange(null);
+  }, [investValue, duration, withGem]);
 
   return (
     <div style={style.selectionStepWrapper}>
-      <h1 style={style.pageTitle}>Simule seu Contrato</h1>
-      <p style={style.pageSubtitle}>
-        Invista em contratos de minérios e saque seus lucros todo mês. Comece
-        agora a planejar seu futuro financeiro conosco!
-      </p>
-      <div style={style.simulationSection}>
-        <h2 style={style.simulationSectionH2}>Faça uma simulação!</h2>
-        {isLoading ? (
-          <p style={{textAlign: 'center'}}>Carregando configurações de investimento...</p>
-        ) : (
-          <>
-            <div style={style.simulationInputs}>
-              <div style={style.inputWrapper}>
-                <label style={style.inputWrapperLabel}>
-                  Quanto você quer investir? (mín. {formatServices.formatCurrencyBR(contractSettings?.minimumValue || 0)})
-                </label>
-                <input
-                  type="number"
-                  min={contractSettings?.minimumValue || 0}
-                  value={investValue}
-                  onChange={(e) => setInvestValue(e.target.value)}
-                  style={style.simulationInput}
-                />
-              </div>
-              <div style={style.inputWrapper}>
-                <label style={style.inputWrapperLabel}>
-                  Qual o tempo do contrato?
-                </label>
-                <div style={style.inputWithAddon}>
-                  <select
-                    value={duration}
-                    onChange={(e) => setDuration(e.target.value)}
-                    style={{ ...style.simulationSelect, ...style.inputInGroup }}
-                    disabled={availableMonths.length === 0}
-                  >
-                    {availableMonths.length > 0 ? (
-                      availableMonths.map((month) => (
-                        <option key={month} value={month}>
-                          {month}
-                        </option>
-                      ))
-                    ) : (
-                      <option>Carregando...</option>
-                    )}
-                  </select>
-                  <span style={style.inputAddon}>meses</span>
-                </div>
-              </div>
-            </div>
-            <div style={style.checkboxWrapper}>
-              <input
-                type="checkbox"
-                id="withGem"
-                checked={withGem}
-                onChange={(e) => setWithGem(e.target.checked)}
-                style={style.checkboxInput}
-              />
-              <label htmlFor="withGem" style={style.checkboxLabel}>
-                Levar pedra preciosa para casa (+ valorização)
-              </label>
-            </div>
-            <button
-              style={btnStyle}
-              onClick={() => onGenerateProposal(investValue, duration)}
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-              disabled={!duration || !investValue}
+      <div style={style.selectionColumn}>
+        <h1 style={style.pageTitle}>Simule e Adquira seu GemCash</h1>
+        <p style={style.pageSubtitle}>
+          Ajuste os valores e veja o potencial de valorização do seu
+          investimento em tempo real.
+        </p>
+
+        <div style={style.sliderGroup}>
+          <label style={style.sliderLabel}>Valor do Aporte</label>
+          <div style={style.sliderInputWrapper}>
+            <span>R$</span>
+            <input
+              type="text"
+              value={formattedValue}
+              onChange={handleValueChange}
+              style={style.sliderInput}
+            />
+          </div>
+          <input
+            type="range"
+            min="1000"
+            max="2000000"
+            step="500"
+            value={investValue}
+            onChange={(e) => setInvestValue(Number(e.target.value))}
+            style={style.slider}
+          />
+        </div>
+
+        <div style={style.sliderGroup}>
+          <label style={style.sliderLabel}>Prazo do Contrato</label>
+          <div style={style.sliderInputWrapper}>
+            <select
+              value={duration}
+              onChange={(e) => setDuration(e.target.value)}
+              style={style.selectInput}
+              disabled={isLoadingMonths || availableMonths.length === 0}
             >
-              Gerar Proposta
-            </button>
-          </>
-        )}
+              {isLoadingMonths ? (
+                <option>Carregando...</option>
+              ) : (
+                availableMonths.map((month) => (
+                  <option key={month} value={month}>
+                    {month}
+                  </option>
+                ))
+              )}
+            </select>
+            <span>Meses</span>
+          </div>
+        </div>
+
+        <div style={style.checkboxWrapper}>
+          <input
+            type="checkbox"
+            id="withGem"
+            checked={withGem}
+            onChange={(e) => setWithGem(e.target.checked)}
+            style={style.checkboxInput}
+          />
+          <label htmlFor="withGem" style={style.checkboxLabel}>
+            Desejo receber a gema física ao final do contrato.
+          </label>
+        </div>
+
+        <button
+          style={style.simulateButton}
+          onClick={handleSimulateClick}
+          disabled={isSimulating || isLoadingMonths}
+        >
+          {isSimulating ? "Calculando..." : "Simular Agora"}
+        </button>
+      </div>
+
+      <div style={style.summaryColumn}>
+        <div style={style.summaryCard}>
+          <h3 style={style.summaryTitle}>Resumo da Simulação</h3>
+          {isSimulating ? (
+            <SkeletonLoader />
+          ) : !simulationResult ? (
+            <div style={style.startSimulationPrompt}>
+              <p>
+                Ajuste os valores e clique em "Simular Agora" para ver seus
+                ganhos potenciais.
+              </p>
+            </div>
+          ) : (
+            <>
+              <ValueDisplay
+                label="Valorização Mensal"
+                value={simulationResult.monthlyPercentage}
+              />
+              <ValueDisplay
+                label="Ganho Mensal Estimado"
+                value={simulationResult.monthlyGain}
+                isCurrency
+              />
+              <hr style={style.summaryDivider} />
+              <ValueDisplay
+                label="Ganho Total Estimado"
+                value={simulationResult.totalGain}
+                isCurrency
+              />
+              <div style={{ ...style.summaryItem, ...style.summaryTotal }}>
+                <span style={style.summaryLabel}>Valor Final Estimado</span>
+                <span style={style.summaryValue}>
+                  {formatServices.formatCurrencyBR(
+                    simulationResult.finalAmount
+                  )}
+                </span>
+              </div>
+            </>
+          )}
+          <button
+            style={style.proceedButton}
+            onClick={onProceed}
+            disabled={!simulationResult || isSimulating}
+          >
+            <span>Configurar Contrato</span>
+            <FontAwesomeIcon icon={faArrowRight} />
+          </button>
+        </div>
       </div>
     </div>
   );

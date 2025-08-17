@@ -1,234 +1,367 @@
 import React, { useEffect, useState } from "react";
 import style from "./DashboardStyle.js";
-import DataTable from "./DataTable";
-import UserContracts from "../UserContracts/UserContracts.js";
 import { useAuth } from "../../Context/AuthContext.js";
 import formatServices from "../../formatServices/formatServices.js";
-import contractServices from "../../dbServices/contractServices.js";
-import extractServices from "../../dbServices/extractServices.js";
 import clientServices from "../../dbServices/clientServices.js";
 import Carousel from "./Carousel/Carousel.js";
 import useCountUpAnimation from "../../hooks/useCountUpAnimation.js";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faGem,
+  faArrowRight,
+  faChartLine,
+} from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
-const announcementSlides = [
-    {
-        type: 'Anúncio',
-        title: 'Coleção Brilho Eterno',
-        description: 'Descubra anéis e colares que capturam a essência da elegância.',
-        imageUrl: 'https://blog.vivara.com.br/wp-content/uploads/2023/05/vivara-blog-1316x512_01-39-1110x512.jpg',
-    },
-    {
-        type: 'Produto em Destaque',
-        title: 'Colar de Diamantes "Via Láctea"',
-        description: 'Com 150 diamantes cravejados em platina, este colar é a definição de luxo.',
-        imageUrl: 'https://images.pexels.com/photos/265906/pexels-photo-265906.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    },
-    {
-        type: 'Vídeo',
-        title: 'O Processo de Criação',
-        description: 'Assista aos nossos artesãos transformando pedras brutas em obras de arte.',
-        imageUrl: 'https://ecrie70.com.br/sistema/conteudos/imagem/g_66_2_1_04042024145433.jpeg',
-        isVideo: false,
-    }
+const products = [
+  {
+    name: "Anel de Safira 'Oceano'",
+    price: 12500.0,
+    imageUrl:
+      "https://static.wixstatic.com/media/2e38e5_9f0292c300f040b286693a1f4968848d~mv2.jpg/v1/fill/w_1000,h_1000,al_c,q_85/2e38e5_9f0292c300f040b286693a1f4968848d~mv2.jpg",
+  },
+  {
+    name: "Brincos 'Lágrima de Esmeralda'",
+    price: 21800.0,
+    imageUrl:
+      "https://cdn.awsli.com.br/2500x2500/2320/2320286/produto/207018898/brinco-de-prata-com-esmeralda-indiana-e-marcassita-dfrab-prat-49b80053.jpg",
+  },
+  {
+    name: "Colar de Rubi 'Chama Eterna'",
+    price: 18950.0,
+    imageUrl:
+      "https://i.pinimg.com/736x/87/4c/94/874c94d13e3b0922e96d744b41b3992b.jpg",
+  },
 ];
 
 const gemInfoSlides = [
-    {
-        type: 'Conhecimento',
-        title: 'O Que São Gemas?',
-        description: 'Gemas são minerais raros e valiosos que, após lapidados, revelam um brilho e cor excepcionais.',
-        imageUrl: 'https://i0.wp.com/sheragems.com/wp-content/uploads/2024/09/10001-e1725873679218.webp?resize=1255%2C870',
-    },
-    {
-        type: 'Design',
-        title: 'Tipos de Lapidação',
-        description: 'Do clássico Brilhante ao elegante Esmeralda, a lapidação define como a luz dança na pedra.',
-        imageUrl: 'https://turismo.b-cdn.net/wp-content/uploads/2023/02/Tipos-de-Lapidacao-de-Diamantes.jpg',
-    },
-    {
-        type: 'Exclusividade',
-        title: 'Colorações Únicas',
-        description: 'Explore o mundo das Safiras, Rubis e Esmeraldas, onde cada cor conta uma história de raridade.',
-        imageUrl: 'https://images.pexels.com/photos/2762942/pexels-photo-2762942.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    }
+  {
+    type: "Conhecimento",
+    title: "O Que São Gemas?",
+    description:
+      "Minerais raros e valiosos que, após lapidados, revelam um brilho e cor excepcionais.",
+    imageUrl:
+      "https://i0.wp.com/sheragems.com/wp-content/uploads/2024/09/10001-e1725873679218.webp?resize=1255%2C870",
+  },
+  {
+    type: "Design",
+    title: "A Arte da Lapidação",
+    description:
+      "Do clássico Brilhante ao elegante Esmeralda, a lapidação define como a luz dança na pedra.",
+    imageUrl:
+      "https://turismo.b-cdn.net/wp-content/uploads/2023/02/Tipos-de-Lapidacao-de-Diamantes.jpg",
+  },
+];
+
+const announcementSlides = [
+  {
+    type: "Coleção",
+    title: "Brilho Eterno",
+    description:
+      "Descubra anéis e colares que capturam a essência da elegância.",
+    imageUrl:
+      "https://blog.vivara.com.br/wp-content/uploads/2023/05/vivara-blog-1316x512_01-39-1110x512.jpg",
+  },
+  {
+    type: "Destaque",
+    title: "Colar 'Via Láctea'",
+    description: "A definição de luxo.",
+    imageUrl:
+      "https://images.pexels.com/photos/265906/pexels-photo-265906.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+  },
 ];
 
 const AnimatedInfoItem = ({ label, value, isCurrency = false, isLoading }) => {
-    const endColorRgb = [0, 123, 255];
-    const { currentValue } = useCountUpAnimation(value, 2000, isLoading, endColorRgb);
+  const { currentValue } = useCountUpAnimation(value || 0, 1500, isLoading);
+  const displayValue = () => {
+    if (isLoading) return "---";
+    if (isCurrency) return formatServices.formatCurrencyBR(currentValue);
+    return Math.round(currentValue);
+  };
+  return (
+    <div style={style.cardInfoItem}>
+      <span style={style.cardInfoLabel}>{label}</span>
+      <span style={style.cardInfoValue}>{displayValue()}</span>
+    </div>
+  );
+};
 
-    const displayValue = () => {
-        if (isLoading) return "Carregando...";
-        if (isCurrency) {
-            return formatServices.formatCurrencyBR(currentValue);
-        }
-        return Math.round(currentValue);
-    };
+const DashboardCard = ({ title, children }) => {
+  const [isExpanded, setIsExpanded] = useState(true);
+  const headerStyle = { ...style.cardHeader, cursor: "pointer" };
+  const arrowStyle = {
+    ...style.cardHeaderArrow,
+    transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)",
+  };
+  const contentStyle = {
+    ...style.cardContent,
+    ...(isExpanded ? style.cardContentExpanded : style.cardContentCollapsed),
+  };
+  const cardStyle = {
+    ...style.dashboardCard,
+    ...(!isExpanded && style.dashboardCardCollapsed),
+  };
+  return (
+    <div style={cardStyle}>
+      <div style={headerStyle} onClick={() => setIsExpanded(!isExpanded)}>
+        <h3 style={style.cardHeaderH3}>{title}</h3>
+        <i className="fa-solid fa-chevron-right" style={arrowStyle}></i>
+      </div>
+      <div style={contentStyle}>
+        {isExpanded ? children : React.Children.toArray(children)[0]}
+      </div>
+    </div>
+  );
+};
 
-    return (
-        <div style={style.cardInfoItem}>
-            <span>{label}</span>
-            <span style={style.cardInfoValue}>
-                {displayValue()}
-            </span>
-        </div>
-    );
+const ActionButton = ({
+  title,
+  description,
+  icon,
+  onClick,
+  primary = false,
+}) => {
+  const [hover, setHover] = useState(false);
+  const buttonStyle = {
+    ...style.actionButton,
+    ...(primary ? style.actionButtonPrimary : style.actionButtonSecondary),
+    transform: hover ? "translateY(-5px)" : "translateY(0)",
+    boxShadow: hover
+      ? "0 12px 40px rgba(0,0,0,0.12)"
+      : "0 8px 32px rgba(0,0,0,0.08)",
+  };
+  const iconStyle = {
+    ...style.actionButtonIcon,
+    transform: hover ? "rotate(-10deg) scale(1.1)" : "rotate(-20deg) scale(1)",
+  };
+  return (
+    <button
+      style={buttonStyle}
+      onClick={onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      <div style={style.actionButtonText}>
+        <h4 style={style.actionButtonTitle}>{title}</h4>
+        <p style={style.actionButtonDescription}>{description}</p>
+      </div>
+      <FontAwesomeIcon icon={icon} style={iconStyle} />
+    </button>
+  );
 };
 
 export default function Dashboard() {
-  const [userContracts, setUserContracts] = useState([]);
-  const [filteredContracts, setFilteredContracts] = useState([]);
   const [informacoesCarteira, setInformacoesCarteira] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [extracts, setExtracts] = useState([]);
-  const [filterId, setFilterId] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
   const { token } = useAuth();
-
-  const remuneracoesColumns = [
-    { key: "id", label: "ID" },
-    { key: "totalIncome", label: "REMUNERAÇÃO OBTIDA", function: formatServices.formatCurrencyBR },
-    { key: "currentIncome", label: "SALDO DISPONÍVEL", function: formatServices.formatCurrencyBR },
-  ];
-
-  const extratosColumns = [
-    { key: "description", label: "Descrição" },
-    { key: "dateCreated", label: "Data", function: formatServices.formatData },
-    { key: "amount", label: "VALOR", function: formatServices.formatCurrencyBR },
-  ];
-
-  const fetchDashboardData = async () => {
-    if (!token) return;
-    setIsLoading(true);
-    try {
-      const walletInfo = await clientServices.informacoesCarteira(token);
-      setInformacoesCarteira(walletInfo);
-    } catch (error) {
-      console.error("Error fetching dashboard data:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  const fetchSecondaryData = async () => {
-    if (!token) return;
-    try {
-        const [contracts, userExtracts] = await Promise.all([
-            contractServices.obterContratosDoUsuario(token),
-            extractServices.getExtracts(token)
-        ]);
-        setUserContracts(contracts);
-        setExtracts(userExtracts);
-    } catch (error) {
-        console.error("Error fetching secondary data:", error);
-    }
-  };
+  const navigate = useNavigate();
+  const [areCardsExpanded, setAreCardsExpanded] = useState(true);
 
   useEffect(() => {
+    const fetchDashboardData = async () => {
+      if (!token) return;
+      setIsLoading(true);
+      try {
+        const walletInfo = await clientServices.informacoesCarteira(token);
+        setInformacoesCarteira(walletInfo);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     fetchDashboardData();
-    fetchSecondaryData();
   }, [token]);
 
-  useEffect(() => {
-    let contractsToFilter = [...userContracts];
-    if (filterId) {
-      contractsToFilter = contractsToFilter.filter(c =>
-        c.id.toString().includes(filterId)
-      );
-    }
-    if (filterStatus) {
-      contractsToFilter = contractsToFilter.filter(c =>
-        c.status.toString() === filterStatus
-      );
-    }
-    setFilteredContracts(contractsToFilter);
-  }, [userContracts, filterId, filterStatus]);
+  const cardHeaderStyle = { ...style.cardHeader, cursor: "pointer" };
+  const cardArrowStyle = {
+    ...style.cardHeaderArrow,
+    transform: areCardsExpanded ? "rotate(90deg)" : "rotate(0deg)",
+  };
+  const cardContentStyle = {
+    ...style.cardContent,
+    ...(areCardsExpanded
+      ? style.cardContentExpanded
+      : style.cardContentCollapsed),
+  };
+  const cardStyle = {
+    ...style.dashboardCard,
+    ...(!areCardsExpanded && style.dashboardCardCollapsed),
+  };
 
   return (
     <div style={style.bodyDashboard}>
       <div style={style.containerDashboard}>
         <div style={style.headerRow}>
-          <img src="/img/logo.png" alt="Gemas Brilhantes Logo" style={style.headerLogo} />
+          <img
+            src="/img/logo.png"
+            alt="Gemas Brilhantes Logo"
+            style={style.headerLogo}
+          />
         </div>
         <div style={style.dashboardRow}>
-          <div style={{ ...style.dashboardCard, ...style.dashboardCardLarge }}>
-            <h3 style={style.cardHeaderH3}>GEMCASH</h3>
-            <div style={style.cardInfoList}>
-                <AnimatedInfoItem label="Total Na Plataforma" value={informacoesCarteira?.totalBalance} isCurrency isLoading={isLoading} />
-                <AnimatedInfoItem label="Compras Ativas" value={informacoesCarteira?.activeContracts} isLoading={isLoading} />
-                <AnimatedInfoItem label="Compras Finalizados" value={informacoesCarteira?.endedContracts} isLoading={isLoading} />
-                <AnimatedInfoItem label="Valor de Compra" value={informacoesCarteira?.totalInvested} isCurrency isLoading={isLoading} />
-                <AnimatedInfoItem label="Remuneração Total" value={informacoesCarteira?.totalIncome} isCurrency isLoading={isLoading} />
-                <AnimatedInfoItem label="Disponível para Retirada" value={informacoesCarteira?.totalAvaliableBalance} isCurrency isLoading={isLoading} />
+          <div style={cardStyle}>
+            <div
+              style={cardHeaderStyle}
+              onClick={() => setAreCardsExpanded(!areCardsExpanded)}
+            >
+              <h3 style={style.cardHeaderH3}>GEMCASH</h3>
+              <i
+                className="fa-solid fa-chevron-right"
+                style={cardArrowStyle}
+              ></i>
+            </div>
+            <div style={cardContentStyle}>
+              <div style={style.cardInfoList}>
+                <AnimatedInfoItem
+                  label="Total Na Plataforma"
+                  value={informacoesCarteira?.totalBalance}
+                  isCurrency
+                  isLoading={isLoading}
+                />
+                {areCardsExpanded && (
+                  <>
+                    <AnimatedInfoItem
+                      label="Compras Ativas"
+                      value={informacoesCarteira?.activeContracts}
+                      isLoading={isLoading}
+                    />
+                    <AnimatedInfoItem
+                      label="Compras Finalizados"
+                      value={informacoesCarteira?.endedContracts}
+                      isLoading={isLoading}
+                    />
+                    <AnimatedInfoItem
+                      label="Valor de Compra"
+                      value={informacoesCarteira?.totalInvested}
+                      isCurrency
+                      isLoading={isLoading}
+                    />
+                    <AnimatedInfoItem
+                      label="Remuneração Total"
+                      value={informacoesCarteira?.totalIncome}
+                      isCurrency
+                      isLoading={isLoading}
+                    />
+                    <AnimatedInfoItem
+                      label="Disponível para Retirada"
+                      value={informacoesCarteira?.totalAvaliableBalance}
+                      isCurrency
+                      isLoading={isLoading}
+                    />
+                  </>
+                )}
+              </div>
             </div>
           </div>
-          <div style={{ ...style.dashboardCard, ...style.dashboardCardLarge }}>
-            <h3 style={style.cardHeaderH3}>Pedras Preciosas</h3>
-            <div style={style.cardInfoList}>
-              <div style={style.cardInfoItem}>
-                <span>Compras</span>
-                <span style={style.cardInfoValue}>15</span>
-              </div>
-              <div style={style.cardInfoItem}>
-                <span>Valor em Compras</span>
-                <span style={style.cardInfoValue}>R$ 5.320,80</span>
-              </div>
-              <div style={style.cardInfoItem}>
-                <span>Pedidos Entregues</span>
-                <span style={style.cardInfoValue}>14</span>
-              </div>
-              <div style={style.cardInfoItem}>
-                <span>Pedidos em Andamento</span>
-                <span style={style.cardInfoValue}>1</span>
-              </div>
-              <div style={style.cardInfoItem}>
-                <span>Carrinho</span>
-                <span style={style.cardInfoValue}>2 itens</span>
+          <div style={cardStyle}>
+            <div
+              style={cardHeaderStyle}
+              onClick={() => setAreCardsExpanded(!areCardsExpanded)}
+            >
+              <h3 style={style.cardHeaderH3}>Pedras Preciosas</h3>
+              <i
+                className="fa-solid fa-chevron-right"
+                style={cardArrowStyle}
+              ></i>
+            </div>
+            <div style={cardContentStyle}>
+              <div style={style.cardInfoList}>
+                <AnimatedInfoItem
+                  label="Valor em Compras"
+                  value={5320.8}
+                  isCurrency
+                  isLoading={isLoading}
+                />
+                {areCardsExpanded && (
+                  <>
+                    <AnimatedInfoItem
+                      label="Compras"
+                      value={15}
+                      isLoading={isLoading}
+                    />
+                    <AnimatedInfoItem
+                      label="Pedidos Entregues"
+                      value={14}
+                      isLoading={isLoading}
+                    />
+                    <AnimatedInfoItem
+                      label="Pedidos em Andamento"
+                      value={1}
+                      isLoading={isLoading}
+                    />
+                    <AnimatedInfoItem
+                      label="Carrinho"
+                      value={2}
+                      isLoading={isLoading}
+                    />
+                  </>
+                )}
               </div>
             </div>
           </div>
         </div>
 
+        <div style={style.mainActionsContainer}>
+          <ActionButton
+            title="Comprar GemCash"
+            description="Amplie sua coleção e veja sua remuneração crescer."
+            icon={faChartLine}
+            onClick={() => navigate("/gemcash/new")}
+            primary
+          />
+          <ActionButton
+            title="Comprar Pedras Preciosas"
+            description="Adquira jóias e gemas exclusivas de nossa curadoria."
+            icon={faGem}
+            onClick={() => navigate("/ecommerce")}
+          />
+        </div>
+
         <div style={style.dashboardRow}>
           <div style={style.dashboardContentBlockLarge}>
-            <Carousel slides={gemInfoSlides} variant="light" />
+            <Carousel slides={gemInfoSlides} />
           </div>
           <div style={style.dashboardContentBlockSmall}>
             <Carousel slides={announcementSlides} />
           </div>
         </div>
 
-        <div style={{ ...style.dashboardRow, ...style.dashboardRowStretch }}>
-          <div style={style.dashboardCol}>
-            <DataTable
-              title="REMUNERAÇÃO DISPONÍVEL POR CONTRATO"
-              columns={remuneracoesColumns}
-              data={userContracts}
-            />
-          </div>
-          <div style={style.dashboardCol}>
-            <DataTable
-              title="EXTRATOS DA CONTA"
-              columns={extratosColumns}
-              data={extracts}
+        <div style={style.productsSection}>
+          <div style={style.sectionHeader}>
+            <h2 style={style.sectionTitle}>Nossa Curadoria Exclusiva</h2>
+            <button
+              style={style.seeMoreButton}
+              onClick={() => navigate("/ecommerce")}
             >
-              <i
-                className="fa-solid fa-cog"
-                style={style.dataTableControlsIcon}
-              ></i>
-            </DataTable>
+              Ver todos <FontAwesomeIcon icon={faArrowRight} />
+            </button>
           </div>
-        </div>
-
-        <div style={style.dashboardRow}>
-          <div style={style.dashboardColFull}>
-            <UserContracts
-              contracts={filteredContracts}
-              filterId={filterId}
-              setFilterId={setFilterId}
-              filterStatus={filterStatus}
-              setFilterStatus={setFilterStatus}
-            />
+          <div style={style.productsGrid}>
+            {products.slice(0, 3).map((product, index) => (
+              <div
+                key={index}
+                style={style.productCard}
+                onClick={() => navigate("/ecommerce/produto/" + index)}
+              >
+                <div style={style.productImageContainer}>
+                  <img
+                    src={product.imageUrl}
+                    alt={product.name}
+                    style={style.productImage}
+                  />
+                  <div style={style.productOverlay}>
+                    <button style={style.productButton}>Ver Detalhes</button>
+                  </div>
+                </div>
+                <div style={style.productInfo}>
+                  <h3 style={style.productName}>{product.name}</h3>
+                  <p style={style.productPrice}>
+                    {formatServices.formatCurrencyBR(product.price)}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

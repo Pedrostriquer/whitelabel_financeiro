@@ -2,87 +2,73 @@ import React from "react";
 import style from "./ContratosPageStyle";
 import GeneratedContract from "./GenerateContract";
 import formatServices from "../../formatServices/formatServices";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFileSignature } from "@fortawesome/free-solid-svg-icons";
 
 const ConfigurationStep = ({
-  contract,
+  simulation,
   handleBuy,
-  onGenerateContract,
   onBack,
-  showGeneratedContract,
   termsAccepted,
   setTermsAccepted,
   paymentMethod,
   setPaymentMethod,
   contractRef,
-  onPrint,
-  user
+  user,
 }) => {
-  if (!contract) return null;
-
-  const valorTotal = contract.preco;
-  const lucroTotal = contract.totalGain;
-  const lucroMensal = contract.monthlyGain;
-  const valorizacaoMes = contract.monthlyPercentage;
-  const valorizacaoAno = valorizacaoMes * 12;
+  if (!simulation) return null;
 
   return (
     <div style={style.configurationPage}>
-      <button onClick={onBack} style={style.contractsBackButton}>
-        <i className="fa-solid fa-arrow-left"></i> Voltar
+      <button onClick={onBack} style={style.backButton}>
+        <i className="fa-solid fa-arrow-left"></i> Voltar para Simulação
       </button>
-      <h1 style={style.pageTitle}>
-        {showGeneratedContract ? "Contrato Gerado" : "Proposta do Contrato"}
-      </h1>
+      <div style={style.configHeader}>
+        <FontAwesomeIcon icon={faFileSignature} style={style.configIcon} />
+        <h1 style={style.pageTitle}>Configuração do Contrato</h1>
+        <p style={style.pageSubtitle}>
+          Revise os detalhes, aceite os termos e selecione seu método de
+          pagamento para finalizar.
+        </p>
+      </div>
 
-      <table style={style.summaryTable}>
-        <thead>
-          <tr>
-            <th style={style.summaryTableHeaderCell}>Valor do Contrato</th>
-            <th style={style.summaryTableHeaderCell}>Duração</th>
-            <th style={style.summaryTableHeaderCell}>Lucro Mensal</th>
-            <th style={style.summaryTableHeaderCell}>Lucro Total</th>
-            <th style={style.summaryTableHeaderCell}>Valorização % (Mês)</th>
-            <th style={style.summaryTableHeaderCell}>Valorização % (Ano)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style={style.summaryTableCell}>
-              R$ {formatServices.formatCurrencyBR(valorTotal)}
-            </td>
-            <td style={style.summaryTableCell}>
-              {contract.duracaoMeses} meses
-            </td>
-            <td style={style.summaryTableCell}>
-              R$ {formatServices.formatCurrencyBR(lucroMensal)}
-            </td>
-            <td style={{ ...style.summaryTableCell, ...style.lucroTotalCell }}>
-              R$ {formatServices.formatCurrencyBR(lucroTotal)}
-            </td>
-            <td style={style.summaryTableCell}>{valorizacaoMes.toFixed(2)}%</td>
-            <td style={style.summaryTableCell}>{valorizacaoAno.toFixed(2)}%</td>
-          </tr>
-        </tbody>
-      </table>
+      <div style={style.configGrid}>
+        <div style={style.configSummary}>
+          <div style={style.summaryItem}>
+            <span style={style.summaryLabel}>Valor do Aporte</span>
+            <span style={style.summaryValue}>
+              {formatServices.formatCurrencyBR(simulation.initialAmount)}
+            </span>
+          </div>
+          <div style={style.summaryItem}>
+            <span style={style.summaryLabel}>Prazo</span>
+            <span style={style.summaryValue}>{simulation.months} meses</span>
+          </div>
+          <div style={style.summaryItem}>
+            <span style={style.summaryLabel}>Valorização Mensal</span>
+            <span style={style.summaryValue}>
+              {simulation.monthlyPercentage.toFixed(2)}%
+            </span>
+          </div>
+          <div style={style.summaryItem}>
+            <span style={style.summaryLabel}>Valor Final Estimado</span>
+            <span style={{ ...style.summaryValue, ...style.summaryTotalValue }}>
+              {formatServices.formatCurrencyBR(simulation.finalAmount)}
+            </span>
+          </div>
+        </div>
 
-      {!showGeneratedContract ? (
-        <button style={style.btnGerarContrato} onClick={onGenerateContract}>
-          Gerar Contrato
-        </button>
-      ) : (
         <GeneratedContract
-          contract={contract}
-          total={valorTotal}
+          contract={simulation}
           handleBuy={handleBuy}
           termsAccepted={termsAccepted}
           setTermsAccepted={setTermsAccepted}
           paymentMethod={paymentMethod}
           setPaymentMethod={setPaymentMethod}
           contractRef={contractRef}
-          onPrint={onPrint}
           user={user}
         />
-      )}
+      </div>
     </div>
   );
 };

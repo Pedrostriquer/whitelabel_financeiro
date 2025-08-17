@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../Context/AuthContext";
 import style from "./UserPageStyle";
 import clientServices from "../../dbServices/clientServices";
+import formatServices from "../../formatServices/formatServices";
 
 const formatDate = (dateString) => {
   if (!dateString) return "Não informado";
@@ -59,7 +60,10 @@ export default function UserPage() {
       if (user && token) {
         setIsFetchingBankAccount(true);
         try {
-          const fetchedAccount = await clientServices.getBankAccountByClientId(user.id, token);
+          const fetchedAccount = await clientServices.getBankAccountByClientId(
+            user.id,
+            token
+          );
           setBankAccount(fetchedAccount);
         } catch (error) {
           if (error.response && error.response.status === 404) {
@@ -116,7 +120,11 @@ export default function UserPage() {
       { key: "phoneNumber", apiName: "phoneNumber", source: user },
       { key: "street", apiName: "address.street", source: user.address },
       { key: "number", apiName: "address.number", source: user.address },
-      { key: "neighborhood", apiName: "address.neighborhood", source: user.address },
+      {
+        key: "neighborhood",
+        apiName: "address.neighborhood",
+        source: user.address,
+      },
       { key: "city", apiName: "address.city", source: user.address },
       { key: "state", apiName: "address.state", source: user.address },
       { key: "zipcode", apiName: "address.zipcode", source: user.address },
@@ -135,7 +143,11 @@ export default function UserPage() {
     }
 
     try {
-      const updatedClient = await clientServices.editClient(user.id, updates, token);
+      const updatedClient = await clientServices.editClient(
+        user.id,
+        updates,
+        token
+      );
       if (updatedClient) {
         updateUserContext(updatedClient);
         alert("Dados atualizados com sucesso!");
@@ -162,11 +174,18 @@ export default function UserPage() {
       let updatedOrCreatedAccount;
       if (bankAccount && bankAccount.id) {
         bankAccountData.id = bankAccount.id;
-        updatedOrCreatedAccount = await clientServices.updateBankAccount(bankAccount.id, bankAccountData, token);
+        updatedOrCreatedAccount = await clientServices.updateBankAccount(
+          bankAccount.id,
+          bankAccountData,
+          token
+        );
       } else {
-        updatedOrCreatedAccount = await clientServices.createBankAccount(bankAccountData, token);
+        updatedOrCreatedAccount = await clientServices.createBankAccount(
+          bankAccountData,
+          token
+        );
       }
-      
+
       setBankAccount(updatedOrCreatedAccount);
       alert("Dados bancários salvos com sucesso!");
       setIsEditing(false);
@@ -191,8 +210,15 @@ export default function UserPage() {
     setIsUploading(true);
     setShowOverlay(true);
     try {
-      const response = await clientServices.uploadProfilePicture(user.id, file, token);
-      updateUserContext({ ...user, profilePictureUrl: response.profilePictureUrl });
+      const response = await clientServices.uploadProfilePicture(
+        user.id,
+        file,
+        token
+      );
+      updateUserContext({
+        ...user,
+        profilePictureUrl: response.profilePictureUrl,
+      });
       alert("Foto de perfil atualizada com sucesso!");
     } catch (error) {
       alert("Ops! Ocorreu um erro ao enviar sua foto.");
@@ -230,23 +256,96 @@ export default function UserPage() {
       case "personal":
         return (
           <Section title="Dados Pessoais" icon="fa-user-pen">
-            <InfoField label="Nome Completo" value={formData.name} name="name" isEditing={isEditing} onChange={handleChange} />
-            <InfoField label="CPF/CNPJ" value={formData.cpfCnpj} name="cpfCnpj" isEditing={false} />
-            <InfoField label="Data de Nascimento" value={formData.birthDate} name="birthDate" isEditing={false} type="date" />
-            <InfoField label="Profissão" value={formData.jobTitle} name="jobTitle" isEditing={isEditing} onChange={handleChange} />
-            <InfoField label="Email" value={formData.email} name="email" isEditing={isEditing} onChange={handleChange} type="email" />
-            <InfoField label="Telefone" value={formData.phoneNumber} name="phoneNumber" isEditing={isEditing} onChange={handleChange} type="tel" />
+            <InfoField
+              label="Nome Completo"
+              value={formData.name}
+              name="name"
+              isEditing={isEditing}
+              onChange={handleChange}
+            />
+            <InfoField
+              label="CPF/CNPJ"
+              value={formData.cpfCnpj}
+              name="cpfCnpj"
+              isEditing={false}
+            />
+            <InfoField
+              label="Data de Nascimento"
+              value={formData.birthDate}
+              name="birthDate"
+              isEditing={false}
+              type="date"
+            />
+            <InfoField
+              label="Profissão"
+              value={formData.jobTitle}
+              name="jobTitle"
+              isEditing={isEditing}
+              onChange={handleChange}
+            />
+            <InfoField
+              label="Email"
+              value={formData.email}
+              name="email"
+              isEditing={isEditing}
+              onChange={handleChange}
+              type="email"
+            />
+            <InfoField
+              label="Telefone"
+              value={formData.phoneNumber}
+              name="phoneNumber"
+              isEditing={isEditing}
+              onChange={handleChange}
+              type="tel"
+            />
           </Section>
         );
       case "address":
         return (
           <Section title="Endereço" icon="fa-map-location-dot">
-            <InfoField label="Rua" value={formData.street} name="street" isEditing={isEditing} onChange={handleChange} />
-            <InfoField label="Número" value={formData.number} name="number" isEditing={isEditing} onChange={handleChange} />
-            <InfoField label="Bairro" value={formData.neighborhood} name="neighborhood" isEditing={isEditing} onChange={handleChange} />
-            <InfoField label="Cidade" value={formData.city} name="city" isEditing={isEditing} onChange={handleChange} />
-            <InfoField label="Estado" value={formData.state} name="state" isEditing={isEditing} onChange={handleChange} />
-            <InfoField label="CEP" value={formData.zipcode} name="zipcode" isEditing={isEditing} onChange={handleChange} />
+            <InfoField
+              label="Rua"
+              value={formData.street}
+              name="street"
+              isEditing={isEditing}
+              onChange={handleChange}
+            />
+            <InfoField
+              label="Número"
+              value={formData.number}
+              name="number"
+              isEditing={isEditing}
+              onChange={handleChange}
+            />
+            <InfoField
+              label="Bairro"
+              value={formData.neighborhood}
+              name="neighborhood"
+              isEditing={isEditing}
+              onChange={handleChange}
+            />
+            <InfoField
+              label="Cidade"
+              value={formData.city}
+              name="city"
+              isEditing={isEditing}
+              onChange={handleChange}
+            />
+            <InfoField
+              label="Estado"
+              value={formData.state}
+              name="state"
+              isEditing={isEditing}
+              onChange={handleChange}
+            />
+            <InfoField
+              label="CEP"
+              value={formData.zipcode}
+              name="zipcode"
+              isEditing={isEditing}
+              onChange={handleChange}
+            />
           </Section>
         );
       case "banking":
@@ -255,21 +354,86 @@ export default function UserPage() {
         }
         return (
           <Section title="Dados Bancários" icon="fa-building-columns">
-            <InfoField label="Nome do Banco" value={formData.bankName} name="bankName" isEditing={isEditing} onChange={handleChange} />
-            <InfoField label="Agência" value={formData.agencyNumber} name="agencyNumber" isEditing={isEditing} onChange={handleChange} />
-            <InfoField label="Número da Conta" value={formData.accountNumber} name="accountNumber" isEditing={isEditing} onChange={handleChange} />
-            <InfoField label="Tipo de Chave Pix" value={formData.pixKeyType} name="pixKeyType" isEditing={isEditing} onChange={handleChange} />
-            <InfoField label="Chave Pix" value={formData.pix} name="pix" isEditing={isEditing} onChange={handleChange} />
-            <InfoField label="Nome do Beneficiário" value={formData.beneficiaryName} name="beneficiaryName" isEditing={isEditing} onChange={handleChange} />
+            <InfoField
+              label="Nome do Banco"
+              value={formData.bankName}
+              name="bankName"
+              isEditing={isEditing}
+              onChange={handleChange}
+            />
+            <InfoField
+              label="Agência"
+              value={formData.agencyNumber}
+              name="agencyNumber"
+              isEditing={isEditing}
+              onChange={handleChange}
+            />
+            <InfoField
+              label="Número da Conta"
+              value={formData.accountNumber}
+              name="accountNumber"
+              isEditing={isEditing}
+              onChange={handleChange}
+            />
+            <InfoField
+              label="Tipo de Chave Pix"
+              value={formData.pixKeyType}
+              name="pixKeyType"
+              isEditing={isEditing}
+              onChange={handleChange}
+            />
+            <InfoField
+              label="Chave Pix"
+              value={formData.pix}
+              name="pix"
+              isEditing={isEditing}
+              onChange={handleChange}
+            />
+            <InfoField
+              label="Nome do Beneficiário"
+              value={formData.beneficiaryName}
+              name="beneficiaryName"
+              isEditing={isEditing}
+              onChange={handleChange}
+            />
           </Section>
         );
       case "security":
         return (
           <Section title="Segurança" icon="fa-shield-halved">
-            <InfoField label="Pergunta de Segurança" value={formData.securityQuestion} name="securityQuestion" isEditing={isEditing} onChange={handleChange} />
-            <InfoField label="Resposta de Segurança" value="••••••••" name="securityQuestionAnswer" isEditing={isEditing} onChange={handleChange} type="password" />
-            {isEditing && (<InfoField label="Nova Senha" name="newPassword" isEditing={true} onChange={handleChange} type="password" />)}
-            {isEditing && (<InfoField label="Confirmar Nova Senha" name="confirmNewPassword" isEditing={true} onChange={handleChange} type="password" />)}
+            <InfoField
+              label="Pergunta de Segurança"
+              value={formData.securityQuestion}
+              name="securityQuestion"
+              isEditing={isEditing}
+              onChange={handleChange}
+            />
+            <InfoField
+              label="Resposta de Segurança"
+              value="••••••••"
+              name="securityQuestionAnswer"
+              isEditing={isEditing}
+              onChange={handleChange}
+              type="password"
+            />
+            {isEditing && (
+              <InfoField
+                label="Nova Senha"
+                name="newPassword"
+                isEditing={true}
+                onChange={handleChange}
+                type="password"
+              />
+            )}
+            {isEditing && (
+              <InfoField
+                label="Confirmar Nova Senha"
+                name="confirmNewPassword"
+                isEditing={true}
+                onChange={handleChange}
+                type="password"
+              />
+            )}
           </Section>
         );
       default:
@@ -279,19 +443,52 @@ export default function UserPage() {
 
   return (
     <div style={style.pageContainer}>
-      <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{ display: 'none' }} accept="image/png, image/jpeg, image/gif" />
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        style={{ display: "none" }}
+        accept="image/png, image/jpeg, image/gif"
+      />
       <div style={style.profileGrid}>
         <div style={style.profileCard}>
           <div style={style.profileCardHeader}></div>
-          <div style={style.avatarContainer} onMouseEnter={() => setShowOverlay(true)} onMouseLeave={() => setShowOverlay(false)}>
-            <div onClick={() => fileInputRef.current.click()} style={style.avatar}>
-              {user.profilePictureUrl ? (<img src={user.profilePictureUrl} alt="Foto do Perfil" style={style.avatarImage} />) : (user.name.charAt(0))}
+          <div
+            style={style.avatarContainer}
+            onMouseEnter={() => setShowOverlay(true)}
+            onMouseLeave={() => setShowOverlay(false)}
+          >
+            <div
+              onClick={() => fileInputRef.current.click()}
+              style={style.avatar}
+            >
+              {user.profilePictureUrl ? (
+                <img
+                  src={user.profilePictureUrl}
+                  alt="Foto do Perfil"
+                  style={style.avatarImage}
+                />
+              ) : (
+                user.name.charAt(0)
+              )}
               {(showOverlay || isUploading) && (
                 <div style={{ ...style.avatarOverlay, opacity: 1 }}>
-                  {isUploading ? (<div style={style.spinner}></div>) : (
+                  {isUploading ? (
+                    <div style={style.spinner}></div>
+                  ) : (
                     <div style={style.avatarActions}>
-                      <button style={style.avatarButton} title="Alterar foto"><i className="fa-solid fa-camera"></i></button>
-                      {user.profilePictureUrl && (<button style={style.avatarButton} onClick={handleDeletePicture} title="Remover foto"><i className="fa-solid fa-trash"></i></button>)}
+                      <button style={style.avatarButton} title="Alterar foto">
+                        <i className="fa-solid fa-camera"></i>
+                      </button>
+                      {user.profilePictureUrl && (
+                        <button
+                          style={style.avatarButton}
+                          onClick={handleDeletePicture}
+                          title="Remover foto"
+                        >
+                          <i className="fa-solid fa-trash"></i>
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -300,14 +497,20 @@ export default function UserPage() {
           </div>
           <div style={style.profileInfo}>
             <h2 style={style.userName}>{user.name}</h2>
-            <p style={style.userJobTitle}>{user.jobTitle || 'Profissão não informada'}</p>
+            <p style={style.userJobTitle}>
+              {user.jobTitle || "Profissão não informada"}
+            </p>
             <div style={style.statsContainer}>
               <div style={style.stat}>
-                <span style={style.statValue}>R$ {(user.balance || 0).toFixed(2)}</span>
+                <span style={style.statValue}>
+                  R$ {formatServices.formatCurrencyBR(user.balance || 0)}
+                </span>
                 <span style={style.statLabel}>Saldo</span>
               </div>
               <div style={style.stat}>
-                <span style={style.statValue}>{formatDate(user.dateCreated)}</span>
+                <span style={style.statValue}>
+                  {formatDate(user.dateCreated)}
+                </span>
                 <span style={style.statLabel}>Cliente Desde</span>
               </div>
             </div>
@@ -316,18 +519,69 @@ export default function UserPage() {
         <div style={style.detailsCard}>
           <div style={style.cardHeader}>
             <div style={style.tabs}>
-              <button onClick={() => setActiveTab("personal")} style={activeTab === "personal" ? { ...style.tab, ...style.activeTab } : style.tab}>Pessoal</button>
-              <button onClick={() => setActiveTab("address")} style={activeTab === "address" ? { ...style.tab, ...style.activeTab } : style.tab}>Endereço</button>
-              <button onClick={() => setActiveTab("banking")} style={activeTab === "banking" ? { ...style.tab, ...style.activeTab } : style.tab}>Bancário</button>
-              <button onClick={() => setActiveTab("security")} style={activeTab === "security" ? { ...style.tab, ...style.activeTab } : style.tab}>Segurança</button>
+              <button
+                onClick={() => setActiveTab("personal")}
+                style={
+                  activeTab === "personal"
+                    ? { ...style.tab, ...style.activeTab }
+                    : style.tab
+                }
+              >
+                Pessoal
+              </button>
+              <button
+                onClick={() => setActiveTab("address")}
+                style={
+                  activeTab === "address"
+                    ? { ...style.tab, ...style.activeTab }
+                    : style.tab
+                }
+              >
+                Endereço
+              </button>
+              <button
+                onClick={() => setActiveTab("banking")}
+                style={
+                  activeTab === "banking"
+                    ? { ...style.tab, ...style.activeTab }
+                    : style.tab
+                }
+              >
+                Bancário
+              </button>
+              <button
+                onClick={() => setActiveTab("security")}
+                style={
+                  activeTab === "security"
+                    ? { ...style.tab, ...style.activeTab }
+                    : style.tab
+                }
+              >
+                Segurança
+              </button>
             </div>
             <div style={style.actions}>
               {!isEditing ? (
-                <button onClick={() => setIsEditing(true)} style={style.editButton}><i className="fa-solid fa-pencil"></i></button>
+                <button
+                  onClick={() => setIsEditing(true)}
+                  style={style.editButton}
+                >
+                  <i className="fa-solid fa-pencil"></i>
+                </button>
               ) : (
                 <>
-                  <button onClick={handleSave} style={{ ...style.editButton, ...style.saveButton }}>Salvar</button>
-                  <button onClick={() => setIsEditing(false)} style={{ ...style.editButton, ...style.cancelButton }}>Cancelar</button>
+                  <button
+                    onClick={handleSave}
+                    style={{ ...style.editButton, ...style.saveButton }}
+                  >
+                    Salvar
+                  </button>
+                  <button
+                    onClick={() => setIsEditing(false)}
+                    style={{ ...style.editButton, ...style.cancelButton }}
+                  >
+                    Cancelar
+                  </button>
                 </>
               )}
             </div>

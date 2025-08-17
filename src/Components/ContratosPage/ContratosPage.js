@@ -1,110 +1,74 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import style from "./ContratosPageStyle.js";
-import Loader from "../Loader/Loader";
 import { useAuth } from "../../Context/AuthContext.js";
 import contractServices from "../../dbServices/contractServices.js";
 import verificationCodeService from "../../dbServices/verificationCodeService.js";
 import SelectionStep from "./SelectionStep.js";
 import ConfigurationStep from "./ConfigurationStep.js";
-import UserContracts from "../UserContracts/UserContracts.js";
 import VerificationModal from "./VerificationModal.js";
 import { useNavigate } from "react-router-dom";
 
+// --- ALTERAÇÃO 1: Componente para a Animação ---
+// Cria vários diamantes em posições e com velocidades aleatórias.
+const SuccessAnimation = () => {
+  const diamonds = Array.from({ length: 50 }).map((_, index) => {
+    const randomLeft = Math.random() * 100;
+    const randomDuration = 2 + Math.random() * 2; // Duração entre 2s e 4s
+    const randomDelay = Math.random() * 1.5; // Delay para não caírem todos juntos
+    const randomSize = 15 + Math.random() * 15; // Tamanho entre 15px e 30px
+
+    const diamondStyle = {
+      ...style.diamond,
+      left: `${randomLeft}vw`,
+      fontSize: `${randomSize}px`,
+      animationDuration: `${randomDuration}s`,
+      animationDelay: `${randomDelay}s`,
+    };
+
+    return (
+      <div key={index} style={diamondStyle}>
+        💎
+      </div>
+    );
+  });
+
+  return <div style={style.successAnimationOverlay}>{diamonds}</div>;
+};
+
 export default function ContratosPage() {
   const [step, setStep] = useState("selection");
-  const [selectedContract, setSelectedContract] = useState(null);
+  const [simulationResult, setSimulationResult] = useState(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("PIX");
   const [isLoading, setIsLoading] = useState(false);
   const [withGem, setWithGem] = useState(false);
   const { token, user } = useAuth();
   const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
-  const [userContracts, setUserContracts] = useState([]);
-  const [filteredContracts, setFilteredContracts] = useState([]);
-  const [filterId, setFilterId] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
   const contractRef = useRef();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchUserContracts = async () => {
-      if (!token) return;
-      setIsLoading(true);
-      try {
-        const contracts = await contractServices.obterContratosDoUsuario(token);
-        setUserContracts(contracts);
-        setFilteredContracts(contracts);
-      } catch (error) {
-        console.error("Error fetching user contracts:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchUserContracts();
-  }, [token]);
+  // --- ALTERAÇÃO 2: Novo estado para controlar a animação ---
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
 
-  useEffect(() => {
-    let filtered = userContracts;
-    if (filterId) {
-      filtered = filtered.filter((contract) => contract.id.toString().includes(filterId));
-    }
-    if (filterStatus) {
-      filtered = filtered.filter((contract) => contract.status === parseInt(filterStatus, 10));
-    }
-    setFilteredContracts(filtered);
-  }, [filterId, filterStatus, userContracts]);
-
-  const handleGenerateProposal = async (valor, duracao) => {
-    setIsLoading(true);
-    try {
-      const valorNumerico = parseFloat(valor);
-      const duracaoNumerica = parseInt(duracao, 10);
-      if (isNaN(valorNumerico) || isNaN(duracaoNumerica)) {
-        alert("Por favor, insira um valor e uma duração válidos.");
-        return;
-      }
-      const simulation = await contractServices.simularContrato(token, {
-        amount: valorNumerico,
-        months: duracaoNumerica,
-        withGem: withGem,
-      });
-      const formattedContract = {
-        nome: "Contrato de Investimento",
-        lucro: simulation.monthlyPercentage,
-        monthlyPercentage: simulation.monthlyPercentage,
-        duracaoMeses: duracaoNumerica,
-        preco: valorNumerico,
-        finalAmount: simulation.finalAmount,
-        monthlyGain: simulation.monthlyGain,
-        totalGain: simulation.totalGain,
-      };
-      setSelectedContract(formattedContract);
-      setStep("configuration");
-    } catch (error) {
-      console.error("Erro ao gerar proposta:", error);
-      alert("Erro ao simular contrato. Tente novamente.");
-    } finally {
-      setIsLoading(false);
-    }
+  const resetPage = () => {
+    setStep("selection");
+    setSimulationResult(null);
+    setTermsAccepted(false);
+    setWithGem(false);
   };
 
-  const handleProceedToGeneratedView = () => {
-    if (!selectedContract) return;
-    setStep("generated");
+  const handleSimulationChange = (simulation) => {
+    setSimulationResult(simulation);
   };
 
-  const handlePrint = () => {
-    const printContent = contractRef.current.innerHTML;
-    const originalContent = document.body.innerHTML;
-    document.body.innerHTML = `<html><head><title>Contrato</title></head><body>${printContent}</body></html>`;
-    window.print();
-    document.body.innerHTML = originalContent;
-    window.location.reload();
+  const handleProceedToConfiguration = () => {
+    if (!simulationResult) return;
+    setStep("configuration");
   };
 
   const handleBackToSelection = () => {
     setStep("selection");
-    setSelectedContract(null);
+    setSimulationResult(null);
   };
 
   const handleOpenVerificationModal = async () => {
@@ -117,69 +81,90 @@ export default function ContratosPage() {
       await verificationCodeService.enviarCodigoDeVerificacao(token);
       setIsVerificationModalOpen(true);
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "Não foi possível enviar o código.";
-      alert(errorMessage);
+      alert(
+        error.response?.data?.message || "Não foi possível enviar o código."
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleBuyContract = async (verificationCode) => {
-    if (!selectedContract) return;
+    if (!simulationResult) return;
     setIsLoading(true);
+    // Fecha o modal de verificação imediatamente
+    setIsVerificationModalOpen(false);
     try {
       const contractData = {
         clientId: user.id,
-        amount: selectedContract.preco,
-        months: selectedContract.duracaoMeses,
+        amount: simulationResult.initialAmount,
+        months: simulationResult.months,
         withGem: withGem,
         description: "Contrato criado via plataforma",
-        allowWithdraw: true,
         paymentMethod: paymentMethod,
         verificationCode: verificationCode,
       };
-      const createdContract = await contractServices.criarContrato(token, contractData);
-      setIsVerificationModalOpen(false);
-      alert(`Contrato #${createdContract.id} criado com sucesso!`);
-      const contracts = await contractServices.obterContratosDoUsuario(token);
-      setUserContracts(contracts);
-      handleBackToSelection();
+      await contractServices.criarContrato(token, contractData);
+
+      // --- ALTERAÇÃO 3: Lógica da animação e redirecionamento ---
+      // Aciona a animação de sucesso
+      setShowSuccessAnimation(true);
+
+      // Agenda o redirecionamento para depois de 4 segundos
+      setTimeout(() => {
+        window.location.href = "/gemcash/my-gem-cashes";
+      }, 4000);
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "Erro ao comprar o contrato.";
-      alert(errorMessage);
-    } finally {
+      alert(error.response?.data?.message || "Erro ao comprar o contrato.");
+      // Se der erro, só reseta o loading e a página
       setIsLoading(false);
+      resetPage();
     }
+    // O finally foi removido para não resetar a página antes da animação terminar
   };
 
   return (
     <div style={style.contratosPageContainer}>
-      {isLoading && !isVerificationModalOpen && <Loader />}
+      {/* --- ALTERAÇÃO 4: Renderiza a tag de estilos e a animação --- */}
+      <style>{style.keyframes}</style>
+      {showSuccessAnimation && <SuccessAnimation />}
+
+      {isLoading && !isVerificationModalOpen && (
+        <div style={style.loadingOverlay}>
+          <div style={style.loadingSpinner}></div>
+        </div>
+      )}
+
       {step === "selection" && (
-        <>
-          <SelectionStep onGenerateProposal={handleGenerateProposal} withGem={withGem} setWithGem={setWithGem} />
-          <UserContracts contracts={filteredContracts} filterId={filterId} setFilterId={setFilterId} filterStatus={filterStatus} setFilterStatus={setFilterStatus} />
-        </>
+        <SelectionStep
+          onSimulationChange={handleSimulationChange}
+          onProceed={handleProceedToConfiguration}
+          withGem={withGem}
+          setWithGem={setWithGem}
+          simulationResult={simulationResult}
+        />
       )}
+
       {step === "configuration" && (
-        <ConfigurationStep contract={selectedContract} onGenerateContract={handleProceedToGeneratedView} onBack={handleBackToSelection} user={user} />
-      )}
-      {step === "generated" && (
         <ConfigurationStep
-          contract={selectedContract}
-          handleBuy={handleOpenVerificationModal}
+          simulation={simulationResult}
           onBack={handleBackToSelection}
-          showGeneratedContract={true}
+          user={user}
+          handleBuy={handleOpenVerificationModal}
           termsAccepted={termsAccepted}
           setTermsAccepted={setTermsAccepted}
           paymentMethod={paymentMethod}
           setPaymentMethod={setPaymentMethod}
           contractRef={contractRef}
-          onPrint={handlePrint}
-          user={user}
         />
       )}
-      <VerificationModal isOpen={isVerificationModalOpen} onClose={() => setIsVerificationModalOpen(false)} onSubmit={handleBuyContract} isLoading={isLoading} />
+
+      <VerificationModal
+        isOpen={isVerificationModalOpen}
+        onClose={() => setIsVerificationModalOpen(false)}
+        onSubmit={handleBuyContract}
+        isLoading={isLoading}
+      />
     </div>
   );
 }
