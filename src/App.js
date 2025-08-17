@@ -47,7 +47,6 @@ function App() {
 
                 {/* sidebar start routes */}
                 <Route path="dashboard" element={<Dashboard />} />
-                <Route path="wallet" element={<Wallet />} />
                 <Route path="ordens-venda" element={<OrdensVenda />} />
                 <Route path="ordens-compra" element={<OrdensCompra />} />
                 <Route path="contratos" element={<ContratosPage />} />
@@ -59,6 +58,7 @@ function App() {
                 <Route path="gemcash" element={<ContratosPage />} />
                 <Route path="gemcash/new" element={<ContratosPage />} />
                 <Route path="gemcash/my-gem-cashes" element={<MyGeanCashesPage />} />
+                <Route path="gemcash/solicitation" element={<Wallet />} />
                 {/* ======================================================= */}
 
                 {/* sidebar end routes */}

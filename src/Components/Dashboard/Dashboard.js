@@ -152,7 +152,7 @@ export default function Dashboard() {
         </div>
         <div style={style.dashboardRow}>
           <div style={{ ...style.dashboardCard, ...style.dashboardCardLarge }}>
-            <h3 style={style.cardHeaderH3}>CONTRATOS</h3>
+            <h3 style={style.cardHeaderH3}>GEMCASH</h3>
             <div style={style.cardInfoList}>
                 <AnimatedInfoItem label="Total Na Plataforma" value={informacoesCarteira?.totalBalance} isCurrency isLoading={isLoading} />
                 <AnimatedInfoItem label="Compras Ativas" value={informacoesCarteira?.activeContracts} isLoading={isLoading} />
@@ -163,7 +163,7 @@ export default function Dashboard() {
             </div>
           </div>
           <div style={{ ...style.dashboardCard, ...style.dashboardCardLarge }}>
-            <h3 style={style.cardHeaderH3}>E-COMMERCE</h3>
+            <h3 style={style.cardHeaderH3}>Pedras Preciosas</h3>
             <div style={style.cardInfoList}>
               <div style={style.cardInfoItem}>
                 <span>Compras</span>

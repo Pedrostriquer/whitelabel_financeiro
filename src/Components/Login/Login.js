@@ -1,14 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import style from "./LoginStyle";
 import { useAuth } from "../../Context/AuthContext";
+import { useLocation } from "react-router-dom";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false); // Estado de loading
-  const { login } = useAuth();
+  const [loading, setLoading] = useState(false); 
+  const { login, loginWithToken } = useAuth();
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tokenFromUrl = params.get('token');
+    if (tokenFromUrl) {
+      loginWithToken(tokenFromUrl);
+    }
+  }, [location, loginWithToken]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,11 +26,11 @@ export default function Login() {
       alert("Por favor, preencha todos os campos.");
       return;
     }
-    setLoading(true); // Ativa o loading
+    setLoading(true); 
     try {
       await login(email, password, rememberMe);
     } finally {
-      setLoading(false); // Desativa o loading
+      setLoading(false); 
     }
   };
 
