@@ -1,10 +1,20 @@
-// src/dbServices/contractServices.js (Arquivo completo atualizado)
-
 import axios from "axios";
 
 const BASE_ROUTE = process.env.REACT_APP_BASE_ROUTE;
 
 const contractServices = {
+  getContractSettings: async (token) => {
+    try {
+      const response = await axios.get(`${BASE_ROUTE}contractsettings`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao obter configurações de contrato:", error);
+      throw error;
+    }
+  },
+
   obterRegras: async (token) => {
     try {
       const response = await axios.get(`${BASE_ROUTE}contract/rules`, {
@@ -31,13 +41,9 @@ const contractServices = {
 
   simularContrato: async (token, data) => {
     try {
-      const response = await axios.post(
-        `${BASE_ROUTE}contract/simulate`,
-        data,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.post(`${BASE_ROUTE}contract/simulate`, data, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return response.data;
     } catch (error) {
       console.error("Erro ao simular contrato:", error);
@@ -57,21 +63,6 @@ const contractServices = {
     }
   },
 
-  obterMesesDisponiveis: async (token) => {
-    try {
-      const response = await axios.get(
-        `${BASE_ROUTE}contract/rules/available-months`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Erro ao obter meses disponíveis:", error);
-      throw error;
-    }
-  },
-
   reinvestirLucro: async (token, data) => {
     try {
       const response = await axios.post(`${BASE_ROUTE}reinvestment`, data, {
@@ -79,7 +70,7 @@ const contractServices = {
       });
       return response.data;
     } catch (error) {
-      console.error("Erro ao obter meses disponíveis:", error);
+      console.error("Erro ao reinvestir lucro:", error);
       throw error;
     }
   },
@@ -96,18 +87,26 @@ const contractServices = {
     }
   },
 
+  obterMesesDisponiveis: async (token) => {
+    try {
+      const response = await axios.get(`${BASE_ROUTE}contract/rules/available-months`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data || []; // Garante que retorna array vazio se não houver dados
+    } catch (error) {
+      console.error("Erro ao obter meses disponíveis:", error);
+      return []; // Retorna array vazio em caso de erro
+    }
+  },
+
   atualizarAutoReinvestimento: async (token, contractId, autoReinvestState) => {
     try {
-      const response = await axios.patch(
-        `${BASE_ROUTE}contract/${contractId}/auto-reinvest`,
-        autoReinvestState, // Envia diretamente o valor booleano
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.patch(`${BASE_ROUTE}contract/${contractId}/auto-reinvest`, autoReinvestState, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
       return response.data;
     } catch (error) {
       console.error("Erro ao atualizar auto-reinvestimento:", error);

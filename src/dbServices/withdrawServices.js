@@ -14,7 +14,17 @@ const withdrawServices = {
       throw error;
     }
   },
-
+  getRules: async (token) => {
+    try {
+      const response = await axios.get(`${BASE_ROUTE}withdrawrule/current`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao obter regras de saque:", error);
+      throw error;
+    }
+  },
   criarSaque: async (token, data) => {
     try {
       const response = await axios.post(`${BASE_ROUTE}withdraw`, data, {

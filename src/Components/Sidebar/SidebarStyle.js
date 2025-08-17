@@ -55,7 +55,7 @@ const style = {
         marginLeft: '10px',
         opacity: 1,
         transition: `opacity ${dimensions.transitionSpeed} ease`,
-        whiteSpace: 'nowrap', // Impede que o texto quebre linha durante a animação
+        whiteSpace: 'nowrap',
     },
     sidebarTitleCollapsed: {
         opacity: 0,
@@ -93,29 +93,29 @@ const style = {
         padding: 0,
         margin: '20px 0',
         flexGrow: 1,
-        overflow: 'hidden', // Previne qualquer vazamento durante a transição
+        overflow: 'hidden',
     },
     subMenu: {
         listStyle: 'none',
-        paddingLeft: '20px', // Apenas o padding lateral fixo
+        paddingLeft: '20px',
         paddingTop: 0,
         paddingBottom: 0,
         margin: 0,
-        overflow: 'hidden', // Essencial para a animação funcionar
+        overflow: 'hidden',
         backgroundColor: 'rgba(0,0,0,0.15)',
         borderRadius: '6px',
-        maxHeight: '0', // Começa fechado
-        transition: 'max-height 0.3s ease-in-out, padding-top 0.3s ease-in-out, padding-bottom 0.3s ease-in-out', // Animação suave
+        maxHeight: '0',
+        transition: 'max-height 0.3s ease-in-out, padding-top 0.3s ease-in-out, padding-bottom 0.3s ease-in-out',
     },
     subMenuOpen: {
-        maxHeight: '500px', // Um valor alto o suficiente para caber todos os itens
-        paddingTop: '10px', // Adiciona padding vertical quando aberto
+        maxHeight: '500px',
+        paddingTop: '10px',
         paddingBottom: '10px',
     },
     subMenuItem: {
         height: '45px',
         paddingLeft: '10px',
-        marginBottom: '5px', // Espaçamento entre subitens
+        marginBottom: '5px',
     },
     navLink: {
         display: 'flex',
@@ -147,7 +147,33 @@ const style = {
     },
     sidebarFooter: {
         paddingTop: '10px',
+        marginTop: 'auto',
         borderTop: `1px solid ${colors.activeBg}`,
+    },
+    footerProfile: {
+        display: 'flex',
+        alignItems: 'center',
+        cursor: 'pointer',
+        borderRadius: '6px',
+        padding: '5px 0',
+        marginBottom: '10px',
+        transition: `background-color ${dimensions.transitionSpeed} ease`,
+    },
+    sidebarLogo: {
+        minWidth: '60px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        // Se a foto estiver presente, o fundo não precisa aparecer
+        // Se as iniciais estiverem, isso ainda funciona perfeitamente
+        backgroundColor: colors.activeBg, 
+        color: colors.logoText,
+        fontSize: '1.5rem',
+        fontWeight: 'bold',
+        height: '50px',
+        borderRadius: '6px',
+        overflow: 'hidden', // Importante para a imagem não vazar das bordas arredondadas
+        padding: 0 // Removido para a imagem preencher 100%
     },
 };
 

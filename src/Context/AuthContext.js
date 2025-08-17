@@ -153,6 +153,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // 👇 FUNÇÃO ADICIONADA PARA ATUALIZAR O USUÁRIO
+  const updateUserContext = (newUserData) => {
+    setUser(newUserData);
+  };
+
   const value = {
     user,
     token,
@@ -161,6 +166,7 @@ export const AuthProvider = ({ children }) => {
     login,
     loginWithToken,
     logout,
+    updateUserContext, // <-- Expondo a nova função
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
