@@ -41,12 +41,34 @@ const SelectionStep = ({
   setWithGem,
   simulationResult,
 }) => {
-  const [investValue, setInvestValue] = useState(5000);
+  const [minPurchaseValue, setMinPurchaseValue] = useState(3000);
+  const [areSettingsLoading, setAreSettingsLoading] = useState(true);
+  const [investValue, setInvestValue] = useState(3000);
   const [duration, setDuration] = useState("");
   const [availableMonths, setAvailableMonths] = useState([]);
   const [isLoadingMonths, setIsLoadingMonths] = useState(true);
   const [isSimulating, setIsSimulating] = useState(false);
   const { token } = useAuth();
+
+  useEffect(() => {
+    const fetchContractSettings = async () => {
+      if (!token) return;
+      try {
+        setAreSettingsLoading(true);
+        const settings = await contractServices.getContractSettings(token);
+        const minValue = settings?.minimumValue || 3000;
+        setMinPurchaseValue(minValue);
+        setInvestValue((currentValue) => Math.max(currentValue, minValue));
+      } catch (error) {
+        console.error("Falha ao buscar as configurações do contrato:", error);
+        setMinPurchaseValue(3000);
+        setInvestValue((currentValue) => Math.max(currentValue, 3000));
+      } finally {
+        setAreSettingsLoading(false);
+      }
+    };
+    fetchContractSettings();
+  }, [token]);
 
   const handleValueChange = (e) => {
     let value = e.target.value.replace(/\D/g, "");
@@ -79,7 +101,7 @@ const SelectionStep = ({
   }, [token]);
 
   const handleSimulateClick = useCallback(async () => {
-    if (!token || !duration || investValue < 1000) {
+    if (!token || !duration || investValue < minPurchaseValue) {
       onSimulationChange(null);
       return;
     }
@@ -96,11 +118,20 @@ const SelectionStep = ({
     } finally {
       setIsSimulating(false);
     }
-  }, [token, investValue, duration, withGem, onSimulationChange]);
+  }, [
+    token,
+    investValue,
+    duration,
+    withGem,
+    onSimulationChange,
+    minPurchaseValue,
+  ]);
 
   useEffect(() => {
     onSimulationChange(null);
-  }, [investValue, duration, withGem]);
+  }, [investValue, duration, withGem, onSimulationChange]);
+
+  const isValueInvalid = investValue < minPurchaseValue;
 
   return (
     <div style={style.selectionStepWrapper}>
@@ -112,7 +143,7 @@ const SelectionStep = ({
         />
       </div>
 
-      <div style={{...style.selectionColumn, marginTop: 100}}>
+      <div style={{ ...style.selectionColumn, marginTop: 100 }}>
         <h1 style={style.pageTitle}>Simule e Adquira seu GemCash</h1>
         <p style={style.pageSubtitle}>
           Ajuste os valores e veja o potencial de valorização do seu
@@ -128,17 +159,25 @@ const SelectionStep = ({
               value={formattedValue}
               onChange={handleValueChange}
               style={style.sliderInput}
+              disabled={areSettingsLoading}
             />
           </div>
           <input
             type="range"
-            min="1000"
+            min={minPurchaseValue}
             max="2000000"
             step="500"
             value={investValue}
             onChange={(e) => setInvestValue(Number(e.target.value))}
             style={style.slider}
+            disabled={areSettingsLoading}
           />
+          {isValueInvalid && !areSettingsLoading && (
+            <p style={style.errorMessage}>
+              O valor mínimo do aporte é de{" "}
+              {formatServices.formatCurrencyBR(minPurchaseValue)}.
+            </p>
+          )}
         </div>
 
         <div style={style.sliderGroup}>
@@ -180,7 +219,12 @@ const SelectionStep = ({
         <button
           style={style.simulateButton}
           onClick={handleSimulateClick}
-          disabled={isSimulating || isLoadingMonths}
+          disabled={
+            isSimulating ||
+            isLoadingMonths ||
+            areSettingsLoading ||
+            isValueInvalid
+          }
         >
           {isSimulating ? "Calculando..." : "Simular Agora"}
         </button>

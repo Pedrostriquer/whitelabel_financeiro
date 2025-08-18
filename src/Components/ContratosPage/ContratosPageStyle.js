@@ -45,10 +45,10 @@ const style = {
     transform: "translateX(-50%)",
     display: "flex",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   headerLogo: {
-    width: 250
+    width: 250,
   },
   selectionColumn: { display: "flex", flexDirection: "column" },
   pageTitle: {
@@ -318,7 +318,13 @@ const style = {
       }
     }
   `,
-  // --- FIM DOS NOVOS ESTILOS ---
+  errorMessage: {
+    color: "#e74c3c", // Um tom de vermelho
+    fontSize: "0.875rem",
+    marginTop: "5px",
+    textAlign: "right",
+    width: "100%",
+  },
 };
 
 export default style;

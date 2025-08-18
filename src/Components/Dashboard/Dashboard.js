@@ -305,14 +305,14 @@ export default function Dashboard() {
         <div style={style.mainActionsContainer}>
           <ActionButton
             title="Comprar GemCash"
-            description="Amplie sua coleção e veja sua remuneração crescer."
+            description="Compre uma gema preciosa e receba uma remuneração mensal."
             icon={faChartLine}
             onClick={() => navigate("/gemcash/new")}
             primary
           />
           <ActionButton
             title="Comprar Pedras Preciosas"
-            description="Adquira jóias e gemas exclusivas de nossa curadoria."
+            description="Adquira gemas gemas exclusivas de nossa curadoria."
             icon={faGem}
             onClick={() => navigate("/ecommerce")}
           />
