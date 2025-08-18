@@ -52,7 +52,10 @@ const SelectionStep = ({
 
   useEffect(() => {
     const fetchContractSettings = async () => {
-      if (!token) return;
+      if (!token) {
+        setAreSettingsLoading(false);
+        return;
+      }
       try {
         setAreSettingsLoading(true);
         const settings = await contractServices.getContractSettings(token);
@@ -62,7 +65,6 @@ const SelectionStep = ({
       } catch (error) {
         console.error("Falha ao buscar as configurações do contrato:", error);
         setMinPurchaseValue(3000);
-        setInvestValue((currentValue) => Math.max(currentValue, 3000));
       } finally {
         setAreSettingsLoading(false);
       }
@@ -115,21 +117,15 @@ const SelectionStep = ({
       onSimulationChange(simulation);
     } catch (error) {
       console.error("Erro ao simular:", error);
+      onSimulationChange(null);
     } finally {
       setIsSimulating(false);
     }
-  }, [
-    token,
-    investValue,
-    duration,
-    withGem,
-    onSimulationChange,
-    minPurchaseValue,
-  ]);
+  }, [token, investValue, duration, withGem, onSimulationChange, minPurchaseValue]);
 
   useEffect(() => {
     onSimulationChange(null);
-  }, [investValue, duration, withGem, onSimulationChange]);
+  }, [investValue, duration, withGem]);
 
   const isValueInvalid = investValue < minPurchaseValue;
 
@@ -220,10 +216,7 @@ const SelectionStep = ({
           style={style.simulateButton}
           onClick={handleSimulateClick}
           disabled={
-            isSimulating ||
-            isLoadingMonths ||
-            areSettingsLoading ||
-            isValueInvalid
+            isSimulating || isLoadingMonths || areSettingsLoading || isValueInvalid
           }
         >
           {isSimulating ? "Calculando..." : "Simular Agora"}
