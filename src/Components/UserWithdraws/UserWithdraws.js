@@ -107,7 +107,7 @@ const UserWithdraws = ({ withdrawals, isLoading }) => {
             <tr>
               <th style={style.dataTableTh}>ID</th>
               <th style={style.dataTableTh}>Valor Solicitado</th>
-              <th style={style.dataTableTh}>Taxa (4%)</th>
+              <th style={style.dataTableTh}>Taxa</th>
               <th style={style.dataTableTh}>Valor Líquido</th>
               <th style={style.dataTableTh}>Status</th>
               <th style={style.dataTableTh}>Data da Solicitação</th>
