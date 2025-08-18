@@ -252,7 +252,7 @@ export default function Sidebar({ navItems = [], loading = false }) {
             className="fa-solid fa-right-from-bracket"
             style={style.navLinkIcon}
           ></i>
-          <span style={linkTextStyle}>Logout</span>
+          <span style={linkTextStyle}>Sair</span>
         </a>
       </div>
     </nav>

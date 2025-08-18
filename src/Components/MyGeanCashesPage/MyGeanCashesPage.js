@@ -52,11 +52,19 @@ export default function MyGeanCashesPage() {
   return (
     <div style={style.myGeanCashesPage}>
       {isLoading && <Loader />}
-      
+      <div style={style.logoContainer}>
+        <img
+          src="/img/logo.png"
+          alt="Gemas Brilhantes Logo"
+          style={style.logo}
+        />
+      </div>
+
       <div style={style.header}>
         <h1 style={style.pageTitle}>Meus Gean Cashes</h1>
         <p style={style.pageSubtitle}>
-          Visualize, filtre e gerencie todos os seus contratos de investimento em um só lugar.
+          Visualize, filtre e gerencie todos os seus contratos de investimento
+          em um só lugar.
         </p>
       </div>
 

@@ -20,6 +20,15 @@ const style = {
     minHeight: "100vh",
     fontFamily: "'Segoe UI', 'Roboto', sans-serif",
   },
+  logoContainer: {
+    width: "100%",
+    display: "flex",
+    justifyContent: "center",
+    marginBottom: 20
+  },
+  logo: {
+    width: 250,
+  },
   loading: {
     fontSize: "1.2rem",
     textAlign: "center",
@@ -274,6 +283,7 @@ const style = {
       transform: "scale(1.2)",
     },
   },
+
   spinner: {
     position: "absolute",
     border: "4px solid rgba(255, 255, 255, 0.3)",

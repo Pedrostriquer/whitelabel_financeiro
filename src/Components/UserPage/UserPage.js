@@ -443,6 +443,13 @@ export default function UserPage() {
 
   return (
     <div style={style.pageContainer}>
+      <div style={style.logoContainer}>
+        <img
+          src="/img/logo.png"
+          alt="Gemas Brilhantes Logo"
+          style={style.logo}
+        />
+      </div>
       <input
         type="file"
         ref={fileInputRef}

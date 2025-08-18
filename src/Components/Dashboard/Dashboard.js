@@ -259,7 +259,7 @@ export default function Dashboard() {
               style={cardHeaderStyle}
               onClick={() => setAreCardsExpanded(!areCardsExpanded)}
             >
-              <h3 style={style.cardHeaderH3}>Pedras Preciosas</h3>
+              <h3 style={style.cardHeaderH3}>Gemas Preciosas</h3>
               <i
                 className="fa-solid fa-chevron-right"
                 style={cardArrowStyle}

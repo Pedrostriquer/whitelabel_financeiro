@@ -125,7 +125,6 @@ export default function ContratosPage() {
 
   return (
     <div style={style.contratosPageContainer}>
-      {/* --- ALTERAÇÃO 4: Renderiza a tag de estilos e a animação --- */}
       <style>{style.keyframes}</style>
       {showSuccessAnimation && <SuccessAnimation />}
 

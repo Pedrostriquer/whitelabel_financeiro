@@ -104,7 +104,15 @@ const SelectionStep = ({
 
   return (
     <div style={style.selectionStepWrapper}>
-      <div style={style.selectionColumn}>
+      <div style={style.headerLogoContainer}>
+        <img
+          src="/img/logo.png"
+          alt="Gemas Brilhantes Logo"
+          style={style.headerLogo}
+        />
+      </div>
+
+      <div style={{...style.selectionColumn, marginTop: 100}}>
         <h1 style={style.pageTitle}>Simule e Adquira seu GemCash</h1>
         <p style={style.pageSubtitle}>
           Ajuste os valores e veja o potencial de valorização do seu
@@ -222,7 +230,7 @@ const SelectionStep = ({
             onClick={onProceed}
             disabled={!simulationResult || isSimulating}
           >
-            <span>Configurar Contrato</span>
+            <span>Ir para a compra</span>
             <FontAwesomeIcon icon={faArrowRight} />
           </button>
         </div>

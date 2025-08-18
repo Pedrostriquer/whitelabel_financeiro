@@ -10,6 +10,14 @@ const style = {
         textAlign: 'center',
         marginBottom: '40px',
     },
+    logoContainer: {
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+    },
+    logo: {
+        width: 250
+    },
     pageTitle: {
         fontSize: '2.2rem',
         fontWeight: 600,

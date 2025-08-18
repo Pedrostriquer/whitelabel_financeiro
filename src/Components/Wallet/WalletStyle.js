@@ -15,6 +15,15 @@ const style = {
         flexDirection: 'column',
         gap: '20px',
     },
+    logoContainer: {
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        marginBottom: 20
+    },
+    logo: {
+        width: 250
+    },
     infoPanelContainer: {
         background: 'white',
         color: '#333',

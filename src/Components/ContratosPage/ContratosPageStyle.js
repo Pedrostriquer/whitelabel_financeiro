@@ -36,6 +36,20 @@ const style = {
     maxWidth: "1200px",
     alignItems: "center",
   },
+  headerLogoContainer: {
+    width: "100%",
+    position: "absolute",
+    top: 30,
+    left: "50%",
+    right: "50%",
+    transform: "translateX(-50%)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  headerLogo: {
+    width: 250
+  },
   selectionColumn: { display: "flex", flexDirection: "column" },
   pageTitle: {
     fontSize: "2.8rem",

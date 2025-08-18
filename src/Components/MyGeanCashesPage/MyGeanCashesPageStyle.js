@@ -6,9 +6,19 @@ const style = {
         alignItems: 'center',
         gap: '30px',
     },
+    logoContainer: {
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        marginBottom: -30
+    },
+    logo: {
+        width: 250
+    },
     header: {
         textAlign: 'center',
         width: '100%',
+        height: "max-content",
         maxWidth: '1200px',
     },
     pageTitle: {

@@ -126,6 +126,13 @@ export default function ExtratosPage() {
   return (
     <div style={style.extratosPageContainer}>
       {isLoading && <Loader />}
+      <div style={style.logoContainer}>
+        <img
+          src="/img/logo.png"
+          alt="Gemas Brilhantes Logo"
+          style={style.logo}
+        />
+      </div>
       <div style={style.pageHeader}>
         <h1 style={style.pageTitle}>Extrato da Conta</h1>
         <p style={style.pageSubtitle}>
