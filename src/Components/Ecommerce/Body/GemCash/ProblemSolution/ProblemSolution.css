@@ -1,0 +1,115 @@
+/* Dentro de src/Components/ClientView/Body/GemCash/ProblemSolution/ProblemSolution.css */
+
+.ps-section {
+    padding: 100px 40px;
+    background-color: #f0f2f5;
+}
+
+.ps-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.ps-intro {
+    max-width: 800px;
+    margin: 0 auto 60px auto;
+}
+
+.ps-main-title {
+    font-size: 3em;
+    font-weight: normal;
+    color: #122C4F;
+    line-height: 1.2;
+    font-family: 'Helnore', serif;
+    color: #122C4F;
+    text-transform: uppercase;
+
+}
+
+.ps-subtitle {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2em;
+    color: #000000;
+    line-height: 1.7;
+    margin-top: 15px;
+}
+
+.comparison-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.comparison-card {
+    background-color: #f8f9fa;
+    padding: 40px;
+    border-radius: 12px;
+    text-align: left;
+    border: 1px solid #e9ecef;
+}
+
+.comparison-card.solution {
+    background-color: #122C4F;
+    color: #FFFFFF;
+    border: 1px solid #122C4F;
+}
+
+.card-title {
+    font-family: 'Helnore', serif;
+    font-size: 2em;
+    font-weight: normal;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.traditional .card-title { color: #333; }
+.solution .card-title { color: #FFFFFF; }
+
+.features-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.feature-item i {
+    font-size: 1.8em;
+    margin-top: 5px;
+    width: 35px;
+    flex-shrink: 0;
+}
+
+.feature-item h4 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1em;
+    margin-bottom: 5px;
+}
+
+.feature-item p {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95em;
+    line-height: 1.6;
+    opacity: 0.8;
+}
+
+/* Cores dos Ícones e Textos */
+.feature-item.problem i { color: #888; }
+.feature-item.problem h4 { color: #333; }
+.feature-item.problem p { color: #555; }
+
+.feature-item.success i { color: #FFFFFF; } /* Ícones azuis como a cor da marca */
+.feature-item.success h4 { color: #FFFFFF; }
+.feature-item.success p { color: #FFFFFF; opacity: 0.8; }
+
+@media (max-width: 900px) {
+    .comparison-wrapper { grid-template-columns: 1fr; }
+    .ps-main-title { font-size: 2.2em; }
+}

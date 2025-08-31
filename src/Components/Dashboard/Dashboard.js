@@ -3,6 +3,7 @@ import style from "./DashboardStyle.js";
 import { useAuth } from "../../Context/AuthContext.js";
 import formatServices from "../../formatServices/formatServices.js";
 import clientServices from "../../dbServices/clientServices.js";
+import offerService from "../../dbServices/offerService.js";
 import Carousel from "./Carousel/Carousel.js";
 import useCountUpAnimation from "../../hooks/useCountUpAnimation.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,6 +11,7 @@ import {
   faGem,
   faArrowRight,
   faChartLine,
+  faBell,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 
@@ -34,43 +36,6 @@ const products = [
   },
 ];
 
-const gemInfoSlides = [
-  {
-    type: "Conhecimento",
-    title: "O Que São Gemas?",
-    description:
-      "Minerais raros e valiosos que, após lapidados, revelam um brilho e cor excepcionais.",
-    imageUrl:
-      "https://i0.wp.com/sheragems.com/wp-content/uploads/2024/09/10001-e1725873679218.webp?resize=1255%2C870",
-  },
-  {
-    type: "Design",
-    title: "A Arte da Lapidação",
-    description:
-      "Do clássico Brilhante ao elegante Esmeralda, a lapidação define como a luz dança na pedra.",
-    imageUrl:
-      "https://turismo.b-cdn.net/wp-content/uploads/2023/02/Tipos-de-Lapidacao-de-Diamantes.jpg",
-  },
-];
-
-const announcementSlides = [
-  {
-    type: "Coleção",
-    title: "Brilho Eterno",
-    description:
-      "Descubra anéis e colares que capturam a essência da elegância.",
-    imageUrl:
-      "https://blog.vivara.com.br/wp-content/uploads/2023/05/vivara-blog-1316x512_01-39-1110x512.jpg",
-  },
-  {
-    type: "Destaque",
-    title: "Colar 'Via Láctea'",
-    description: "A definição de luxo.",
-    imageUrl:
-      "https://images.pexels.com/photos/265906/pexels-photo-265906.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-  },
-];
-
 const AnimatedInfoItem = ({ label, value, isCurrency = false, isLoading }) => {
   const { currentValue } = useCountUpAnimation(value || 0, 1500, isLoading);
   const displayValue = () => {
@@ -82,34 +47,6 @@ const AnimatedInfoItem = ({ label, value, isCurrency = false, isLoading }) => {
     <div style={style.cardInfoItem}>
       <span style={style.cardInfoLabel}>{label}</span>
       <span style={style.cardInfoValue}>{displayValue()}</span>
-    </div>
-  );
-};
-
-const DashboardCard = ({ title, children }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
-  const headerStyle = { ...style.cardHeader, cursor: "pointer" };
-  const arrowStyle = {
-    ...style.cardHeaderArrow,
-    transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)",
-  };
-  const contentStyle = {
-    ...style.cardContent,
-    ...(isExpanded ? style.cardContentExpanded : style.cardContentCollapsed),
-  };
-  const cardStyle = {
-    ...style.dashboardCard,
-    ...(!isExpanded && style.dashboardCardCollapsed),
-  };
-  return (
-    <div style={cardStyle}>
-      <div style={headerStyle} onClick={() => setIsExpanded(!isExpanded)}>
-        <h3 style={style.cardHeaderH3}>{title}</h3>
-        <i className="fa-solid fa-chevron-right" style={arrowStyle}></i>
-      </div>
-      <div style={contentStyle}>
-        {isExpanded ? children : React.Children.toArray(children)[0]}
-      </div>
     </div>
   );
 };
@@ -150,9 +87,29 @@ const ActionButton = ({
   );
 };
 
+const NotificationBell = ({ count, onClick }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div
+      style={style.notificationBell}
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <FontAwesomeIcon icon={faBell} style={style.notificationIcon} />
+      {count > 0 && <span style={style.notificationBadge}>{count}</span>}
+      {isHovered && <span style={style.tooltip}>Notificações</span>}
+    </div>
+  );
+};
+
 export default function Dashboard() {
   const [informacoesCarteira, setInformacoesCarteira] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [leftOffers, setLeftOffers] = useState([]);
+  const [rightOffers, setRightOffers] = useState([]);
+  const [notificationCount, setNotificationCount] = useState(3);
   const { token } = useAuth();
   const navigate = useNavigate();
   const [areCardsExpanded, setAreCardsExpanded] = useState(true);
@@ -162,8 +119,36 @@ export default function Dashboard() {
       if (!token) return;
       setIsLoading(true);
       try {
-        const walletInfo = await clientServices.informacoesCarteira(token);
+        const walletInfoPromise = clientServices.informacoesCarteira(token);
+        const offersPromise = offerService.getOffers(token);
+
+        const [walletInfo, offersData] = await Promise.all([
+          walletInfoPromise,
+          offersPromise,
+        ]);
+
         setInformacoesCarteira(walletInfo);
+
+        const activeOffers = offersData.filter((offer) => offer.status === 2);
+
+        const mapOfferToSlide = (offer) => ({
+          type: offer.categoryName,
+          title: offer.title,
+          description: offer.description,
+          imageUrl: offer.mideaUrl,
+          mediaType: offer.mideaType,
+        });
+
+        setLeftOffers(
+          activeOffers
+            .filter((offer) => offer.panelSide === 1)
+            .map(mapOfferToSlide)
+        );
+        setRightOffers(
+          activeOffers
+            .filter((offer) => offer.panelSide === 2)
+            .map(mapOfferToSlide)
+        );
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {
@@ -193,10 +178,16 @@ export default function Dashboard() {
     <div style={style.bodyDashboard}>
       <div style={style.containerDashboard}>
         <div style={style.headerRow}>
-          <img
-            src="/img/logo.png"
-            alt="Gemas Brilhantes Logo"
-            style={style.headerLogo}
+          <div style={style.headerLogoContainer}>
+            <img
+              src="/img/logo.png"
+              alt="Gemas Brilhantes Logo"
+              style={style.headerLogo}
+            />
+          </div>
+          <NotificationBell
+            count={notificationCount}
+            onClick={() => navigate("/notifications")}
           />
         </div>
         <div style={style.dashboardRow}>
@@ -319,12 +310,16 @@ export default function Dashboard() {
         </div>
 
         <div style={style.dashboardRow}>
-          <div style={style.dashboardContentBlockLarge}>
-            <Carousel slides={gemInfoSlides} />
-          </div>
-          <div style={style.dashboardContentBlockSmall}>
-            <Carousel slides={announcementSlides} />
-          </div>
+          {leftOffers.length > 0 && (
+            <div style={style.dashboardContentBlockLarge}>
+              <Carousel slides={leftOffers} />
+            </div>
+          )}
+          {rightOffers.length > 0 && (
+            <div style={style.dashboardContentBlockSmall}>
+              <Carousel slides={rightOffers} />
+            </div>
+          )}
         </div>
 
         <div style={style.productsSection}>

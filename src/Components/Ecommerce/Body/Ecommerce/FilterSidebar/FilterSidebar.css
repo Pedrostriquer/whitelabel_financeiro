@@ -1,0 +1,76 @@
+/* Em src/Components/ClientView/Body/GemasBrilhantes/FilterSidebar.css */
+
+.filter-sidebar {
+    width: 280px;
+    flex-shrink: 0;
+    padding-right: 40px;
+}
+
+.sidebar-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #333;
+    padding-bottom: 26px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 20px;
+}
+
+.filter-section {
+    border-bottom: 1px solid #eee;
+    padding: 20px 0 20px 20px;
+}
+
+.section-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1em;
+    font-weight: 500;
+    padding: 0;
+    margin-bottom: 15px;
+}
+
+.section-header i {
+    transition: transform 0.3s ease;
+}
+
+.section-header i.open {
+    transform: rotate(180deg);
+}
+
+.section-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.section-content.open {
+    max-height: 500px; /* Altura suficiente para mostrar todas as opções */
+    transition: max-height 0.4s ease-in;
+}
+
+.radio-option, .checkbox-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.radio-option label, .checkbox-option label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95em;
+    color: #555;
+    cursor: pointer;
+}
+
+input[type="radio"], input[type="checkbox"] {
+    accent-color: #122C4F; /* Cor principal para o radio/checkbox */
+}

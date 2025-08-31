@@ -1,0 +1,125 @@
+/* Dentro de src/Components/ClientView/Body/Home/AboutSection/AboutSection.css */
+
+.about-v2-wrapper {
+    padding: 80px 40px;
+    background-color: #f0f2f5;
+    font-family: 'Poppins', sans-serif;
+}
+
+.about-v2-title {
+    text-align: center;
+    font-size: 2.5em;
+    font-weight: normal;
+    color: #122C4F;
+    margin-bottom: 30px;
+    font-family: 'Helnore', serif;
+    text-transform: uppercase;
+}
+
+/* --- Seção Quem Somos --- */
+.about-v2-main {
+    max-width: 800px;
+    margin: 0 auto 80px auto;
+    text-align: center;
+}
+
+.about-v2-text {
+    font-size: 1.1em;
+    line-height: 1.8;
+    color: #000000;
+    margin-bottom: 20px;
+    font-weight: normal;
+}
+
+/* --- Seção Propósito e O Que Fazemos --- */
+.about-v2-secondary-grid {
+    max-width: 1200px;
+    margin: 0 auto 80px auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    padding: 60px 0;
+    border-top: 1px solid #122c4f33;
+    border-bottom: 1px solid #122c4f33;
+}
+
+.secondary-block {
+    text-align: left;
+}
+
+.secondary-title {
+    font-size: 1.8em;
+    font-weight: normal;
+    color: #122C4F;
+    margin-bottom: 15px;
+    font-family: 'Helnore', serif;
+    text-transform: uppercase;
+}
+
+.secondary-text {
+    font-size: 1em;
+    line-height: 1.7;
+    color: #000000;
+}
+
+/* --- Seção Nossos Valores --- */
+.about-v2-values {
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+.values-grid {
+    display: grid;
+    /* Adapta o número de colunas ao espaço, com um mínimo de 200px */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+}
+
+.value-card {
+    background-color: #f8f9fa;
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.value-icon-wrapper {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 20px auto;
+    border-radius: 50%;
+    background-color: #122c4f1a; /* Azul com 10% de opacidade */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.value-icon-wrapper i {
+    font-size: 1.8em;
+    color: #122C4F;
+}
+
+.value-card h4 {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.value-card p {
+    font-size: 0.95em;
+    color: #000000;
+    line-height: 1.6;
+}
+
+/* --- Responsividade --- */
+@media (max-width: 768px) {
+    .about-v2-secondary-grid {
+        grid-template-columns: 1fr; /* Empilha as colunas */
+    }
+    .about-v2-title {
+        font-size: 2em;
+    }
+    .about-v2-wrapper {
+        padding: 60px 20px;
+    }
+}

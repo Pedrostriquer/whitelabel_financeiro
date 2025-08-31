@@ -1,0 +1,133 @@
+/* Dentro de src/Components/ClientView/Body/GemCash/HowItWorks/HowItWorks.css */
+
+.how-it-works-section {
+    padding: 100px 40px;
+    background-color: #f0f2f5;
+}
+
+.how-it-works-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.hiw-title {
+    text-align: center;
+    font-size: 2.5em;
+    color: #122C4F;
+    margin-bottom: 20px;
+    font-family: 'Helnore', serif;
+    font-weight: normal; /* Garante que a fonte não fique grossa */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 40px;
+}
+
+.interactive-layout {
+    display: flex;
+    gap: 60px;
+    background-color: #FFFFFF;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+}
+
+/* Coluna Esquerda: Navegação */
+.features-nav-list {
+    list-style: none;
+    flex-shrink: 0;
+    width: 300px;
+    border-right: 1px solid #eee;
+    padding-right: 40px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.nav-item i {
+    font-size: 1.5em;
+    color: #aaa;
+    transition: color 0.3s ease;
+}
+
+.nav-item span {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1em;
+    font-weight: 500;
+    color: #555;
+    transition: color 0.3s ease;
+}
+
+.nav-item:hover {
+    background-color: #f8f9fa;
+}
+
+.nav-item.active {
+    background-color: #122c4f1a; /* Azul com 10% de opacidade */
+}
+.nav-item.active i, .nav-item.active span {
+    color: #122C4F;
+}
+
+/* Coluna Direita: Conteúdo */
+.feature-content-display {
+    flex-grow: 1;
+    animation: fadeIn 0.6s ease-out; /* Animação ao trocar */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.content-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.8em;
+    font-weight: 600;
+    color: #122C4F;
+    margin-bottom: 25px;
+}
+
+.content-text-block {
+    margin-bottom: 20px;
+}
+
+.content-text-block strong {
+    display: block;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    color: #333;
+    font-size: 1.1em;
+    margin-bottom: 8px;
+}
+
+.content-text-block p {
+    font-family: 'Poppins', sans-serif;
+    color: #555;
+    line-height: 1.7;
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+    .interactive-layout {
+        flex-direction: column;
+        gap: 30px;
+    }
+    .features-nav-list {
+        width: 100%;
+        border-right: none;
+        padding-right: 0;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 20px;
+    }
+    .hiw-title {
+        font-size: 2.2em;
+    }
+}

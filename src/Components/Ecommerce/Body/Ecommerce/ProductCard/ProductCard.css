@@ -1,0 +1,118 @@
+/* Dentro de src/Components/ClientView/Body/GemasBrilhantes/ProductCard.css */
+
+.product-card {
+    background-color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #f0f0f0;
+    transition: box-shadow 0.3s ease;
+    overflow: hidden; /* Garante que os cantos arredondados sejam aplicados */
+    border-radius: 4px;
+}
+
+.product-card:hover {
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.product-image-wrapper {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    position: relative; /* Essencial para posicionar as setas */
+}
+
+.product-media {
+    width: 100%; 
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.product-card:hover .product-media {
+    transform: scale(1.05); /* Efeito de zoom sutil na mídia */
+}
+
+/* --- Estilos do Carrossel --- */
+.carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    font-size: 1.2em;
+    color: #122C4F;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    
+    /* Estado inicial (escondido) */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* Mostra as setas quando o mouse está sobre a imagem */
+.product-image-wrapper:hover .carousel-arrow {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.carousel-arrow.left {
+    left: 10px;
+}
+
+.carousel-arrow.right {
+    right: 10px;
+}
+
+.carousel-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 0;
+    background-color: #fff; /* Fundo para os pontos */
+}
+
+.dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: #ddd;
+    transition: background-color 0.3s ease;
+}
+
+.dot.active {
+    background-color: #122C4F;
+}
+
+/* --- Informações do Produto --- */
+.product-info-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.product-info {
+    padding: 15px;
+    text-align: center;
+}
+
+.product-name {
+    font-size: 1.1em;
+    color: #122C4F;
+    font-weight: normal;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.product-price {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1em;
+    font-weight: 500;
+    color: #333;
+}

@@ -1,0 +1,252 @@
+/* Dentro de src/Components/ClientView/Body/GemCash/GemCashSimulator/GemCashSimulator.css */
+
+/* --- Animações --- */
+@keyframes spin { 
+    0% { transform: rotate(0deg); } 
+    100% { transform: rotate(360deg); } 
+}
+@keyframes pulse { 
+    0%, 100% { opacity: 1; } 
+    50% { opacity: 0.5; } 
+}
+@keyframes fadeInResult { 
+    from { opacity: 0; transform: translateY(10px); } 
+    to { opacity: 1; transform: translateY(0); } 
+}
+
+/* --- Container Principal --- */
+.sim-section {
+    padding: 100px 40px;
+    background-color: #f0f2f5;
+}
+
+.sim-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.sim-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.sim-main-title {
+    text-align: center;
+    font-size: 3em;
+    color: #122C4F;
+    margin-bottom: 20px;
+    font-family: 'Helnore', serif;
+    font-weight: normal; /* Garante que a fonte não fique grossa */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sim-subtitle {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1em;
+    color: #555;
+    max-width: 600px;
+    margin: 10px auto 0;
+}
+
+.sim-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+/* --- Card de Controles (Esquerda) --- */
+.sim-controls-card {
+    background: #FFFFFF;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+}
+
+.sim-control-group {
+    margin-bottom: 25px;
+}
+
+.sim-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.sim-input-wrapper {
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 8px 15px;
+    border-radius: 8px;
+}
+.sim-input-wrapper span {
+    font-family: 'Poppins', sans-serif;
+    color: #888;
+}
+
+.sim-input, .sim-select {
+    border: none;
+    background: transparent;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #122C4F;
+    width: 100%;
+    outline: none;
+    font-family: 'Poppins', sans-serif;
+}
+.sim-select { appearance: none; cursor: pointer; }
+
+.sim-slider {
+    width: 100%;
+    cursor: pointer;
+    margin-top: 15px;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 5px;
+    outline: none;
+}
+.sim-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #122C4F;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+.sim-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+.sim-checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    gap: 10px;
+}
+#withGem { width: 18px; height: 18px; accent-color: #122C4F; }
+#withGem + label { font-family: 'Poppins', sans-serif; color: #555; cursor: pointer; }
+
+.sim-button {
+    width: 100%;
+    padding: 18px;
+    background-color: #122C4F;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 30px;
+    transition: all 0.3s ease;
+}
+.sim-button:hover {
+    background-color: #1a3c6d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(18, 44, 79, 0.2);
+}
+
+/* --- Card de Resumo (Direita) --- */
+.sim-summary-card {
+    background: #FFFFFF;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    min-height: 450px;
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-title {
+    font-size: 1.8em;
+    color: #122C4F;
+    margin: 0 0 25px 0;
+    text-align: center;
+    font-weight: normal;
+}
+
+.summary-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.start-prompt {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #aaa;
+    font-family: 'Poppins', sans-serif;
+}
+.start-prompt i {
+    font-size: 3em;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.results-wrapper {
+    animation: fadeInResult 0.5s ease-out;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-family: 'Poppins', sans-serif;
+}
+.summary-label { color: #555; }
+.summary-value { font-weight: 600; color: #122C4F; }
+.summary-divider { border: none; border-top: 1px solid #e2e8f0; margin: 10px 0; }
+.summary-total { padding-top: 20px; border-bottom: none; }
+.summary-total .summary-value { font-size: 1.4rem; font-weight: 700; }
+
+.proceed-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #122C4F;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+.proceed-button:hover {
+    background-color: #1a3c6d;
+    transform: translateY(-2px);
+}
+
+/* Estados */
+.skeleton-wrapper { display: flex; flex-direction: column; gap: 15px; }
+.skeleton-line { background: #e2e8f0; border-radius: 4px; height: 1.5rem; animation: pulse 1.5s cubic-bezier(.4,0,.6,1) infinite; }
+.error-message { color: #c0392b; font-size: .875rem; margin-top: 5px; text-align: right; }
+button:disabled { background-color: #a0aec0 !important; cursor: not-allowed; transform: translateY(0) !important; box-shadow: none !important; }
+
+/* Responsividade */
+@media (max-width: 900px) {
+    .sim-layout {
+        grid-template-columns: 1fr;
+    }
+}

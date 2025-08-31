@@ -1,0 +1,248 @@
+/* Dentro de src/Components/ClientView/Body/Personalizadas/Personalizadas.css */
+
+.personalizadas-page-wrapper {
+    background-color: #f8f9fa;
+}
+
+.p-section-title {
+    text-align: center;
+    font-size: 2.5em;
+    font-weight: normal;
+    color: #122C4F;
+    margin-bottom: 50px;
+    font-family: 'Helnore', serif;
+    text-transform: uppercase;
+}
+
+/* --- Seção 1: Hero Banner --- */
+.p-hero-section {
+    height: 50vh;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #FFFFFF;
+}
+
+.p-hero-title {
+    font-size: 4em;
+    font-weight: normal;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    font-family: 'Helnore', serif;
+    text-transform: uppercase;
+}
+
+.p-hero-subtitle {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2em;
+    margin-top: 10px;
+}
+
+/* --- Seção 2: Introdução ao Ateliê --- */
+.p-intro-section {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.p-intro-text {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1em;
+    line-height: 1.8;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+/* --- Seção 3: Benefícios (Layout Desktop) --- */
+.p-benefits-section {
+    padding: 80px 40px;
+    background-color: #f8f9fa;
+}
+
+.p-benefits-layout-desktop {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 0.9fr 1.5fr;
+    gap: 50px;
+    align-items: center;
+}
+
+.p-benefit-media-card-v3 {
+    width: 320px;
+    height: 432px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-left: 55px;
+}
+
+.p-benefit-media-card-v3 img, 
+.p-benefit-media-card-v3 video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.p-benefits-nav-list-v3 {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.p-benefit-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 18px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid #e0e0e0;
+    background-color: #FFFFFF;
+    transition: all 0.3s ease;
+}
+
+.p-benefit-nav-item i {
+    font-size: 1.4em;
+    color: #888;
+    width: 25px;
+    transition: color 0.3s ease;
+}
+
+.p-benefit-nav-item span {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.05em;
+    font-weight: 500;
+    color: #555;
+    transition: color 0.3s ease;
+}
+
+.p-benefit-nav-item.active {
+    background-color: #122C4F;
+    color: #FFFFFF;
+    border-color: #122C4F;
+    transform: scale(1.03);
+}
+
+.p-benefit-nav-item.active i, 
+.p-benefit-nav-item.active span {
+    color: #FFFFFF;
+}
+
+.p-benefit-text-content-v3 {
+    animation: fadeInSlideUp 0.6s ease-out forwards;
+}
+
+@keyframes fadeInSlideUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.p-benefit-text-content-v3 h3 {
+    font-family: 'Helnore', serif;
+    font-size: 2.2em;
+    color: #122C4F;
+    margin-bottom: 20px;
+}
+
+.p-benefit-text-content-v3 p {
+    font-family: 'Poppins', sans-serif;
+    color: #555;
+    line-height: 1.8;
+    font-size: 1.1em;
+}
+
+/* --- Layout de Acordeão para Mobile (Escondido por padrão) --- */
+.p-benefits-layout-mobile {
+    display: none;
+}
+
+/* --- Seções 4, 5 e 6 --- */
+.p-quote-section { padding: 0; background-color: #122C4F; color: #FFFFFF; display: flex; align-items: center; overflow: hidden; }
+.p-quote-content { flex: 1; padding: 20px 30px; text-align: center; }
+.p-quote-content p { max-width: 700px; margin: 0 auto; font-family: 'Helnore', serif; font-size: 1.61em; line-height: 1.6; opacity: 0.9; }
+.p-quote-image-wrapper { flex-basis: 35%; height: 300px; width: 300px; position: relative; }
+.p-quote-image-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+.p-how-it-works-section { padding: 80px 40px;  }
+.p-steps-container { max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-around; gap: 20px; flex-wrap: wrap; }
+.p-step { text-align: center; max-width: 250px; }
+.p-step span { display: block; margin: 0 auto 15px auto; width: 50px; height: 50px; border-radius: 50%; border: 2px solid #122C4F; color: #122C4F; font-family: 'Helnore', serif; font-size: 1.8em; line-height: 48px; }
+.p-step p { font-family: 'Poppins', sans-serif; color: #555; }
+.p-form-section { padding: 80px 40px; background-color: #f8f9fa; }
+.p-form-subtitle { text-align: center; max-width: 600px; margin: -40px auto 40px auto; font-family: 'Poppins', sans-serif; color: #555; }
+.p-consult-form { max-width: 700px; margin: 0 auto; display: grid; gap: 20px; }
+.p-consult-form input, .p-consult-form select, .p-consult-form textarea { padding: 15px; font-family: 'Poppins', sans-serif; font-size: 1em; border: 1px solid #ddd; border-radius: 8px; }
+.p-submit-button { background-color: #122C4F; color: #FFFFFF; border: none; padding: 18px; border-radius: 8px; font-size: 1.1em; font-weight: 500; cursor: pointer; }
+.p-form-footer-text { text-align: center; max-width: 600px; margin: 25px auto 0 auto; font-family: 'Poppins', sans-serif; color: #888; font-size: 0.9em; }
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 1024px) {
+    .p-benefits-layout-desktop {
+        display: none;
+    }
+    .p-benefits-layout-mobile {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    .accordion-item {
+        background-color: #FFFFFF;
+        border-radius: 8px;
+        border: 1px solid #eee;
+        overflow: hidden;
+    }
+    .accordion-header {
+        width: 100%;
+        background: none;
+        border: none;
+        padding: 18px 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        cursor: pointer;
+        text-align: left;
+    }
+    .accordion-header i { font-size: 1.4em; color: #888; width: 25px; }
+    .accordion-header span { font-family: 'Poppins', sans-serif; font-size: 1.05em; font-weight: 500; color: #555; }
+    .accordion-header .chevron-icon { margin-left: auto; transition: transform 0.3s ease; }
+    .accordion-header.active i, .accordion-header.active span { color: #122C4F; }
+    .accordion-header .chevron-icon.open { transform: rotate(180deg); }
+    .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+        padding: 0 20px;
+        color: #555;
+        line-height: 1.8;
+    }
+    .accordion-content.open {
+        max-height: 200px;
+        padding: 0 20px 20px 20px;
+    }
+    
+    .p-quote-section {
+        flex-direction: column-reverse; /* Coloca o texto antes da imagem */
+    }
+    .p-quote-image-wrapper {
+        width: 100%;
+        height: 250px;
+        flex-basis: auto;
+    }
+    .p-quote-content {
+        padding: 40px 20px;
+    }
+}
+
+@media (max-width: 900px) {
+    .p-steps-container { flex-direction: column; align-items: center; }
+    .p-hero-title { font-size: 2.8em; }
+    .p-section-title { font-size: 2em; }
+}

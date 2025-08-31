@@ -1,0 +1,101 @@
+/* Dentro de src/Components/ClientView/Footer/Footer.css */
+
+.footer-wrapper {
+    background-color: #122C4F;
+    color: #e0e0e0;
+    padding: 60px 40px 20px 40px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 40px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-column {
+    flex: 1;
+    min-width: 250px;
+}
+
+.footer-title {
+    font-size: 1.5em;
+    font-weight: normal;
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+.footer-text, .footer-link {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1em;
+    line-height: 1.6;
+    margin-bottom: 10px;
+    color: #b0b0d0;
+    text-decoration: none;
+    display: block;
+}
+
+.footer-link:hover {
+    color: #ffffff;
+}
+
+.whatsapp-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #25D366; /* Verde do WhatsApp */
+    color: white;
+    padding: 12px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.whatsapp-button:hover {
+    transform: scale(1.05);
+    background-color: #128C7E;
+}
+
+.whatsapp-button i {
+    font-size: 1.4em;
+}
+
+.social-links {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+
+.social-links a {
+    color: #e0e0e0;
+    font-size: 1.8em;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.social-links a:hover {
+    color: #ffffff;
+    transform: translateY(-3px);
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 20px;
+    font-size: 0.9em;
+    color: #a0a0c0;
+}
+
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+}

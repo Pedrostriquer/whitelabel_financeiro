@@ -1,0 +1,55 @@
+/* Dentro de src/Components/ClientView/FloatingWhatsApp/FloatingWhatsApp.css */
+
+.floating-whatsapp-button {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000; /* Garante que fique acima da maioria dos conteúdos */
+    
+    width: 60px;
+    height: 60px;
+    background-color: #25D366; /* Cor oficial do WhatsApp */
+    color: #FFFFFF;
+    
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    font-size: 2.2em; /* Tamanho do ícone */
+    text-decoration: none;
+    
+    /* Animação */
+    animation: fadeInButton 0.5s ease-out forwards;
+    transform: scale(0.9);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.floating-whatsapp-button:hover {
+    transform: scale(1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes fadeInButton {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ajuste para telas menores */
+@media (max-width: 768px) {
+    .floating-whatsapp-button {
+        bottom: 20px;
+        right: 20px;
+        width: 55px;
+        height: 55px;
+        font-size: 2em;
+    }
+}

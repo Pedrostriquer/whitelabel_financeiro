@@ -55,6 +55,16 @@ const contractServices = {
     }
   },
 
+  simulateContract: async (data) => { // for site
+    try {
+      const response = await axios.post(`${BASE_ROUTE}contract/simulate`, data);
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao simular contrato:", error);
+      throw error;
+    }
+  },
+
   criarContrato: async (token, data) => {
     try {
       const response = await axios.post(`${BASE_ROUTE}contract`, data, {

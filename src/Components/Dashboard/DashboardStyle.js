@@ -19,11 +19,66 @@ const style = {
   headerRow: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-between",
     boxSizing: "border-box",
     marginBottom: "10px",
   },
-  headerLogo: { height: "80px" },
+  headerLogoContainer: {
+    flex: 1,
+    display: "flex",
+    justifyContent: "center",
+  },
+  headerLogo: {
+    height: "80px",
+    marginLeft: "auto",
+    marginRight: "auto",
+    paddingLeft: "50px",
+  },
+  notificationBell: {
+    position: "relative",
+    cursor: "pointer",
+    width: "50px",
+    height: "50px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  notificationIcon: {
+    fontSize: "1.5rem",
+    color: "#475569",
+    transition: "color 0.2s ease",
+  },
+  notificationBadge: {
+    position: "absolute",
+    top: "8px",
+    right: "8px",
+    backgroundColor: "#ef4444",
+    color: "white",
+    borderRadius: "50%",
+    width: "18px",
+    height: "18px",
+    fontSize: "0.7rem",
+    fontWeight: "bold",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    border: "2px solid white",
+    animation: "scaleIn 0.3s ease-out",
+  },
+  tooltip: {
+    position: "absolute",
+    bottom: "-35px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    backgroundColor: "#1e293b",
+    color: "white",
+    padding: "5px 12px",
+    borderRadius: "6px",
+    fontSize: "0.8rem",
+    whiteSpace: "nowrap",
+    zIndex: "10",
+    animation: "fadeInUpTooltip 0.3s ease-out",
+  },
   dashboardRow: { display: "flex", gap: "30px", width: "100%" },
 
   dashboardCard: {
@@ -229,6 +284,14 @@ const style = {
   "@keyframes fadeInUp": {
     from: { opacity: 0, transform: "translateY(20px)" },
     to: { opacity: 1, transform: "translateY(0)" },
+  },
+  "@keyframes scaleIn": {
+    from: { transform: "scale(0.5)", opacity: 0 },
+    to: { transform: "scale(1)", opacity: 1 },
+  },
+  "@keyframes fadeInUpTooltip": {
+    from: { opacity: 0, transform: "translateY(-40%) translateX(-50%)" },
+    to: { opacity: 1, transform: "translateY(0) translateX(-50%)" },
   },
 };
 

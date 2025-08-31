@@ -1,0 +1,94 @@
+.feature-section {
+    padding: 100px 40px;
+    background-color: #f0f2f5;
+}
+
+.feature-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 80px;
+    /* Aumenta o espaço entre texto e imagem */
+}
+
+/* Regra para inverter a ordem da imagem e do texto */
+.feature-section.reverse .feature-container {
+    flex-direction: row-reverse;
+}
+
+/* Coluna da Mídia */
+.feature-media-col {
+    flex: 1;
+}
+
+.feature-media {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    display: block;
+}
+
+/* Coluna do Texto */
+.feature-text-col {
+    flex: 1;
+    text-align: left;
+}
+
+.feature-title {
+    color: #122C4F;
+    font-size: 2.5em;
+    font-weight: normal;
+    margin-bottom: 20px;
+    font-family: 'Helnore', serif;
+    text-transform: uppercase;
+    word-spacing: 4px;
+}
+
+.feature-text {
+    font-family: 'Poppins', sans-serif;
+    color: #555;
+    font-size: 1.05em;
+    line-height: 1.8;
+    margin-bottom: 30px;
+}
+
+.feature-button {
+    background-color: #122C4F;
+    color: #FFFFFF;
+    border: none;
+    padding: 15px 35px;
+    border-radius: 30px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 1em;
+    cursor: pointer;
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: inline-block;
+}
+
+.feature-button:hover {
+    background-color: #1a3c6d;
+    transform: translateY(-3px);
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+
+    .feature-container,
+    .feature-section.reverse .feature-container {
+        flex-direction: column;
+    }
+
+    .feature-text-col {
+        text-align: center;
+    }
+
+    .feature-title {
+        font-size: 2em;
+    }
+}
