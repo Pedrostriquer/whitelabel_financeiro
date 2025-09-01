@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import style from "./ContratosPageStyle.js";
 import { useAuth } from "../../Context/AuthContext.js";
 import contractServices from "../../dbServices/contractServices.js";
@@ -6,16 +6,14 @@ import verificationCodeService from "../../dbServices/verificationCodeService.js
 import SelectionStep from "./SelectionStep.js";
 import ConfigurationStep from "./ConfigurationStep.js";
 import VerificationModal from "./VerificationModal.js";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
-// --- ALTERAÇÃO 1: Componente para a Animação ---
-// Cria vários diamantes em posições e com velocidades aleatórias.
 const SuccessAnimation = () => {
   const diamonds = Array.from({ length: 50 }).map((_, index) => {
     const randomLeft = Math.random() * 100;
-    const randomDuration = 2 + Math.random() * 2; // Duração entre 2s e 4s
-    const randomDelay = Math.random() * 1.5; // Delay para não caírem todos juntos
-    const randomSize = 15 + Math.random() * 15; // Tamanho entre 15px e 30px
+    const randomDuration = 2 + Math.random() * 2;
+    const randomDelay = Math.random() * 1.5;
+    const randomSize = 15 + Math.random() * 15;
 
     const diamondStyle = {
       ...style.diamond,
@@ -45,10 +43,40 @@ export default function ContratosPage() {
   const { token, user } = useAuth();
   const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
   const contractRef = useRef();
-  const navigate = useNavigate();
-
-  // --- ALTERAÇÃO 2: Novo estado para controlar a animação ---
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const fromSite = params.get("fromSite");
+
+    if (fromSite) {
+      const amount = parseFloat(params.get("amount"));
+      const months = parseInt(params.get("months"), 10);
+      const withGemParam = params.get("withGem") === "true";
+
+      const prefilledSimulation = async () => {
+        setIsLoading(true);
+        try {
+          const simulation = await contractServices.simularContrato(token, {
+            amount,
+            months,
+            withGem: withGemParam,
+          });
+          setSimulationResult(simulation);
+          setWithGem(withGemParam);
+          setStep("configuration");
+        } catch (error) {
+          console.error("Erro ao pré-preencher simulação:", error);
+          setStep("selection");
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      prefilledSimulation();
+    }
+  }, [location, token]);
 
   const resetPage = () => {
     setStep("selection");
@@ -92,7 +120,6 @@ export default function ContratosPage() {
   const handleBuyContract = async (verificationCode) => {
     if (!simulationResult) return;
     setIsLoading(true);
-    // Fecha o modal de verificação imediatamente
     setIsVerificationModalOpen(false);
     try {
       const contractData = {
@@ -106,21 +133,16 @@ export default function ContratosPage() {
       };
       await contractServices.criarContrato(token, contractData);
 
-      // --- ALTERAÇÃO 3: Lógica da animação e redirecionamento ---
-      // Aciona a animação de sucesso
       setShowSuccessAnimation(true);
 
-      // Agenda o redirecionamento para depois de 4 segundos
       setTimeout(() => {
         window.location.href = "/gemcash/my-gem-cashes";
       }, 4000);
     } catch (error) {
       alert(error.response?.data?.message || "Erro ao comprar o contrato.");
-      // Se der erro, só reseta o loading e a página
       setIsLoading(false);
       resetPage();
     }
-    // O finally foi removido para não resetar a página antes da animação terminar
   };
 
   return (
@@ -144,7 +166,7 @@ export default function ContratosPage() {
         />
       )}
 
-      {step === "configuration" && (
+      {step === "configuration" && simulationResult && (
         <ConfigurationStep
           simulation={simulationResult}
           onBack={handleBackToSelection}

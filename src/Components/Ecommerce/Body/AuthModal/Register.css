@@ -1,0 +1,222 @@
+:root {
+    --primary-color: #007bff;
+    --primary-color-dark: #0056b3;
+    --border-color: #dee2e6;
+    --background-light: #f8f9fa;
+    --text-color: #495057;
+    --text-light: #6c757d;
+    --success-color: #28a745;
+    --white: #fff;
+}
+
+.register-flow {
+    padding: 30px 40px;
+    background-color: var(--white);
+}
+
+.register-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.modal-form-logo {
+    max-width: 150px;
+    margin-bottom: 15px;
+}
+
+.modal-form-title {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 25px;
+}
+
+.modal-progress-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.modal-progress-step-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+}
+
+.modal-progress-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--white);
+    border: 2px solid var(--border-color);
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.4s ease;
+}
+
+.modal-progress-circle.active {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+.modal-progress-circle.completed {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--white);
+}
+
+.modal-progress-label {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+.modal-progress-line {
+    flex-grow: 1;
+    height: 2px;
+    background-color: var(--border-color);
+    position: relative;
+    top: -15px;
+    margin: 0 -10px;
+    transition: background-color 0.4s ease;
+}
+
+.modal-progress-line.completed {
+    background-color: var(--primary-color);
+}
+
+.form-steps-container {
+    width: 100%;
+    overflow: hidden;
+}
+
+.form-steps-wrapper {
+    display: flex;
+    width: 100%;
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.form-step {
+    flex-shrink: 0;
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.modal-error-message {
+    color: #dc3545;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-top: 15px;
+    width: 100%;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.modal-input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.modal-input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #adb5bd;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 12px 15px 12px 45px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: var(--background-light);
+    color: var(--text-color);
+}
+
+.modal-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+input[type="date"].modal-input {
+    color: var(--text-light);
+}
+
+.modal-form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.modal-form-row .modal-input-group {
+    flex: 1;
+}
+
+.state-group {
+    max-width: 90px;
+}
+
+.modal-form-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 25px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 25px;
+}
+
+.modal-nav-button {
+    padding: 12px 30px;
+    background-color: var(--white);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.modal-submit-button {
+    padding: 12px 30px;
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.modal-switch-link {
+    text-align: center;
+    margin-top: 20px;
+    color: var(--text-light);
+}
+
+.modal-switch-link span {
+    color: var(--primary-color);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.modal-spinner {
+    animation: spin 1s linear infinite;
+}

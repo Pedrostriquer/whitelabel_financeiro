@@ -1,94 +1,82 @@
-// Dentro de src/Components/ClientView/Body/GemasBrilhantes/ProductCard.js
-
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import './ProductCard.css';
+import React from "react";
+import { Link } from "react-router-dom";
+import Carousel from "../Carousel/Carousel";
+import "./ProductCard.css";
+import { FaShoppingCart, FaTags } from "react-icons/fa";
 
 const ProductCard = ({ product }) => {
-    // Estado para controlar o índice da mídia atual (imagem/vídeo)
-    const [currentIndex, setCurrentIndex] = useState(0);
+  const mediaItems = product.media || [];
 
-    // Garante que temos um array de mídias para trabalhar
-    const mediaItems = product.media || [];
+  const onSale = product.salePrice && product.salePrice < product.price;
+  const originalPrice = product.price;
+  const salePrice = onSale ? product.salePrice : originalPrice;
 
-    // Funções para navegar pelo carrossel interno do card
-    const goToPrevious = (e) => {
-        e.preventDefault(); // Impede a navegação ao clicar na seta
-        e.stopPropagation(); // Impede que o clique "vaze" para o link do card
-        const isFirstSlide = currentIndex === 0;
-        const newIndex = isFirstSlide ? mediaItems.length - 1 : currentIndex - 1;
-        setCurrentIndex(newIndex);
-    };
+  const formattedSalePrice = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(salePrice);
 
-    const goToNext = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const isLastSlide = currentIndex === mediaItems.length - 1;
-        const newIndex = isLastSlide ? 0 : currentIndex + 1;
-        setCurrentIndex(newIndex);
-    };
+  const formattedOriginalPrice = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(originalPrice);
 
-    const formattedPrice = new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    }).format(product.price);
-    
-    // Pega a mídia atual para renderizar
-    const currentMedia = mediaItems[currentIndex];
+  const discountPercentage = onSale
+    ? Math.round(((originalPrice - salePrice) / originalPrice) * 100)
+    : 0;
 
-    return (
-        <div className="product-card">
-            <div className="product-image-wrapper">
-                {/* O link agora envolve apenas a área de mídia */}
-                <Link to={`/ecommerce/product/${product.id}`}>
-                    {/* Renderização condicional para imagem ou vídeo */}
-                    {currentMedia ? (
-                        currentMedia.type === 'video' ? (
-                            <video 
-                                key={currentMedia.url} // A 'key' força o vídeo a reiniciar ao trocar
-                                src={currentMedia.url} 
-                                className="product-media"
-                                autoPlay 
-                                loop 
-                                muted 
-                                playsInline 
-                            />
-                        ) : (
-                            <img src={currentMedia.url} alt={product.name} className="product-media" />
-                        )
-                    ) : (
-                        // Fallback caso não haja mídia
-                        <img src={'https://via.placeholder.com/300'} alt="Sem imagem" className="product-media" />
-                    )}
-                </Link>
+  const installmentPrice = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(salePrice / 10);
 
-                {/* Setas de navegação, visíveis apenas no hover */}
-                {mediaItems.length > 1 && (
-                    <>
-                        <button className="carousel-arrow left" onClick={goToPrevious}>&#10094;</button>
-                        <button className="carousel-arrow right" onClick={goToNext}>&#10095;</button>
-                    </>
-                )}
+  return (
+    <div className="product-card">
+      <Link
+        to={`/ecommerce/product/${product.id}`}
+        className="product-card-link"
+        aria-label={`Ver detalhes de ${product.name}`}
+      >
+        <div className="product-image-container">
+          <Carousel mediaItems={mediaItems} productName={product.name} />
+          {onSale && (
+            <div className="discount-badge">
+              <FaTags /> {discountPercentage}% OFF
             </div>
-
-            {/* Pontos de indicação do slide */}
-            {mediaItems.length > 1 && (
-                <div className="carousel-dots">
-                    {mediaItems.map((_, index) => (
-                        <div key={index} className={`dot ${currentIndex === index ? 'active' : ''}`} />
-                    ))}
-                </div>
-            )}
-
-            {/* A informação do produto continua sendo um link */}
-            <Link to={`/produto/${product.id}`} className="product-info-link">
-                <div className="product-info">
-                    <h3 className="product-name fonte-principal">{product.name}</h3>
-                    <p className="product-price">{formattedPrice}</p>
-                </div>
-            </Link>
+          )}
+          <div className="product-overlay">
+            <span className="overlay-text">Ver Detalhes</span>
+          </div>
         </div>
-    );
+        <div className="product-info">
+          <h3 className="product-name">{product.name}</h3>
+          <div className="price-container">
+            {onSale && (
+              <span className="product-price-original">
+                {formattedOriginalPrice}
+              </span>
+            )}
+            <p className="product-price-sale">{formattedSalePrice}</p>
+          </div>
+          <p className="installment-info">ou 10x de {installmentPrice} s/ juros</p>
+        </div>
+      </Link>
+      <div className="product-card-footer">
+        <button
+          className="add-to-cart-btn"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log(`${product.name} adicionado ao carrinho!`);
+          }}
+          aria-label={`Adicionar ${product.name} ao carrinho`}
+        >
+          <FaShoppingCart />
+          Adicionar
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default ProductCard;

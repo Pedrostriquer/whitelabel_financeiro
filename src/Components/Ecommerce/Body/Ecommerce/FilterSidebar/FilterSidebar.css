@@ -1,24 +1,20 @@
-/* Em src/Components/ClientView/Body/GemasBrilhantes/FilterSidebar.css */
-
 .filter-sidebar {
-    width: 280px;
+    width: 100%;
+    max-width: 280px;
     flex-shrink: 0;
-    padding-right: 40px;
 }
 
 .sidebar-title {
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.2em;
+    font-family: var(--font-primary);
+    font-size: 1.4rem;
     font-weight: 600;
-    color: #333;
-    padding-bottom: 26px;
-    border-bottom: 1px solid #eee;
-    margin-bottom: 20px;
+    color: var(--primary-color);
+    margin: 0 0 20px 0;
 }
 
 .filter-section {
-    border-bottom: 1px solid #eee;
-    padding: 20px 0 20px 20px;
+    border-bottom: 1px solid var(--border-color);
+    padding: 15px 0;
 }
 
 .section-header {
@@ -29,18 +25,18 @@
     background: none;
     border: none;
     cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-    font-size: 1em;
+    font-family: var(--font-primary);
+    font-size: 1.1rem;
     font-weight: 500;
-    padding: 0;
-    margin-bottom: 15px;
+    padding: 10px 0;
+    color: var(--text-color);
 }
 
-.section-header i {
+.chevron-icon {
     transition: transform 0.3s ease;
 }
 
-.section-header i.open {
+.filter-section.open .chevron-icon {
     transform: rotate(180deg);
 }
 
@@ -48,29 +44,81 @@
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.4s ease-out;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
 }
 
-.section-content.open {
-    max-height: 500px; /* Altura suficiente para mostrar todas as opções */
+.filter-section.open .section-content {
+    max-height: 500px;
     transition: max-height 0.4s ease-in;
 }
 
-.radio-option, .checkbox-option {
+.filter-options {
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.custom-radio {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 10px;
 }
 
-.radio-option label, .checkbox-option label {
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.95em;
-    color: #555;
+.custom-radio input[type="radio"] {
+    opacity: 0;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+}
+
+.custom-radio label {
+    font-family: var(--font-primary);
+    font-size: 0.95rem;
+    color: var(--light-text-color);
     cursor: pointer;
+    padding-left: 30px;
+    transition: color 0.2s ease;
 }
 
-input[type="radio"], input[type="checkbox"] {
-    accent-color: #122C4F; /* Cor principal para o radio/checkbox */
+.custom-radio label:hover {
+    color: var(--primary-color);
+}
+
+.custom-radio label::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    background-color: var(--white-color);
+    transition: border-color 0.2s ease;
+}
+
+.custom-radio label::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%) scale(0);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    transition: transform 0.2s ease-in-out;
+}
+
+.custom-radio input[type="radio"]:checked+label::before {
+    border-color: var(--accent-color);
+}
+
+.custom-radio input[type="radio"]:checked+label::after {
+    transform: translateY(-50%) scale(1);
+}
+
+.custom-radio input[type="radio"]:focus-visible+label::before {
+    box-shadow: 0 0 0 3px rgba(76, 130, 195, 0.3);
 }

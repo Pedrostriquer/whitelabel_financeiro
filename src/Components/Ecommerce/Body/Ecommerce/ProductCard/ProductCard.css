@@ -1,118 +1,186 @@
-/* Dentro de src/Components/ClientView/Body/GemasBrilhantes/ProductCard.css */
+:root {
+    --primary-color: #1a3a69;
+    --secondary-color: #f7f9fc;
+    --accent-color: #4c82c3;
+    --text-color: #333333;
+    --light-text-color: #757575;
+    --border-color: #e0e0e0;
+    --white-color: #ffffff;
+    --sale-color: #2e7d32;
+    --sale-badge-bg: #e53935;
+    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    --card-shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.1);
+    --border-radius: 12px;
+    --transition-speed: 0.3s ease;
+    --font-primary: "Poppins", sans-serif;
+}
 
 .product-card {
-    background-color: #FFFFFF;
+    background-color: var(--white-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
     display: flex;
     flex-direction: column;
-    border: 1px solid #f0f0f0;
-    transition: box-shadow 0.3s ease;
-    overflow: hidden; /* Garante que os cantos arredondados sejam aplicados */
-    border-radius: 4px;
 }
 
 .product-card:hover {
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    transform: translateY(-8px);
+    box-shadow: var(--card-shadow-hover);
 }
 
-.product-image-wrapper {
+.product-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-image-container {
+    position: relative;
     width: 100%;
-    aspect-ratio: 1 / 1;
+    padding-top: 100%;
     overflow: hidden;
-    position: relative; /* Essencial para posicionar as setas */
+}
+
+.discount-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background-color: var(--sale-badge-bg);
+    color: var(--white-color);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.product-image-container .carousel-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
 .product-media {
-    width: 100%; 
+    width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.4s ease;
+    transition: transform var(--transition-speed);
 }
 
 .product-card:hover .product-media {
-    transform: scale(1.05); /* Efeito de zoom sutil na mídia */
+    transform: scale(1.08);
 }
 
-/* --- Estilos do Carrossel --- */
-.carousel-arrow {
+.product-overlay {
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: rgba(255, 255, 255, 0.8);
-    border: none;
-    border-radius: 50%;
-    width: 35px;
-    height: 35px;
-    font-size: 1.2em;
-    color: #122C4F;
-    cursor: pointer;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    
-    /* Estado inicial (escondido) */
     opacity: 0;
+    transition: opacity var(--transition-speed);
     pointer-events: none;
-    transition: opacity 0.3s ease;
 }
 
-/* Mostra as setas quando o mouse está sobre a imagem */
-.product-image-wrapper:hover .carousel-arrow {
+.product-card:hover .product-overlay {
     opacity: 1;
-    pointer-events: auto;
 }
 
-.carousel-arrow.left {
-    left: 10px;
-}
-
-.carousel-arrow.right {
-    right: 10px;
-}
-
-.carousel-dots {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    padding: 10px 0;
-    background-color: #fff; /* Fundo para os pontos */
-}
-
-.dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background-color: #ddd;
-    transition: background-color 0.3s ease;
-}
-
-.dot.active {
-    background-color: #122C4F;
-}
-
-/* --- Informações do Produto --- */
-.product-info-link {
-    text-decoration: none;
-    color: inherit;
+.overlay-text {
+    color: var(--white-color);
+    font-family: var(--font-primary);
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 8px 16px;
+    border: 2px solid var(--white-color);
+    border-radius: 50px;
+    backdrop-filter: blur(5px);
 }
 
 .product-info {
-    padding: 15px;
+    padding: 15px 20px 0;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--white-color);
 }
 
 .product-name {
-    font-size: 1.1em;
-    color: #122C4F;
-    font-weight: normal;
-    margin-bottom: 10px;
+    font-family: var(--font-primary);
+    font-size: 1.05rem;
+    color: var(--primary-color);
+    font-weight: 600;
+    margin: 0 0 8px 0;
     line-height: 1.4;
+    height: 44px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 
-.product-price {
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.1em;
+.price-container {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.product-price-original {
+    font-size: 0.9rem;
+    color: var(--light-text-color);
+    text-decoration: line-through;
+}
+
+.product-price-sale {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--sale-color);
+}
+
+.installment-info {
+    font-size: 0.85rem;
+    color: var(--light-text-color);
+    margin: 0;
+}
+
+.product-card-footer {
+    padding: 15px 20px 20px 20px;
+    margin-top: auto;
+}
+
+.add-to-cart-btn {
+    font-family: var(--font-primary);
+    font-size: 0.95rem;
     font-weight: 500;
-    color: #333;
+    background-color: var(--accent-color);
+    color: var(--white-color);
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color var(--transition-speed);
+}
+
+.add-to-cart-btn:hover {
+    background-color: var(--primary-color);
 }

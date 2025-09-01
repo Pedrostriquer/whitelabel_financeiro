@@ -4,6 +4,7 @@ import { useAuth } from "../../Context/AuthContext.js";
 import formatServices from "../../formatServices/formatServices.js";
 import clientServices from "../../dbServices/clientServices.js";
 import offerService from "../../dbServices/offerService.js";
+import messageService from "../../dbServices/messageService.js";
 import Carousel from "./Carousel/Carousel.js";
 import useCountUpAnimation from "../../hooks/useCountUpAnimation.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,27 +15,6 @@ import {
   faBell,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-
-const products = [
-  {
-    name: "Anel de Safira 'Oceano'",
-    price: 12500.0,
-    imageUrl:
-      "https://static.wixstatic.com/media/2e38e5_9f0292c300f040b286693a1f4968848d~mv2.jpg/v1/fill/w_1000,h_1000,al_c,q_85/2e38e5_9f0292c300f040b286693a1f4968848d~mv2.jpg",
-  },
-  {
-    name: "Brincos 'Lágrima de Esmeralda'",
-    price: 21800.0,
-    imageUrl:
-      "https://cdn.awsli.com.br/2500x2500/2320/2320286/produto/207018898/brinco-de-prata-com-esmeralda-indiana-e-marcassita-dfrab-prat-49b80053.jpg",
-  },
-  {
-    name: "Colar de Rubi 'Chama Eterna'",
-    price: 18950.0,
-    imageUrl:
-      "https://i.pinimg.com/736x/87/4c/94/874c94d13e3b0922e96d744b41b3992b.jpg",
-  },
-];
 
 const AnimatedInfoItem = ({ label, value, isCurrency = false, isLoading }) => {
   const { currentValue } = useCountUpAnimation(value || 0, 1500, isLoading);
@@ -109,7 +89,7 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [leftOffers, setLeftOffers] = useState([]);
   const [rightOffers, setRightOffers] = useState([]);
-  const [notificationCount, setNotificationCount] = useState(3);
+  const [notificationCount, setNotificationCount] = useState(0);
   const { token } = useAuth();
   const navigate = useNavigate();
   const [areCardsExpanded, setAreCardsExpanded] = useState(true);
@@ -121,13 +101,16 @@ export default function Dashboard() {
       try {
         const walletInfoPromise = clientServices.informacoesCarteira(token);
         const offersPromise = offerService.getOffers(token);
+        const messagesPromise = messageService.getMyMessages(token);
 
-        const [walletInfo, offersData] = await Promise.all([
+        const [walletInfo, offersData, messagesData] = await Promise.all([
           walletInfoPromise,
           offersPromise,
+          messagesPromise,
         ]);
 
         setInformacoesCarteira(walletInfo);
+        setNotificationCount(messagesData.length);
 
         const activeOffers = offersData.filter((offer) => offer.status === 2);
 
@@ -292,7 +275,6 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-
         <div style={style.mainActionsContainer}>
           <ActionButton
             title="Comprar GemCash"
@@ -308,7 +290,6 @@ export default function Dashboard() {
             onClick={() => navigate("/ecommerce")}
           />
         </div>
-
         <div style={style.dashboardRow}>
           {leftOffers.length > 0 && (
             <div style={style.dashboardContentBlockLarge}>
@@ -320,44 +301,6 @@ export default function Dashboard() {
               <Carousel slides={rightOffers} />
             </div>
           )}
-        </div>
-
-        <div style={style.productsSection}>
-          <div style={style.sectionHeader}>
-            <h2 style={style.sectionTitle}>Nossa Curadoria Exclusiva</h2>
-            <button
-              style={style.seeMoreButton}
-              onClick={() => navigate("/ecommerce")}
-            >
-              Ver todos <FontAwesomeIcon icon={faArrowRight} />
-            </button>
-          </div>
-          <div style={style.productsGrid}>
-            {products.slice(0, 3).map((product, index) => (
-              <div
-                key={index}
-                style={style.productCard}
-                onClick={() => navigate("/ecommerce/produto/" + index)}
-              >
-                <div style={style.productImageContainer}>
-                  <img
-                    src={product.imageUrl}
-                    alt={product.name}
-                    style={style.productImage}
-                  />
-                  <div style={style.productOverlay}>
-                    <button style={style.productButton}>Ver Detalhes</button>
-                  </div>
-                </div>
-                <div style={style.productInfo}>
-                  <h3 style={style.productName}>{product.name}</h3>
-                  <p style={style.productPrice}>
-                    {formatServices.formatCurrencyBR(product.price)}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </div>

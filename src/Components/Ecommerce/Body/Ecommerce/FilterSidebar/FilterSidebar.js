@@ -1,60 +1,65 @@
-// Dentro de src/Components/ClientView/Body/GemasBrilhantes/FilterSidebar.js
-
-import React, { useState } from 'react';
-import './FilterSidebar.css';
+import React, { useState } from "react";
+import "./FilterSidebar.css";
+import { FaChevronDown } from "react-icons/fa";
 
 const FilterSection = ({ title, children }) => {
-    const [isOpen, setIsOpen] = useState(true);
-    return (
-        <div className="filter-section">
-            <button className="section-header" onClick={() => setIsOpen(!isOpen)}>
-                <span>{title}</span>
-                <i className={`fas fa-chevron-down ${isOpen ? 'open' : ''}`}></i>
-            </button>
-            <div className={`section-content ${isOpen ? 'open' : ''}`}>{children}</div>
-        </div>
-    );
+  const [isOpen, setIsOpen] = useState(true);
+
+  return (
+    <div className={`filter-section ${isOpen ? "open" : ""}`}>
+      <button
+        className="section-header"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+      >
+        <span>{title}</span>
+        <FaChevronDown className="chevron-icon" />
+      </button>
+      <div className="section-content">{children}</div>
+    </div>
+  );
 };
 
-// O componente agora recebe os grupos de atributos e seus valores
-const FilterSidebar = ({ attributeGroups, attributeValues, onFilterChange }) => {
-    return (
-        <aside className="filter-sidebar">
-            <h3 className="sidebar-title fonte-principal">Filtros</h3>
-            
-            {/* Itera sobre os grupos de atributos (ex: Cor, Metal) */}
-            {attributeGroups.map(group => (
-                <FilterSection key={group.id} title={group.name}>
-                    <div className="radio-option">
-                        <input 
-                            type="radio" 
-                            id={`all-${group.id}`} 
-                            name={group.id} 
-                            value="all" 
-                            defaultChecked 
-                            onChange={() => onFilterChange(group.id, 'all')} 
-                        />
-                        <label htmlFor={`all-${group.id}`}>Todos</label>
-                    </div>
-                    {/* Itera sobre os valores de cada grupo (ex: Ouro, Prata) */}
-                    {attributeValues[group.id]?.map(value => (
-                        <div key={value.id} className="radio-option">
-                            <input 
-                                type="radio" 
-                                id={value.id} 
-                                name={group.id} 
-                                value={value.id} 
-                                onChange={() => onFilterChange(group.id, value.id)} 
-                            />
-                            <label htmlFor={value.id}>{value.name}</label>
-                        </div>
-                    ))}
-                </FilterSection>
+const FilterSidebar = ({
+  attributeGroups,
+  attributeValues,
+  onFilterChange,
+}) => {
+  return (
+    <aside className="filter-sidebar">
+      <h3 className="sidebar-title">Filtros</h3>
+
+      {attributeGroups.map((group) => (
+        <FilterSection key={group.id} title={group.name}>
+          <div className="filter-options">
+            <div className="custom-radio">
+              <input
+                type="radio"
+                id={`all-${group.id}`}
+                name={group.id}
+                value="all"
+                defaultChecked
+                onChange={() => onFilterChange(group.id, "all")}
+              />
+              <label htmlFor={`all-${group.id}`}>Todos</label>
+            </div>
+            {attributeValues[group.id]?.map((value) => (
+              <div key={value.id} className="custom-radio">
+                <input
+                  type="radio"
+                  id={value.id}
+                  name={group.id}
+                  value={value.id}
+                  onChange={() => onFilterChange(group.id, value.id)}
+                />
+                <label htmlFor={value.id}>{value.name}</label>
+              </div>
             ))}
-            
-            {/* A seção de PROMOÇÃO foi REMOVIDA daqui */}
-        </aside>
-    );
+          </div>
+        </FilterSection>
+      ))}
+    </aside>
+  );
 };
 
 export default FilterSidebar;

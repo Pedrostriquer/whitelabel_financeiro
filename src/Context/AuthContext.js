@@ -71,7 +71,9 @@ export const AuthProvider = ({ children }) => {
             axios.defaults.headers.common[
               "Authorization"
             ] = `Bearer ${newAccessToken}`;
-            originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+            originalRequest.headers[
+              "Authorization"
+            ] = `Bearer ${newAccessToken}`;
 
             if (localStorage.getItem("refreshToken")) {
               localStorage.setItem("authToken", newAccessToken);
@@ -121,7 +123,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem("authToken");
         localStorage.removeItem("refreshToken");
       }
-      
+
       const userResponse = await axios.get(`${API_URL}client/me`);
       setUser(userResponse.data);
       navigate("/dashboard");
@@ -133,23 +135,52 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const loginInModal = async (email, password) => {
+    try {
+      startLoading();
+      const response = await axios.post(`${API_URL}auth/login/client`, {
+        email,
+        password,
+        rememberMe: true,
+      });
+      const { token: newToken, refreshToken } = response.data;
+
+      setToken(newToken);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
+
+      sessionStorage.setItem("authToken", newToken);
+      sessionStorage.setItem("refreshToken", refreshToken);
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("refreshToken");
+
+      const userResponse = await axios.get(`${API_URL}client/me`);
+      setUser(userResponse.data);
+      return { success: true };
+    } catch (error) {
+      console.error("Falha no login (modal):", error);
+      return { success: false, message: "Email ou senha inválidos." };
+    } finally {
+      stopLoading();
+    }
+  };
+
   const loginWithToken = async (tokenFromUrl) => {
     try {
-        startLoading();
-        setToken(tokenFromUrl);
-        axios.defaults.headers.common["Authorization"] = `Bearer ${tokenFromUrl}`;
-        
-        sessionStorage.setItem("authToken", tokenFromUrl);
-        
-        const userResponse = await axios.get(`${API_URL}client/me`);
-        setUser(userResponse.data);
-        
-        navigate("/dashboard");
+      startLoading();
+      setToken(tokenFromUrl);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${tokenFromUrl}`;
+
+      sessionStorage.setItem("authToken", tokenFromUrl);
+
+      const userResponse = await axios.get(`${API_URL}client/me`);
+      setUser(userResponse.data);
+
+      navigate("/dashboard");
     } catch (error) {
-        console.error("Falha no login com token:", error);
-        logout(); 
+      console.error("Falha no login com token:", error);
+      logout();
     } finally {
-        stopLoading();
+      stopLoading();
     }
   };
 
@@ -166,7 +197,8 @@ export const AuthProvider = ({ children }) => {
     login,
     loginWithToken,
     logout,
-    updateUserContext, // <-- Expondo a nova função
+    updateUserContext,
+    loginInModal
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
