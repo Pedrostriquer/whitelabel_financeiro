@@ -35,6 +35,7 @@
     color: inherit;
     display: flex;
     flex-direction: column;
+    flex-grow: 1; /* Faz o link ocupar o espaço disponível */
 }
 
 .product-image-container {
@@ -115,6 +116,7 @@
     display: flex;
     flex-direction: column;
     background-color: var(--white-color);
+    flex-grow: 1;
 }
 
 .product-name {
@@ -130,6 +132,13 @@
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+}
+
+.product-stone-info {
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+    color: var(--light-text-color);
+    margin: -4px 0 8px 0;
 }
 
 .price-container {
@@ -156,11 +165,12 @@
     font-size: 0.85rem;
     color: var(--light-text-color);
     margin: 0;
+    padding-bottom: 15px; /* Adiciona espaço antes do footer */
 }
 
 .product-card-footer {
-    padding: 15px 20px 20px 20px;
-    margin-top: auto;
+    padding: 0 20px 20px 20px;
+    margin-top: auto; /* Empurra o footer para o final */
 }
 
 .add-to-cart-btn {

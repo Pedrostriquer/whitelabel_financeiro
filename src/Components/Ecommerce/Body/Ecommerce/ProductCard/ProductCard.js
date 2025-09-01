@@ -5,11 +5,14 @@ import "./ProductCard.css";
 import { FaShoppingCart, FaTags } from "react-icons/fa";
 
 const ProductCard = ({ product }) => {
-  const mediaItems = product.media || [];
+  const mediaItems = (product.mediaUrls || []).map(url => ({
+    type: url.includes('.mp4') ? 'video' : 'image',
+    url
+  }));
 
-  const onSale = product.salePrice && product.salePrice < product.price;
-  const originalPrice = product.price;
-  const salePrice = onSale ? product.salePrice : originalPrice;
+  const onSale = product.promotionValue && product.promotionValue < product.value;
+  const originalPrice = product.value;
+  const salePrice = onSale ? product.promotionValue : originalPrice;
 
   const formattedSalePrice = new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -29,6 +32,8 @@ const ProductCard = ({ product }) => {
     style: "currency",
     currency: "BRL",
   }).format(salePrice / 10);
+
+  const primaryStone = product.info?.stones?.[0];
 
   return (
     <div className="product-card">
@@ -50,6 +55,11 @@ const ProductCard = ({ product }) => {
         </div>
         <div className="product-info">
           <h3 className="product-name">{product.name}</h3>
+          {primaryStone && (
+             <p className="product-stone-info">
+              {primaryStone.stoneType} - {primaryStone.carats}ct
+            </p>
+          )}
           <div className="price-container">
             {onSale && (
               <span className="product-price-original">
