@@ -5,6 +5,22 @@ import FilterSidebar from "./FilterSidebar/FilterSidebar";
 import productServices from "../../../../dbServices/productServices";
 import { FaFilter, FaTimes } from "react-icons/fa";
 
+// --- Componente do Header da Página ---
+const ShopHeader = () => (
+    <header className="shop-intro-header">
+        <div className="shop-intro-content">
+            <h1 className="shop-intro-title">Curadoria Exclusiva de Gemas Raras</h1>
+            <p className="shop-intro-text">
+                Explore nossa curadoria exclusiva de gemas raras e certificadas.
+                Cada pedra é selecionada por especialistas que avaliam rigorosamente seu brilho, pureza e autenticidade. Nosso compromisso é oferecer gemas que não apenas encantam pela beleza, mas também carregam valor de mercado sólido e duradouro.
+            </p>
+            <p className="shop-intro-text">
+                Com nossas Gemas Preciosas, você tem acesso a um acervo único, onde cada detalhe é pensado para entregar sofisticação, segurança e exclusividade em cada aquisição.
+            </p>
+        </div>
+    </header>
+);
+
 const LoadingSpinner = () => (
     <div className="spinner-container">
         <div className="loading-spinner"></div>
@@ -32,7 +48,6 @@ const GemasBrilhantes = () => {
                 productServices.getAllCategories()
             ]);
             
-            // ✨✨✨ CORREÇÃO DO ERRO ESTÁ AQUI, MIGA! ✨✨✨
             const products = initialProductData.items || [];
             setAllProducts(products);
             
@@ -50,7 +65,6 @@ const GemasBrilhantes = () => {
         fetchInitialData();
     }, [fetchInitialData]);
 
-    // Lógica de filtragem que roda no frontend
     useEffect(() => {
         let items = [...allProducts];
 
@@ -119,6 +133,7 @@ const GemasBrilhantes = () => {
 
     return (
         <div className="shop-page-wrapper">
+            <ShopHeader />
             <div className="shop-body">
                 <aside className="sidebar-desktop-wrapper">
                     <FilterSidebar 
