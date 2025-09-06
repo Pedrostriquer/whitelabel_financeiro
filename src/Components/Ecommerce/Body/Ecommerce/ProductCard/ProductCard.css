@@ -194,3 +194,495 @@
 .add-to-cart-btn:hover {
     background-color: var(--primary-color);
 }
+
+.add-to-cart-btn.added {
+    background-color: var(--sale-color); /* Verde sucesso */
+}
+
+/* --- Estilos para o botão de Favoritar --- */
+.favorite-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    font-size: 1rem;
+    color: #a0aec0;
+    transition: all 0.3s ease;
+}
+
+.favorite-btn:hover {
+    transform: scale(1.1);
+    color: #e53e3e;
+}
+
+.favorite-btn.favorited {
+    color: #e53e3e; /* Cor vermelha para quando está favoritado */
+    background-color: #fff;
+}:root {
+    --primary-color: #1a3a69;
+    --secondary-color: #f7f9fc;
+    --accent-color: #4c82c3;
+    --text-color: #333333;
+    --light-text-color: #757575;
+    --border-color: #e0e0e0;
+    --white-color: #ffffff;
+    --sale-color: #2e7d32;
+    --sale-badge-bg: #e53935;
+    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    --card-shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.1);
+    --border-radius: 12px;
+    --transition-speed: 0.3s ease;
+    --font-primary: "Poppins", sans-serif;
+}
+
+.product-card {
+    background-color: var(--white-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--card-shadow-hover);
+}
+
+.product-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Faz o link ocupar o espaço disponível */
+}
+
+.product-image-container {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    overflow: hidden;
+}
+
+.discount-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background-color: var(--sale-badge-bg);
+    color: var(--white-color);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.product-image-container .carousel-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.product-media {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-speed);
+}
+
+.product-card:hover .product-media {
+    transform: scale(1.08);
+}
+
+.product-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity var(--transition-speed);
+    pointer-events: none;
+}
+
+.product-card:hover .product-overlay {
+    opacity: 1;
+}
+
+.overlay-text {
+    color: var(--white-color);
+    font-family: var(--font-primary);
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 8px 16px;
+    border: 2px solid var(--white-color);
+    border-radius: 50px;
+    backdrop-filter: blur(5px);
+}
+
+.product-info {
+    padding: 15px 20px 0;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--white-color);
+    flex-grow: 1;
+}
+
+.product-name {
+    font-family: var(--font-primary);
+    font-size: 1.05rem;
+    color: var(--primary-color);
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+    height: 44px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.product-stone-info {
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+    color: var(--light-text-color);
+    margin: -4px 0 8px 0;
+}
+
+.price-container {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.product-price-original {
+    font-size: 0.9rem;
+    color: var(--light-text-color);
+    text-decoration: line-through;
+}
+
+.product-price-sale {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--sale-color);
+}
+
+.installment-info {
+    font-size: 0.85rem;
+    color: var(--light-text-color);
+    margin: 0;
+    padding-bottom: 15px; /* Adiciona espaço antes do footer */
+}
+
+.product-card-footer {
+    padding: 0 20px 20px 20px;
+    margin-top: auto; /* Empurra o footer para o final */
+}
+
+.add-to-cart-btn {
+    font-family: var(--font-primary);
+    font-size: 0.95rem;
+    font-weight: 500;
+    background-color: var(--accent-color);
+    color: var(--white-color);
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color var(--transition-speed);
+}
+
+.add-to-cart-btn:hover {
+    background-color: var(--primary-color);
+}
+
+.add-to-cart-btn.added {
+    background-color: var(--sale-color); /* Verde sucesso */
+}
+
+/* --- Estilos para o botão de Favoritar --- */
+.favorite-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    font-size: 1rem;
+    color: #a0aec0;
+    transition: all 0.3s ease;
+}
+
+.favorite-btn:hover {
+    transform: scale(1.1);
+    color: #e53e3e;
+}
+
+.favorite-btn.favorited {
+    color: #e53e3e; /* Cor vermelha para quando está favoritado */
+    background-color: #fff;
+}:root {
+    --primary-color: #1a3a69;
+    --secondary-color: #f7f9fc;
+    --accent-color: #4c82c3;
+    --text-color: #333333;
+    --light-text-color: #757575;
+    --border-color: #e0e0e0;
+    --white-color: #ffffff;
+    --sale-color: #2e7d32;
+    --sale-badge-bg: #e53935;
+    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    --card-shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.1);
+    --border-radius: 12px;
+    --transition-speed: 0.3s ease;
+    --font-primary: "Poppins", sans-serif;
+}
+
+.product-card {
+    background-color: var(--white-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--card-shadow-hover);
+}
+
+.product-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Faz o link ocupar o espaço disponível */
+}
+
+.product-image-container {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    overflow: hidden;
+}
+
+.discount-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background-color: var(--sale-badge-bg);
+    color: var(--white-color);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.product-image-container .carousel-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.product-media {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-speed);
+}
+
+.product-card:hover .product-media {
+    transform: scale(1.08);
+}
+
+.product-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity var(--transition-speed);
+    pointer-events: none;
+}
+
+.product-card:hover .product-overlay {
+    opacity: 1;
+}
+
+.overlay-text {
+    color: var(--white-color);
+    font-family: var(--font-primary);
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 8px 16px;
+    border: 2px solid var(--white-color);
+    border-radius: 50px;
+    backdrop-filter: blur(5px);
+}
+
+.product-info {
+    padding: 15px 20px 0;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--white-color);
+    flex-grow: 1;
+}
+
+.product-name {
+    font-family: var(--font-primary);
+    font-size: 1.05rem;
+    color: var(--primary-color);
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+    height: 44px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.product-stone-info {
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+    color: var(--light-text-color);
+    margin: -4px 0 8px 0;
+}
+
+.price-container {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.product-price-original {
+    font-size: 0.9rem;
+    color: var(--light-text-color);
+    text-decoration: line-through;
+}
+
+.product-price-sale {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--sale-color);
+}
+
+.installment-info {
+    font-size: 0.85rem;
+    color: var(--light-text-color);
+    margin: 0;
+    padding-bottom: 15px; /* Adiciona espaço antes do footer */
+}
+
+.product-card-footer {
+    padding: 0 20px 20px 20px;
+    margin-top: auto; /* Empurra o footer para o final */
+}
+
+.add-to-cart-btn {
+    font-family: var(--font-primary);
+    font-size: 0.95rem;
+    font-weight: 500;
+    background-color: var(--accent-color);
+    color: var(--white-color);
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color var(--transition-speed);
+}
+
+.add-to-cart-btn:hover {
+    background-color: var(--primary-color);
+}
+
+.add-to-cart-btn.added {
+    background-color: var(--sale-color); /* Verde sucesso */
+}
+
+/* --- Estilos para o botão de Favoritar --- */
+.favorite-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    font-size: 1rem;
+    color: #a0aec0;
+    transition: all 0.3s ease;
+}
+
+.favorite-btn:hover {
+    transform: scale(1.1);
+    color: #e53e3e;
+}
+
+.favorite-btn.favorited {
+    color: #e53e3e; /* Cor vermelha para quando está favoritado */
+    background-color: #fff;
+}

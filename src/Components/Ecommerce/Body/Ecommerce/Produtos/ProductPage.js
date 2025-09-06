@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import productServices from '../../../../../dbServices/productServices';
-import { useCart } from "../../../../../Context/CartContect";
+import { useCart } from "../../../../../Context/CartContext";
 import './ProductPage.css';
-import { FaShoppingCart, FaCheck, FaRulerCombined, FaTag, FaGem, FaShieldAlt } from 'react-icons/fa';
+import { FaShoppingCart, FaCheck, FaGem, FaShieldAlt } from 'react-icons/fa';
 
 const MediaGallery = ({ media, productName }) => {
     const [selectedMedia, setSelectedMedia] = useState(media?.[0]);
@@ -12,7 +12,16 @@ const MediaGallery = ({ media, productName }) => {
         setSelectedMedia(media?.[0]);
     }, [media]);
 
-    if (!selectedMedia) return null;
+    if (!selectedMedia) {
+        // Fallback caso não haja mídia
+        return (
+            <div className="product-media-gallery">
+                <div className="main-media-container">
+                    <img src="https://via.placeholder.com/600x600.png?text=Imagem+Indisponível" alt="Imagem do produto indisponível" className="main-media-item" />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="product-media-gallery">
@@ -46,6 +55,8 @@ const ProductInfo = ({ product }) => {
 
     const formattedPrice = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.value);
     const formattedPromoPrice = product.promotionValue ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.promotionValue) : '';
+    const salePrice = product.promotionValue || product.value;
+    const installmentPrice = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(salePrice / 10);
 
     return (
         <div className="product-details-container">
@@ -55,10 +66,11 @@ const ProductInfo = ({ product }) => {
                 {product.promotionValue && <span className="promo-price">{formattedPromoPrice}</span>}
                 <span className={`original-price ${product.promotionValue ? 'on-sale' : ''}`}>{formattedPrice}</span>
             </div>
+            <p className="installment-info-page">ou em até 10x de {installmentPrice} sem juros</p>
 
             <p className="product-page-description">{product.description}</p>
             
-            <button onClick={handleAddToCart} className={`buy-button ${addedToCart ? 'added' : ''}`}>
+            <button onClick={handleAddToCart} className={`buy-button ${addedToCart ? 'added' : ''}`} disabled={addedToCart}>
                 {addedToCart ? <><FaCheck /> Adicionado!</> : <><FaShoppingCart /> Adicionar ao Carrinho</>}
             </button>
         </div>
@@ -93,12 +105,12 @@ const ProductSpecs = ({ product }) => {
                 )}
                 {info.stones?.map((stone, index) => (
                     <React.Fragment key={index}>
-                        <div className="spec-item"><strong>{`Gema ${index + 1}`}</strong><span className="spec-value-main">{stone.stoneType}</span></div>
+                        <div className="spec-item header"><strong>{`Gema ${index + 1}: ${stone.stoneType}`}</strong></div>
                         <div className="spec-item"><span>Cor</span><span className="spec-value">{stone.color}</span></div>
-                        <div className="spec-item"><span>Quilates</span><span className="spec-value">{stone.carats} ct</span></div>
+                        <div className="spec-item"><span>Quilates (ct)</span><span className="spec-value">{stone.carats}</span></div>
                         <div className="spec-item"><span>Lapidação</span><span className="spec-value">{stone.cut}</span></div>
                         <div className="spec-item"><span>Claridade</span><span className="spec-value">{stone.clarity}</span></div>
-                        <div className="spec-item"><span>Dimensões</span><span className="spec-value">{`${stone.lengthInMm} x ${stone.widthInMm} x ${stone.heightInMm} mm`}</span></div>
+                        <div className="spec-item"><span>Dimensões (mm)</span><span className="spec-value">{`${stone.lengthInMm} x ${stone.widthInMm} x ${stone.heightInMm}`}</span></div>
                     </React.Fragment>
                 ))}
             </div>
@@ -136,7 +148,7 @@ const ProductPage = () => {
             <div className="product-not-found">
                 <h2 className="fonte-principal">Produto Não Encontrado</h2>
                 <p>O item que você está procurando não existe ou foi removido.</p>
-                <Link to="/ecommerce/gemaspreciosas" className="back-to-store-link">Voltar para a Loja</Link>
+                <Link to="/gemas-preciosas" className="back-to-store-link">Voltar para a Loja</Link>
             </div>
         );
     }

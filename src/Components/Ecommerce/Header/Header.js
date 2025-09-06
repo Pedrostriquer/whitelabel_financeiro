@@ -1,18 +1,21 @@
-// Dentro de src/Components/ClientView/Header/Header.js
-
-import React, { useState, useRef, useEffect } from "react"; // 1. Adicione useRef e useEffect
+import React, { useState, useRef, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { useCart } from "../../../Context/CartContect";
+import { useCart } from "../../../Context/CartContext";
+import { useFavorites } from "../../../Context/FavoritesContext";
+import { useAuth } from "../../../Context/AuthContext"; // Importa o AuthContext
+import { FaReceipt } from 'react-icons/fa'; // Importa o ícone de recibo
 import "./Header.css";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { cartItems } = useCart();
+  const { favoriteItems } = useFavorites();
+  const { isAuthenticated } = useAuth(); // Pega o estado de autenticação
   const totalItemsInCart = cartItems.reduce(
     (total, item) => total + item.quantity,
     0
   );
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const headerRef = useRef(null);
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -21,12 +24,11 @@ const Header = () => {
     if (headerRef.current) {
       setHeaderHeight(headerRef.current.offsetHeight);
     }
-  }, []); // Roda apenas uma vez quando o componente monta
+  }, []);
 
   const menuItems = [
     { name: "HOME", path: "/ecommerce/home" },
     { name: "GEMAS PRECIOSAS", path: "/ecommerce/gemaspreciosas" },
-    // { name: 'JOIAS', path: '/joias' },
     { name: "JOIAS", path: "/ecommerce/joias" },
     { name: "GEMCASH", path: "/ecommerce/gemcash" },
   ];
@@ -36,7 +38,6 @@ const Header = () => {
   };
 
   return (
-    // 4. Associe a referência ao elemento header
     <header className="header-container" ref={headerRef}>
       <div className="header-top-row">
         <div className="header-left">
@@ -44,6 +45,7 @@ const Header = () => {
         </div>
         <div className="header-center">
           <Link to="/ecommerce/home">
+            {/* Mantendo o caminho da sua logo original para corrigir o problema */}
             <img
               src="/ecommerce/img/Untitled design(1).png"
               alt="Gemas Brilhantes Logo"
@@ -52,15 +54,30 @@ const Header = () => {
           </Link>
         </div>
         <div className="header-right">
-          <Link to="/carrinho" className="cart-icon-link">
+          <Link to="/favorites" className="header-icon-link" title="Favoritos">
+            <i className="fas fa-heart"></i>
+            {favoriteItems.length > 0 && (
+              <span className="icon-badge">{favoriteItems.length}</span>
+            )}
+          </Link>
+
+          {/* Adiciona o ícone de "Meus Pedidos" apenas se o usuário estiver logado */}
+          {isAuthenticated && (
+            <Link to="/meus-pedidos" className="header-icon-link" title="Meus Pedidos">
+              <FaReceipt />
+            </Link>
+          )}
+
+          <Link to="/cart" className="header-icon-link" title="Carrinho">
             <i className="fas fa-shopping-cart"></i>
             {totalItemsInCart > 0 && (
-              <span className="cart-badge">{totalItemsInCart}</span>
+              <span className="icon-badge">{totalItemsInCart}</span>
             )}
           </Link>
           <button
             className="hamburger-button"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Abrir menu"
           >
             <i className={isMenuOpen ? "fas fa-times" : "fas fa-bars"}></i>
           </button>
@@ -71,13 +88,14 @@ const Header = () => {
         <ul>
           {menuItems.map((item) => (
             <li key={item.name}>
-              <NavLink to={item.path}>{item.name}</NavLink>
+              <NavLink to={item.path} className={({ isActive }) => isActive ? 'active-link' : ''}>
+                {item.name}
+              </NavLink>
             </li>
           ))}
         </ul>
       </nav>
 
-      {/* 5. Passe a altura do header como uma style prop para o menu mobile */}
       <nav
         className={`mobile-nav-overlay ${isMenuOpen ? "open" : ""}`}
         style={{
