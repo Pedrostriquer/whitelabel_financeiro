@@ -22,9 +22,7 @@
     color: #122C4F;
     line-height: 1.2;
     font-family: 'Helnore', serif;
-    color: #122C4F;
     text-transform: uppercase;
-
 }
 
 .ps-subtitle {
@@ -105,11 +103,46 @@
 .feature-item.problem h4 { color: #333; }
 .feature-item.problem p { color: #555; }
 
-.feature-item.success i { color: #FFFFFF; } /* Ícones azuis como a cor da marca */
+.feature-item.success i { color: #FFFFFF; }
 .feature-item.success h4 { color: #FFFFFF; }
 .feature-item.success p { color: #FFFFFF; opacity: 0.8; }
 
 @media (max-width: 900px) {
     .comparison-wrapper { grid-template-columns: 1fr; }
     .ps-main-title { font-size: 2.2em; }
+}
+
+/* --- ESTILOS DO NOVO BOTÃO CTA --- */
+@keyframes cta-shimmer {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.cta-button-animated {
+    /* Usando 'auto' para centralizar horizontalmente */
+    display: block; 
+    margin: 60px auto 0; /* Espaçamento da seção acima e centralizado */
+    width: fit-content;
+    padding: 16px 35px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
+    /* Gradiente animado adaptado para sua paleta */
+    background-image: linear-gradient(45deg, #122C4F, #1a3c6d, #122C4F, #1a3c6d);
+    background-size: 300% 100%;
+    animation: cta-shimmer 4s ease infinite;
+}
+
+.cta-button-animated:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(18, 44, 79, 0.3);
 }

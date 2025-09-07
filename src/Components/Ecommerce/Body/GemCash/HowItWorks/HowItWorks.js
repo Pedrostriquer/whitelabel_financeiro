@@ -1,5 +1,3 @@
-// Dentro de src/Components/ClientView/Body/GemCash/HowItWorks/HowItWorks.js
-
 import React, { useState } from 'react';
 import './HowItWorks.css';
 
@@ -59,6 +57,11 @@ const HowItWorks = ({ data }) => {
                         </div>
                     </div>
                 </div>
+
+                {/* BOTÃO CTA ADICIONADO AQUI */}
+                <button className="cta-button-animated">
+                    Quero Comprar
+                </button>
             </div>
         </section>
     );
