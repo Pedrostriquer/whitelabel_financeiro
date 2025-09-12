@@ -272,6 +272,8 @@
     font-size: 1em;
     border: 1px solid #ddd;
     border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .p-submit-button {
@@ -310,7 +312,6 @@
 .p-success-message-box i {
     font-size: 3.5em;
     color: #28a745;
-    /* Verde sucesso */
     margin-bottom: 20px;
 }
 
@@ -329,6 +330,136 @@
     margin: 0;
 }
 
+
+/* --- ESTILOS PARA INPUT DE ARQUIVO E PREVIEWS --- */
+.p-file-input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.p-file-label-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1em;
+    color: #333;
+}
+
+.p-file-input-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.p-file-input-container input[type="file"] {
+    display: none;
+}
+
+.p-file-upload-button {
+    display: inline-block;
+    padding: 12px 18px;
+    background-color: #f0f2f5;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1em;
+    color: #555;
+    transition: background-color 0.2s ease;
+}
+
+.p-file-upload-button:hover {
+    background-color: #e9ecef;
+}
+
+.p-file-upload-button i {
+    margin-right: 8px;
+}
+
+/* Container da galeria de pré-visualizações */
+.p-previews-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+    margin-top: 8px;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+}
+
+/* Cada item da pré-visualização */
+.p-preview-item {
+    position: relative;
+    width: 100%;
+    padding-top: 100%; /* Cria um container quadrado (aspect ratio 1:1) */
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #e9ecef;
+}
+
+.p-preview-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Estilo para arquivos que não são imagens */
+.p-preview-item-generic {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    text-align: center;
+}
+
+.p-preview-item-generic i {
+    font-size: 2em;
+    color: #888;
+}
+
+.p-preview-item-generic span {
+    font-size: 0.75em;
+    color: #555;
+    margin-top: 8px;
+    word-break: break-all;
+    max-height: 3.2em;
+    overflow: hidden;
+}
+
+/* Botão de remover */
+.p-remove-file-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    z-index: 10;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 22px;
+    text-align: center;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.p-remove-file-button:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
 
 /* --- RESPONSIVIDADE --- */
 @media (max-width: 1024px) {
@@ -406,7 +537,6 @@
 
     .p-quote-section {
         flex-direction: column-reverse;
-        /* Coloca o texto antes da imagem */
     }
 
     .p-quote-image-wrapper {
