@@ -2,15 +2,15 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useCart } from "../../../Context/CartContext";
 import { useFavorites } from "../../../Context/FavoritesContext";
-import { useAuth } from "../../../Context/AuthContext"; // Importa o AuthContext
-import { FaReceipt } from 'react-icons/fa'; // Importa o ícone de recibo
+import { useAuth } from "../../../Context/AuthContext"; 
+import { FaReceipt } from 'react-icons/fa'; 
 import "./Header.css";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { cartItems } = useCart();
   const { favoriteItems } = useFavorites();
-  const { isAuthenticated } = useAuth(); // Pega o estado de autenticação
+  const { isAuthenticated } = useAuth(); 
   const totalItemsInCart = cartItems.reduce(
     (total, item) => total + item.quantity,
     0
@@ -26,10 +26,12 @@ const Header = () => {
     }
   }, []);
 
+  // A única alteração foi nesta lista, adicionando o "BLOG"
   const menuItems = [
     { name: "HOME", path: "/ecommerce/home" },
     { name: "GEMAS PRECIOSAS", path: "/ecommerce/gemaspreciosas" },
     { name: "JOIAS", path: "/ecommerce/joias" },
+    { name: "BLOG", path: "/blog" },
     { name: "GEMCASH", path: "/ecommerce/gemcash" },
   ];
 
@@ -45,7 +47,6 @@ const Header = () => {
         </div>
         <div className="header-center">
           <Link to="/ecommerce/home">
-            {/* Mantendo o caminho da sua logo original para corrigir o problema */}
             <img
               src="/ecommerce/img/Untitled design(1).png"
               alt="Gemas Brilhantes Logo"
@@ -61,7 +62,6 @@ const Header = () => {
             )}
           </Link>
 
-          {/* Adiciona o ícone de "Meus Pedidos" apenas se o usuário estiver logado */}
           {isAuthenticated && (
             <Link to="/meus-pedidos" className="header-icon-link" title="Meus Pedidos">
               <FaReceipt />

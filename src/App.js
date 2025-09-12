@@ -23,7 +23,7 @@ import { NotificationDetailPage } from "./Components/Notifications/NotificationD
 import Container from "./Components/Ecommerce/Container/Container";
 import { CartProvider } from "./Context/CartContext";
 import { FavoritesProvider } from "./Context/FavoritesContext";
-import { PromotionsProvider } from "./Context/PromotionsContext"; // 1. Importe o novo provider
+import { PromotionsProvider } from "./Context/PromotionsContext";
 import Home from "./Components/Ecommerce/Body/Home/Home";
 import GemCash from "./Components/Ecommerce/Body/GemCash/GemCash";
 import GemasBrilhantes from "./Components/Ecommerce/Body/Ecommerce/GemasBrilhantes";
@@ -32,6 +32,7 @@ import Personalizadas from "./Components/Ecommerce/Body/Personalizadas/Personali
 import CartPage from "./Components/Ecommerce/Body/Ecommerce/CartPage/CartPage";
 import FavoritesPage from "./Components/Ecommerce/Body/Ecommerce/FavoritesPage/FavoritesPage";
 import MyOrdersPage from "./Components/Ecommerce/Body/Ecommerce/MyOrders/MyOrdersPage";
+import Blog from "./Components/Ecommerce/Body/Blog/Blog";
 
 function App() {
   return (
@@ -40,7 +41,6 @@ function App() {
         <AuthProvider>
           <CartProvider>
             <FavoritesProvider>
-              {/* 2. Adicione o PromotionsProvider envolvendo as rotas */}
               <PromotionsProvider>
                 <Routes>
                   <Route path="/login" element={<Login />} />
@@ -58,6 +58,7 @@ function App() {
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/favorites" element={<FavoritesPage />} />
                     <Route path="/meus-pedidos" element={<MyOrdersPage />} />
+                    <Route path="/blog" element={<Blog />} />
                   </Route>
 
                   <Route path="/" element={<Navigate to="/ecommerce" />} />
