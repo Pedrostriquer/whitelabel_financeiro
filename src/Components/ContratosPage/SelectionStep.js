@@ -208,7 +208,7 @@ const SelectionStep = ({
             style={style.checkboxInput}
           />
           <label htmlFor="withGem" style={style.checkboxLabel}>
-            Desejo receber a gema física ao final do contrato.
+            Desejo receber a gema física.
           </label>
         </div>
 

@@ -109,7 +109,7 @@ const GemCashSimulator = ({ onFinalizePurchase, onSimulationChange }) => {
       <div className="sim-container">
         <div className="sim-header">
           <h2 className="sim-main-title fonte-principal">
-            Simule Seu Investimento GemCash
+            FAÇA UMA SIMULAÇÃO GEMCASH
           </h2>
           <p className="sim-subtitle">
             Ajuste os valores e veja o potencial de valorização do seu
@@ -177,7 +177,7 @@ const GemCashSimulator = ({ onFinalizePurchase, onSimulationChange }) => {
                 onChange={(e) => setWithGem(e.target.checked)}
               />
               <label htmlFor="withGem">
-                Desejo receber a gema física ao final do contrato.
+                Desejo receber a gema física.
               </label>
             </div>
             <button

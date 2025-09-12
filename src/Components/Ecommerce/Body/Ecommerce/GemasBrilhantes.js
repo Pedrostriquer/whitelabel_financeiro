@@ -1,206 +1,239 @@
-import React, { useState, useEffect } from "react";
-import { db } from "../../../../Firebase/config";
-import { collection, query, where, getDocs } from "firebase/firestore";
-import "./GemasBrilhantes.css";
+import React, { useState, useEffect, useCallback } from "react";
+// Importa o objeto de estilos em vez do arquivo CSS
+import styles from "./GemasBrilhantesStyle"; 
 import ProductCard from "./ProductCard/ProductCard";
 import FilterSidebar from "./FilterSidebar/FilterSidebar";
+import productServices from "../../../../dbServices/productServices";
 import { FaFilter, FaTimes } from "react-icons/fa";
 
-const LoadingSpinner = () => (
-  <div className="spinner-container">
-    <div className="loading-spinner"></div>
-    <p>Carregando Gemas...</p>
-  </div>
+// --- Componente do Header da Página ---
+const ShopHeader = () => (
+    <header style={styles.shopIntroHeader}>
+        <div style={styles.shopIntroContent}>
+            <h1 style={styles.shopIntroTitle}>Curadoria Exclusiva de Gemas Raras</h1>
+            <p style={styles.shopIntroText}>
+                Explore nossa curadoria exclusiva de gemas raras e certificadas.
+                Cada pedra é selecionada por especialistas que avaliam rigorosamente seu brilho, pureza e autenticidade. Nosso compromisso é oferecer gemas que não apenas encantam pela beleza, mas também carregam valor de mercado sólido e duradouro.
+            </p>
+            <p style={{...styles.shopIntroText, marginBottom: 0}}>
+                Com nossas Gemas Preciosas, você tem acesso a um acervo único, onde cada detalhe é pensado para entregar sofisticação, segurança e exclusividade em cada aquisição.
+            </p>
+        </div>
+    </header>
 );
 
+// --- Componente de Loading ---
+const LoadingSpinner = () => (
+    <div style={styles.spinnerContainer}>
+        <div style={styles.loadingSpinner}></div>
+        <p>Carregando Joias...</p>
+    </div>
+);
+
+// --- Componente Principal ---
 const GemasBrilhantes = () => {
-  const [allProducts, setAllProducts] = useState([]);
-  const [attributeGroups, setAttributeGroups] = useState([]);
-  const [attributeValues, setAttributeValues] = useState({});
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [filters, setFilters] = useState({});
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortOrder, setSortOrder] = useState("relevance");
-  const [loading, setLoading] = useState(true);
-  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const productsSnapshot = await getDocs(collection(db, "products"));
-        const productsData = productsSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-          salePrice: doc.data().price * 0.8,
-        }));
-        setAllProducts(productsData);
-
-        const q = query(
-          collection(db, "attributes"),
-          where("appliesTo", "==", "gema")
-        );
-        const groupsSnapshot = await getDocs(q);
-        const groupsData = groupsSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setAttributeGroups(groupsData);
-
-        const valuesMap = {};
-        for (const group of groupsData) {
-          const valuesSnapshot = await getDocs(
-            collection(db, "attributes", group.id, "values")
-          );
-          valuesMap[group.id] = valuesSnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-        }
-        setAttributeValues(valuesMap);
-      } catch (error) {
-        console.error("Erro ao buscar dados da loja:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    let items = allProducts.filter((p) => p.type === "gema");
-
-    Object.keys(filters).forEach((groupId) => {
-      const valueId = filters[groupId];
-      if (valueId && valueId !== "all") {
-        items = items.filter(
-          (product) => product.attributes?.[groupId] === valueId
-        );
-      }
+    const [allProducts, setAllProducts] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [filterOptions, setFilterOptions] = useState({ materials: [], weights: [], stoneTypes: [], colors: [], cuts: [], clarities: [] });
+    const [loading, setLoading] = useState(true);
+    const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+    const [isSearchFocused, setIsSearchFocused] = useState(false); // Novo estado para o foco do input
+    
+    const [filters, setFilters] = useState({
+        searchTerm: '', itemType: 'Todos', categories: [], material: '', weight: '', stoneType: '', color: '', cut: '', clarity: '', minPrice: '', maxPrice: '', minCarats: '', maxCarats: '', sort: 'date_desc'
     });
 
-    if (searchTerm) {
-      items = items.filter((product) =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
+    const fetchInitialData = useCallback(async () => {
+        setLoading(true);
+        try {
+            const [initialProductData, catData] = await Promise.all([
+                productServices.searchProducts({ sort: 'date_desc' }, 1, 1000),
+                productServices.getAllCategories()
+            ]);
+            
+            const products = initialProductData.items || [];
+            setAllProducts(products);
+            
+            const options = await productServices.getAllFilterOptions(products);
+            setFilterOptions(options);
+            setCategories(catData || []);
+        } catch (error) {
+            console.error("Erro ao buscar dados iniciais:", error);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
-    if (sortOrder === "asc")
-      items.sort((a, b) => (a.salePrice || a.price) - (b.salePrice || b.price));
-    else if (sortOrder === "desc")
-      items.sort((a, b) => (b.salePrice || b.price) - (a.salePrice || a.price));
+    useEffect(() => {
+        fetchInitialData();
+    }, [fetchInitialData]);
 
-    setFilteredProducts(items);
-  }, [filters, searchTerm, sortOrder, allProducts]);
+    useEffect(() => {
+        let items = [...allProducts];
 
-  useEffect(() => {
-    document.body.style.overflow = isMobileFiltersOpen ? "hidden" : "unset";
-    return () => {
-      document.body.style.overflow = "unset";
+        if (filters.searchTerm) {
+            items = items.filter(p => p.name.toLowerCase().includes(filters.searchTerm.toLowerCase()));
+        }
+        if (filters.itemType !== 'Todos') {
+            items = items.filter(p => p.itemType === parseInt(filters.itemType));
+        }
+        if (filters.categories.length > 0) {
+            items = items.filter(p => p.categories && filters.categories.every(catId => p.categories.includes(catId)));
+        }
+        if (filters.minPrice) {
+            items = items.filter(p => p.value >= parseFloat(filters.minPrice));
+        }
+        if (filters.maxPrice) {
+            items = items.filter(p => p.value <= parseFloat(filters.maxPrice));
+        }
+        if (filters.material) {
+            items = items.filter(p => p.info?.material === filters.material);
+        }
+        if (filters.weight) {
+            items = items.filter(p => p.info?.weightInGrams === parseFloat(filters.weight));
+        }
+        if (filters.stoneType) {
+            items = items.filter(p => p.info?.stones?.some(s => s.stoneType === filters.stoneType));
+        }
+        if (filters.color) {
+            items = items.filter(p => p.info?.stones?.some(s => s.color === filters.color));
+        }
+        if (filters.cut) {
+            items = items.filter(p => p.info?.stones?.some(s => s.cut === filters.cut));
+        }
+        if (filters.clarity) {
+            items = items.filter(p => p.info?.stones?.some(s => s.clarity === filters.clarity));
+        }
+        if (filters.minCarats) {
+            items = items.filter(p => p.info?.stones?.some(s => s.carats >= parseFloat(filters.minCarats)));
+        }
+        if (filters.maxCarats) {
+            items = items.filter(p => p.info?.stones?.some(s => s.carats <= parseFloat(filters.maxCarats)));
+        }
+
+        setFilteredProducts(items);
+
+    }, [filters, allProducts]);
+
+    const handleFilterChange = (filterName, value) => {
+        setFilters(prev => ({ ...prev, [filterName]: value }));
     };
-  }, [isMobileFiltersOpen]);
 
-  const handleFilterChange = (groupId, valueId) => {
-    setFilters((prev) => ({ ...prev, [groupId]: valueId }));
-  };
+    const handleCategoryToggle = (catId) => {
+        setFilters(prev => {
+            const newCategories = prev.categories.includes(catId)
+                ? prev.categories.filter(id => id !== catId)
+                : [...prev.categories, catId];
+            return { ...prev, categories: newCategories };
+        });
+    };
 
-  return (
-    <div className="shop-page-wrapper">
-      <div className="shop-body">
-        <aside className="sidebar-desktop-wrapper">
-          <FilterSidebar
-            attributeGroups={attributeGroups}
-            attributeValues={attributeValues}
-            onFilterChange={handleFilterChange}
-          />
-        </aside>
+    const clearFilters = () => {
+        setFilters({
+            searchTerm: '', itemType: 'Todos', categories: [], material: '', weight: '', stoneType: '', color: '', cut: '', clarity: '', minPrice: '', maxPrice: '', minCarats: '', maxCarats: '', sort: 'date_desc'
+        });
+    };
 
-        <div
-          className={`sidebar-mobile-modal ${
-            isMobileFiltersOpen ? "open" : ""
-          }`}
-        >
-          <div className="sidebar-modal-content">
-            <div className="modal-header">
-              <h3 className="sidebar-title">Filtros</h3>
-              <button
-                onClick={() => setIsMobileFiltersOpen(false)}
-                className="close-modal-btn"
-                aria-label="Fechar filtros"
-              >
-                <FaTimes />
-              </button>
-            </div>
-            <div className="modal-body">
-              <FilterSidebar
-                attributeGroups={attributeGroups}
-                attributeValues={attributeValues}
-                onFilterChange={handleFilterChange}
-              />
-            </div>
-            <div className="modal-footer">
-              <button
-                className="apply-filters-btn"
-                onClick={() => setIsMobileFiltersOpen(false)}
-              >
-                Ver Resultados
-              </button>
-            </div>
-          </div>
-        </div>
+    // Estilos condicionais para o modal e input
+    const mobileModalStyle = {
+        ...styles.sidebarMobileModal,
+        ...(isMobileFiltersOpen && styles.sidebarMobileModalOpen)
+    };
+    const modalContentStyle = {
+        ...styles.sidebarModalContent,
+        ...(isMobileFiltersOpen && styles.sidebarModalContentOpen)
+    };
+    const searchInputStyle = {
+        ...styles.shopSearchInput,
+        ...(isSearchFocused && styles.shopSearchInputFocus)
+    };
 
-        <main className="product-main-content">
-          <header className="content-header">
-            <input
-              type="text"
-              placeholder="Buscar por sua gema..."
-              className="shop-search-input"
-              onChange={(e) => setSearchTerm(e.target.value)}
-              aria-label="Buscar produtos"
-            />
-            <div className="header-controls">
-              <span className="results-count">
-                {filteredProducts.length} resultados
-              </span>
-              <select
-                className="sort-select"
-                value={sortOrder}
-                onChange={(e) => setSortOrder(e.target.value)}
-                aria-label="Ordenar produtos por"
-              >
-                <option value="relevance">Ordenar por</option>
-                <option value="asc">Menor Preço</option>
-                <option value="desc">Maior Preço</option>
-              </select>
-              <button
-                className="mobile-filter-button"
-                onClick={() => setIsMobileFiltersOpen(true)}
-              >
-                <FaFilter />
-                <span>Filtrar</span>
-              </button>
-            </div>
-          </header>
-          {loading ? (
-            <LoadingSpinner />
-          ) : (
-            <div className="product-grid">
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))
-              ) : (
-                <div className="no-products-found">
-                  <h3>Nenhuma gema encontrada</h3>
-                  <p>Tente ajustar seus filtros ou termo de busca.</p>
+    return (
+        <div style={styles.shopPageWrapper}>
+            <ShopHeader />
+            <div style={styles.shopBody}>
+                {/* Oculta a sidebar de filtros no desktop em telas menores */}
+                {/* OBS: Media queries são melhor gerenciados com hooks ou libs de CSS-in-JS. 
+                    Isto é uma simplificação. Em um app real, use um hook que detecta o tamanho da tela. */}
+                <aside style={styles.sidebarDesktopWrapper}>
+                    <FilterSidebar 
+                        categories={categories}
+                        filterOptions={filterOptions}
+                        filters={filters}
+                        onFilterChange={handleFilterChange}
+                        onCategoryToggle={handleCategoryToggle}
+                        onClearFilters={clearFilters}
+                    />
+                </aside>
+
+                <div style={mobileModalStyle}>
+                    <div style={modalContentStyle}>
+                        <div style={styles.modalHeader}>
+                            <h3 style={styles.sidebarTitle}>Filtros</h3>
+                            <button onClick={() => setIsMobileFiltersOpen(false)} style={styles.closeModalBtn}>
+                                <FaTimes />
+                            </button>
+                        </div>
+                        <div style={styles.modalBody}>
+                            <FilterSidebar 
+                                categories={categories}
+                                filterOptions={filterOptions}
+                                filters={filters}
+                                onFilterChange={handleFilterChange}
+                                onCategoryToggle={handleCategoryToggle}
+                                onClearFilters={clearFilters}
+                            />
+                        </div>
+                        <div style={styles.modalFooter}>
+                            <button style={styles.applyFiltersBtn} onClick={() => setIsMobileFiltersOpen(false)}>
+                                Ver Resultados
+                            </button>
+                        </div>
+                    </div>
                 </div>
-              )}
+                
+                <main style={styles.productMainContent}>
+                    <header style={styles.contentHeader}>
+                        <input 
+                            type="text" 
+                            placeholder="Buscar por sua joia..." 
+                            style={searchInputStyle}
+                            value={filters.searchTerm} 
+                            onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
+                            onFocus={() => setIsSearchFocused(true)}
+                            onBlur={() => setIsSearchFocused(false)}
+                        />
+                        <div style={styles.headerControls}>
+                            <span style={styles.resultsCount}>{filteredProducts.length} resultados</span>
+                            <select style={styles.sortSelect} value={filters.sort} onChange={(e) => handleFilterChange('sort', e.target.value)}>
+                                <option value="date_desc">Mais Recentes</option>
+                                <option value="price_asc">Menor Preço</option>
+                                <option value="price_desc">Maior Preço</option>
+                            </select>
+                            {/* Este botão apareceria em telas mobile. A lógica para exibi-lo
+                                precisaria de um hook de window size para ser fiel ao CSS original. */}
+                            <button style={styles.mobileFilterButton} onClick={() => setIsMobileFiltersOpen(true)}>
+                                <FaFilter /><span>Filtrar</span>
+                            </button>
+                        </div>
+                    </header>
+                    {loading ? <LoadingSpinner /> : (
+                        <div style={styles.productGrid}>
+                            {filteredProducts.length > 0 ? (
+                                filteredProducts.map((product) => <ProductCard key={product.id} product={product} />)
+                            ) : (
+                                <div style={styles.noProductsFound}>
+                                    <h3 style={styles.noProductsFoundH3}>Nenhuma Joia Encontrada</h3>
+                                    <p style={styles.noProductsFoundP}>Tente ajustar seus filtros ou termo de busca.</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </main>
             </div>
-          )}
-        </main>
-      </div>
-    </div>
-  );
+        </div>
+    );
 };
 
 export default GemasBrilhantes;

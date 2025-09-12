@@ -38,7 +38,7 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    gap: 20px;
+    gap: 25px; /* Espaçamento entre os ícones e o menu */
 }
 
 .platform-button {
@@ -58,7 +58,8 @@
     background-color: #1a3c6d;
 }
 
-.cart-icon-link {
+/* --- ESTILOS UNIFICADOS PARA ÍCONES E BADGES --- */
+.header-icon-link {
     position: relative;
     color: #122C4F;
     font-size: 1.5em;
@@ -66,11 +67,11 @@
     transition: transform 0.2s ease;
 }
 
-.cart-icon-link:hover {
+.header-icon-link:hover {
     transform: scale(1.1);
 }
 
-.cart-badge {
+.icon-badge {
     position: absolute;
     top: -5px;
     right: -10px;
@@ -140,7 +141,6 @@
 
 .mobile-nav-overlay {
     position: fixed;
-    /* As propriedades 'top' e 'height' foram removidas daqui */
     left: 0;
     width: 100%;
     background-color: #FFFFFF;
@@ -163,7 +163,7 @@
 .mobile-nav-overlay ul {
     list-style: none;
     text-align: center;
-    padding: 0; /* Remove padding padrão da lista */
+    padding: 0;
 }
 
 .mobile-nav-overlay li {

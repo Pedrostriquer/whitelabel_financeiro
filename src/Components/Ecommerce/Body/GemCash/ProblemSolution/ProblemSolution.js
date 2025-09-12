@@ -1,16 +1,12 @@
-// Dentro de src/Components/ClientView/Body/GemCash/ProblemSolution/ProblemSolution.js
-
 import React from 'react';
 import './ProblemSolution.css';
 
 const ProblemSolution = ({ data }) => {
 
-    // Se a prop 'data' ainda não chegou, não renderiza nada para evitar erros.
     if (!data) {
         return null;
     }
 
-    // Ícones padrão que serão usados no componente, independentemente do que vier do admin.
     const traditionalIcons = ["fas fa-chart-line", "fas fa-cloud", "fas fa-file-invoice-dollar"];
     const solutionIcons = ["fas fa-shield-alt", "fas fa-gem", "fas fa-search-dollar"];
 
@@ -27,10 +23,8 @@ const ProblemSolution = ({ data }) => {
                     <div className="comparison-card traditional">
                         <h3 className="card-title">{data.traditionalTitle}</h3>
                         <ul className="features-list">
-                            {/* Garante que o array exista antes de mapear com '(data.traditionalPoints || [])' */}
                             {(data.traditionalPoints || []).map((point, index) => (
                                 <li className="feature-item problem" key={index}>
-                                    {/* Usa o ícone correspondente do array de ícones padrão */}
                                     <i className={traditionalIcons[index] || "fas fa-times-circle"}></i>
                                     <div>
                                         <h4>{point.title}</h4>
@@ -47,7 +41,6 @@ const ProblemSolution = ({ data }) => {
                         <ul className="features-list">
                             {(data.solutionPoints || []).map((point, index) => (
                                 <li className="feature-item success" key={index}>
-                                    {/* Usa o ícone correspondente do array de ícones padrão */}
                                     <i className={solutionIcons[index] || "fas fa-check-circle"}></i>
                                     <div>
                                         <h4>{point.title}</h4>
@@ -58,6 +51,11 @@ const ProblemSolution = ({ data }) => {
                         </ul>
                     </div>
                 </div>
+
+                {/* BOTÃO CTA ADICIONADO AQUI */}
+                <button className="cta-button-animated">
+                    Adquira Agora
+                </button>
             </div>
         </section>
     );

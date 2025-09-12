@@ -1,0 +1,71 @@
+/* Dentro de /src/Components/Ecommerce/Body/Ecommerce/CartPage/AddressForm.css */
+
+.shipping-address-form {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out, margin-top 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    margin-top: 0;
+    opacity: 0;
+}
+
+.shipping-address-form.visible {
+    max-height: 500px; /* Um valor alto o suficiente para caber o formulário */
+    margin-top: 20px;
+    opacity: 1;
+}
+
+.shipping-address-form h4 {
+    margin-bottom: 15px;
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.9em;
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1em;
+    font-family: 'Poppins', sans-serif;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-group.street { flex: 3; }
+.form-group.number { flex: 1; }
+.form-group.city { flex: 2; }
+.form-group.state { flex: 1; }
+
+.cep-status {
+    font-size: 0.8em;
+    color: #122C4F;
+    position: absolute;
+    right: 10px;
+    top: 38px;
+}
+
+.cep-error {
+    font-size: 0.8em;
+    color: #e74c3c;
+    display: block;
+    margin-top: 4px;
+}

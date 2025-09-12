@@ -1,0 +1,135 @@
+.favorites-page-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 40px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.favorites-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.favorites-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.favorite-item-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background-color: var(--white-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    transition: box-shadow var(--transition-speed);
+}
+
+.favorite-item-card:hover {
+    box-shadow: var(--card-shadow-hover);
+}
+
+.favorite-item-img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.favorite-item-details {
+    flex-grow: 1;
+}
+
+.favorite-item-details .item-name {
+    font-family: var(--font-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin: 0 0 8px 0;
+}
+
+.favorite-item-details .item-price {
+    font-family: var(--font-primary);
+    font-size: 1.2rem;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.favorite-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.favorite-actions .add-btn,
+.favorite-actions .remove-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    background-color: var(--white-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.favorite-actions .add-btn {
+    color: var(--accent-color);
+}
+.favorite-actions .add-btn:hover {
+    background-color: var(--accent-color);
+    color: var(--white-color);
+    border-color: var(--accent-color);
+}
+.favorite-actions .add-btn.added {
+    background-color: var(--sale-color);
+    color: var(--white-color);
+    border-color: var(--sale-color);
+}
+
+.favorite-actions .remove-btn {
+    color: #e53e3e;
+}
+.favorite-actions .remove-btn:hover {
+    background-color: #e53e3e;
+    color: var(--white-color);
+    border-color: #e53e3e;
+}
+
+/* --- Estado Vazio --- */
+.favorites-empty {
+    text-align: center;
+    padding: 100px 40px;
+}
+.favorites-empty h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+.favorites-empty p {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    margin-bottom: 30px;
+}
+.start-shopping-btn {
+    background-color: var(--primary-color);
+    color: #fff;
+    padding: 12px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+.start-shopping-btn:hover {
+    background-color: var(--primary-color-dark);
+}

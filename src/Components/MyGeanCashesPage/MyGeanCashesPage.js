@@ -61,7 +61,7 @@ export default function MyGeanCashesPage() {
       </div>
 
       <div style={style.header}>
-        <h1 style={style.pageTitle}>Meus Gean Cashes</h1>
+        <h1 style={style.pageTitle}>Meus GemCash</h1>
         <p style={style.pageSubtitle}>
           Visualize, filtre e gerencie todos os seus contratos de investimento
           em um só lugar.

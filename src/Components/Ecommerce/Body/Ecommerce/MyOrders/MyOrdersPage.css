@@ -1,0 +1,124 @@
+.orders-container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 20px;
+    font-family: 'Poppins', sans-serif;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.orders-title {
+    text-align: center;
+    font-size: 2.5em;
+    font-weight: 300;
+    margin-bottom: 40px;
+    color: #122C4F;
+}
+
+.orders-list {
+    display: grid;
+    gap: 20px;
+}
+
+.order-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.order-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.order-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.order-card-header h3 {
+    margin: 0;
+    font-size: 1.2em;
+    color: #122C4F;
+}
+
+.order-card-header p {
+    margin: 5px 0 0;
+    font-size: 0.9em;
+    color: #6c757d;
+}
+
+.order-card-body {
+    padding: 20px;
+    font-size: 0.95em;
+    color: #495057;
+}
+
+.order-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    font-size: 1.1em;
+}
+
+.order-card-footer strong {
+    color: #122C4F;
+    font-weight: 700;
+}
+
+.status-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: 600;
+    color: #fff;
+    text-transform: capitalize;
+}
+
+/* Cores dos Status - ajuste os nomes conforme os status da sua API */
+.status-pendingpayment, .status-processing { background-color: #ffc107; color: #333; }
+.status-shipped { background-color: #17a2b8; }
+.status-delivered { background-color: #28a745; }
+.status-cancelled, .status-refunded { background-color: #dc3545; }
+
+/* Estados de loading e vazio */
+.orders-container.loading,
+.orders-container.empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: #6c757d;
+}
+
+.orders-container.empty h2 {
+    color: #122C4F;
+    margin-bottom: 15px;
+}
+
+.shopping-btn {
+    display: inline-block;
+    margin-top: 20px;
+    background-color: #122C4F;
+    color: #fff;
+    padding: 12px 25px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: transform 0.2s ease;
+}
+
+.shopping-btn:hover {
+    transform: scale(1.05);
+}
