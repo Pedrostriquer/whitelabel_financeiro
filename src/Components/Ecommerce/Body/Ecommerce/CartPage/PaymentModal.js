@@ -1,15 +1,18 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import './PaymentModal.css';
-import { FaBarcode, FaUniversity, FaCreditCard } from 'react-icons/fa';
+import { FaBarcode, FaCreditCard } from 'react-icons/fa';
 import { FaPix } from 'react-icons/fa6';
-
-// ✨ 1. Saldo estático para demonstração
-const STATIC_PLATFORM_BALANCE = 100000;
+import { useAuth } from '../../../../../Context/AuthContext';
+import clientServices from '../../../../../dbServices/clientServices';
 
 const PaymentModal = ({ isVisible, onClose, onSubmit, orderSummary }) => {
-    // ✨ 2. Novos estados para gerenciar o pagamento com saldo
+    const { token } = useAuth(); 
+
+    const [platformBalance, setPlatformBalance] = useState(0);
+    const [isLoadingBalance, setIsLoadingBalance] = useState(true);
+
     const [usePlatformBalance, setUsePlatformBalance] = useState(false);
-    const [balanceToUseInput, setBalanceToUseInput] = useState(''); // Valor em string do input
+    const [balanceToUseInput, setBalanceToUseInput] = useState('');
     
     const [secondaryPaymentMethod, setSecondaryPaymentMethod] = useState('pix');
     const [isProcessing, setIsProcessing] = useState(false);
@@ -17,7 +20,24 @@ const PaymentModal = ({ isVisible, onClose, onSubmit, orderSummary }) => {
         cardNumber: '', cardName: '', cardExpiry: '', cardCVC: ''
     });
 
-    // ✨ 3. Cálculos em tempo real usando useMemo para performance
+    useEffect(() => {
+        if (isVisible && token) {
+            const fetchWalletInfo = async () => {
+                setIsLoadingBalance(true);
+                try {
+                    const walletData = await clientServices.informacoesCarteira(token);
+                    setPlatformBalance(walletData.totalAvaliableBalance || 0);
+                } catch (error) {
+                    console.error("Erro ao buscar saldo da carteira:", error);
+                    setPlatformBalance(0);
+                } finally {
+                    setIsLoadingBalance(false);
+                }
+            };
+            fetchWalletInfo();
+        }
+    }, [isVisible, token]);
+
     const {
         orderTotal,
         actualBalanceToUse,
@@ -25,26 +45,26 @@ const PaymentModal = ({ isVisible, onClose, onSubmit, orderSummary }) => {
         isFullPaymentWithBalance,
         newPlatformBalance
     } = useMemo(() => {
-        const orderTotal = orderSummary.subtotalWithDiscount;
+        const orderTotal = orderSummary?.subtotalWithDiscount || 0;
         if (!usePlatformBalance) {
-            return { orderTotal, actualBalanceToUse: 0, remainingAmount: orderTotal, isFullPaymentWithBalance: false, newPlatformBalance: STATIC_PLATFORM_BALANCE };
+            return { orderTotal, actualBalanceToUse: 0, remainingAmount: orderTotal, isFullPaymentWithBalance: false, newPlatformBalance: platformBalance };
         }
         
         const balanceToUse = parseFloat(balanceToUseInput.replace(/\./g, '').replace(',', '.')) || 0;
-        const actualBalanceToUse = Math.min(balanceToUse, STATIC_PLATFORM_BALANCE, orderTotal);
+        const actualBalanceToUse = Math.min(balanceToUse, platformBalance, orderTotal);
         const remainingAmount = Math.max(0, orderTotal - actualBalanceToUse);
         const isFullPaymentWithBalance = remainingAmount <= 0;
-        const newPlatformBalance = STATIC_PLATFORM_BALANCE - actualBalanceToUse;
+        const newPlatformBalance = platformBalance - actualBalanceToUse;
 
         return { orderTotal, actualBalanceToUse, remainingAmount, isFullPaymentWithBalance, newPlatformBalance };
-    }, [usePlatformBalance, balanceToUseInput, orderSummary.subtotalWithDiscount]);
+    }, [usePlatformBalance, balanceToUseInput, orderSummary, platformBalance]);
 
+    if (!isVisible || !orderSummary?.items) {
+        return null;
+    }
 
-    if (!isVisible) return null;
+    const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
 
-    const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-
-    // Formata o input do saldo enquanto o usuário digita
     const handleBalanceInputChange = (e) => {
         let value = e.target.value.replace(/\D/g, '');
         if (value) {
@@ -54,7 +74,7 @@ const PaymentModal = ({ isVisible, onClose, onSubmit, orderSummary }) => {
     };
 
     const handleUseMaxBalance = () => {
-        const maxApplicable = Math.min(STATIC_PLATFORM_BALANCE, orderTotal);
+        const maxApplicable = Math.min(platformBalance, orderTotal);
         setBalanceToUseInput(maxApplicable.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     };
 
@@ -67,7 +87,6 @@ const PaymentModal = ({ isVisible, onClose, onSubmit, orderSummary }) => {
         }
 
         setIsProcessing(true);
-        // ✨ 4. Payload de pagamento mais detalhado
         const paymentDetails = {
             primaryPayment: usePlatformBalance ? { method: 'balance', amount: actualBalanceToUse } : null,
             secondaryPayment: !isFullPaymentWithBalance ? {
@@ -91,7 +110,6 @@ const PaymentModal = ({ isVisible, onClose, onSubmit, orderSummary }) => {
                 <div className="payment-modal-body">
                     <div className="order-summary-section">
                         <h3>Resumo do Pedido</h3>
-                        {/* ✨ 5. Resumo de pagamento atualizado */}
                         <div className="summary-totals">
                             <div className="summary-total-row">
                                 <span>Total do Pedido</span>
@@ -109,10 +127,10 @@ const PaymentModal = ({ isVisible, onClose, onSubmit, orderSummary }) => {
                             </div>
                         </div>
                          <div className="summary-items-list">
-                            {orderSummary.items.map(item => (
-                                <div key={(item.product || item).id} className="summary-item">
-                                    <span>{item.quantity}x {(item.product || item).name}</span>
-                                    <span>{formatCurrency(item.product.value * item.quantity)}</span>
+                            {orderSummary.items && orderSummary.items.map(item => (
+                                <div key={item.product.id} className="summary-item">
+                                    <span>{item.quantity}x {item.product.name}</span>
+                                    <span>{formatCurrency(item.salePrice * item.quantity)}</span>
                                 </div>
                             ))}
                         </div>
@@ -124,13 +142,12 @@ const PaymentModal = ({ isVisible, onClose, onSubmit, orderSummary }) => {
                     </div>
 
                     <div className="payment-options-section">
-                        {/* ✨ 6. Nova seção para usar o saldo */}
                         <h3>Pagamento</h3>
                         <div className="balance-section">
                             <div className="balance-toggle">
                                 <input type="checkbox" id="useBalance" checked={usePlatformBalance} onChange={(e) => setUsePlatformBalance(e.target.checked)} />
                                 <label htmlFor="useBalance">Usar saldo da plataforma</label>
-                                <span>(Disponível: {formatCurrency(STATIC_PLATFORM_BALANCE)})</span>
+                                <span>(Disponível: {isLoadingBalance ? 'Carregando...' : formatCurrency(platformBalance)})</span>
                             </div>
                             {usePlatformBalance && (
                                 <div className="balance-input-wrapper">
@@ -143,7 +160,6 @@ const PaymentModal = ({ isVisible, onClose, onSubmit, orderSummary }) => {
                             )}
                         </div>
                         
-                        {/* ✨ 7. Seção de pagamento secundário */}
                         {!isFullPaymentWithBalance && (
                             <div className="secondary-payment-section">
                                 <h4>Pagar o restante com</h4>
@@ -154,7 +170,6 @@ const PaymentModal = ({ isVisible, onClose, onSubmit, orderSummary }) => {
                                 </div>
                                 {secondaryPaymentMethod === 'card' && (
                                     <div className="card-form-container">
-                                        {/* (código do formulário do cartão - sem alterações) */}
                                         <div className="form-group">
                                             <label htmlFor="cardNumber">Número do Cartão</label>
                                             <input type="text" id="cardNumber" name="cardNumber" placeholder="0000 0000 0000 0000" value={cardDetails.cardNumber} onChange={(e) => setCardDetails({...cardDetails, cardNumber: e.target.value})} />
