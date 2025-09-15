@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import formularyService from "../../../../dbServices/formularySerice"; // Caminho e nome corrigidos
+import formularyService from "../../../../dbServices/formularySerice";
 import { db } from "../../../../Firebase/config";
 import { doc, getDoc } from "firebase/firestore";
 import "./Personalizadas.css";
@@ -8,7 +8,6 @@ const heroBackgroundImage =
   "/ecommerce/img/5d79cfd0c0afa879c1f11b1c26ccb5ce.jpg";
 
 const Personalizadas = () => {
-  // Todos os Hooks foram movidos para o topo do componente.
   const [pageData, setPageData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
@@ -20,7 +19,10 @@ const Personalizadas = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0); // <-- Hook movido para cima
+  const [activeIndex, setActiveIndex] = useState(0);
+  
+  // O estado agora é um array para múltiplos arquivos
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,9 +46,36 @@ const Personalizadas = () => {
     fetchData();
   }, []);
 
+  // Efeito para limpar os URLs de preview da memória e evitar memory leaks
+  useEffect(() => {
+    return () => {
+      selectedFiles.forEach(file => URL.revokeObjectURL(file.preview));
+    };
+  }, [selectedFiles]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Função atualizada para lidar com múltiplos arquivos
+  const handleFileChange = (e) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files).map(file => ({
+        file: file,
+        preview: URL.createObjectURL(file)
+      }));
+
+      // Adiciona os novos arquivos à lista existente
+      setSelectedFiles(prevFiles => [...prevFiles, ...filesArray]);
+    }
+  };
+
+  // Nova função para remover um arquivo da lista
+  const handleRemoveFile = (fileToRemove) => {
+    // Revoga o URL do objeto para liberar memória
+    URL.revokeObjectURL(fileToRemove.preview);
+    setSelectedFiles(prevFiles => prevFiles.filter(file => file !== fileToRemove));
   };
 
   const handleSubmit = async (e) => {
@@ -59,6 +88,7 @@ const Personalizadas = () => {
       phoneNumber: formData.phone,
       objective: formData.objective,
       description: formData.description,
+      // NOTA: O envio dos arquivos em si não foi implementado, pois a API não está pronta.
     };
 
     try {
@@ -77,63 +107,30 @@ const Personalizadas = () => {
     return <div className="loading-message">Carregando...</div>;
   }
 
-  // A lógica que depende dos dados carregados permanece aqui.
   const benefitsDataFromAdmin = pageData?.benefits?.items || [];
   const staticBenefitMedia = [
-    {
-      mediaSrc: "/ecommerce/img/PinDown.io_@venicevibes_1756268271.mp4",
-      mediaType: "video",
-    },
-    {
-      mediaSrc: "/ecommerce/img/PinDown.io_@venicevibes_1756268271.mp4",
-      mediaType: "video",
-    },
-    {
-      mediaSrc: "/ecommerce/img/PinDown.io_@venicevibes_1756268271.mp4",
-      mediaType: "video",
-    },
-    {
-      mediaSrc: "/ecommerce/img/PinDown.io_@venicevibes_1756268271.mp4",
-      mediaType: "video",
-    },
-    {
-      mediaSrc: "/ecommerce/img/PinDown.io_@venicevibes_1756268271.mp4",
-      mediaType: "video",
-    },
-    {
-      mediaSrc: "/ecommerce/img/PinDown.io_@venicevibes_1756268271.mp4",
-      mediaType: "video",
-    },
+    { mediaSrc: "/ecommerce/img/PinDown.io_@venicevibes_1756268271.mp4", mediaType: "video" },
+    { mediaSrc: "/ecommerce/img/PinDown.io_@venicevibes_1756268271.mp4", mediaType: "video" },
+    { mediaSrc: "/ecommerce/img/PinDown.io_@venicevibes_1756268271.mp4", mediaType: "video" },
+    { mediaSrc: "/ecommerce/img/PinDown.io_@venicevibes_1756268271.mp4", mediaType: "video" },
+    { mediaSrc: "/ecommerce/img/PinDown.io_@venicevibes_1756268271.mp4", mediaType: "video" },
+    { mediaSrc: "/ecommerce/img/PinDown.io_@venicevibes_1756268271.mp4", mediaType: "video" },
   ];
-
-  const benefits = benefitsDataFromAdmin.map((item, index) => ({
-    ...item,
-    ...staticBenefitMedia[index],
-  }));
-
+  const benefits = benefitsDataFromAdmin.map((item, index) => ({ ...item, ...staticBenefitMedia[index] }));
   const activeBenefit = benefits[activeIndex];
-  const heroStyle = {
-    backgroundImage: `linear-gradient(rgba(18, 44, 79, 0.5), rgba(18, 44, 79, 0.5)), url(${heroBackgroundImage})`,
-  };
+  const heroStyle = { backgroundImage: `linear-gradient(rgba(18, 44, 79, 0.5), rgba(18, 44, 79, 0.5)), url(${heroBackgroundImage})` };
 
   return (
     <div className="personalizadas-page-wrapper">
       <section className="p-hero-section" style={heroStyle}>
         <div className="p-hero-content">
-          <h1 className="p-hero-title fonte-principal">
-            {pageData?.hero?.title || "Crie a Sua Peça Única"}
-          </h1>
-          <p className="p-hero-subtitle">
-            {pageData?.hero?.subtitle ||
-              "Gemas Brilhantes: Onde o brilho revela valor."}
-          </p>
+          <h1 className="p-hero-title fonte-principal">{pageData?.hero?.title || "Crie a Sua Peça Única"}</h1>
+          <p className="p-hero-subtitle">{pageData?.hero?.subtitle || "Gemas Brilhantes: Onde o brilho revela valor."}</p>
         </div>
       </section>
 
       <section className="p-intro-section">
-        <h2 className="p-section-title fonte-principal">
-          {pageData?.intro?.title || "Bem-vindo ao Ateliê"}
-        </h2>
+        <h2 className="p-section-title fonte-principal">{pageData?.intro?.title || "Bem-vindo ao Ateliê"}</h2>
         <p className="p-intro-text">{pageData?.intro?.text1 || " "}</p>
         <p className="p-intro-text">{pageData?.intro?.text2 || " "}</p>
       </section>
@@ -269,59 +266,53 @@ const Personalizadas = () => {
               {pageData?.form?.subtitle || "Preencha o formulário abaixo..."}
             </p>
             <form className="p-consult-form" onSubmit={handleSubmit}>
-              <input
-                name="name"
-                type="text"
-                placeholder="Nome Completo"
-                value={formData.name}
-                onChange={handleChange}
-                required
-              />
-              <input
-                name="email"
-                type="email"
-                placeholder="E-mail"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-              <input
-                name="phone"
-                type="tel"
-                placeholder="Telefone / WhatsApp"
-                value={formData.phone}
-                onChange={handleChange}
-                required
-              />
-              <input
-                name="objective"
-                type="text"
-                placeholder="Ocasião / Objetivo da Joia"
-                value={formData.objective}
-                onChange={handleChange}
-                required
-              />
-              <textarea
-                name="description"
-                placeholder="Descreva a joia desejada (tipo, gemas, estilo, referências...)"
-                value={formData.description}
-                rows="5"
-                onChange={handleChange}
-                required
-              ></textarea>
-              <button
-                type="submit"
-                className="p-submit-button"
-                disabled={isSubmitting}
-              >
-                {isSubmitting
-                  ? "Enviando..."
-                  : "Iniciar Consultoria Personalizada"}
+              <input name="name" type="text" placeholder="Nome Completo" value={formData.name} onChange={handleChange} required />
+              <input name="email" type="email" placeholder="E-mail" value={formData.email} onChange={handleChange} required />
+              <input name="phone" type="tel" placeholder="Telefone / WhatsApp" value={formData.phone} onChange={handleChange} required />
+              <input name="objective" type="text" placeholder="Ocasião / Objetivo da Joia" value={formData.objective} onChange={handleChange} required />
+              <textarea name="description" placeholder="Descreva a joia desejada (tipo, gemas, estilo, referências...)" value={formData.description} rows="5" onChange={handleChange} required></textarea>
+
+              <div className="p-file-input-wrapper">
+                <label className="p-file-label-title">Anexe imagens de referência (opcional)</label>
+                <div className="p-file-input-container">
+                  <label htmlFor="media-upload" className="p-file-upload-button">
+                    <i className="fa-solid fa-upload"></i> Adicionar Arquivos
+                  </label>
+                  <input
+                    id="media-upload"
+                    name="media"
+                    type="file"
+                    onChange={handleFileChange}
+                    accept="image/*,.pdf"
+                    multiple
+                  />
+                </div>
+              </div>
+
+              {selectedFiles.length > 0 && (
+                <div className="p-previews-container">
+                  {selectedFiles.map((file, index) => (
+                    <div key={index} className="p-preview-item">
+                      <button type="button" className="p-remove-file-button" onClick={() => handleRemoveFile(file)}>×</button>
+                      {file.file.type.startsWith('image/') ? (
+                        <img src={file.preview} alt={`Preview ${file.file.name}`} />
+                      ) : (
+                        <div className="p-preview-item-generic">
+                          <i className="fa-solid fa-file"></i>
+                          <span>{file.file.name}</span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <button type="submit" className="p-submit-button" disabled={isSubmitting}>
+                {isSubmitting ? "Enviando..." : "Iniciar Consultoria Personalizada"}
               </button>
             </form>
             <p className="p-form-footer-text">
-              {pageData?.form?.footerText ||
-                "Após o envio, um de nossos especialistas entrará em contato..."}
+              {pageData?.form?.footerText || "Após o envio, um de nossos especialistas entrará em contato..."}
             </p>
           </>
         )}

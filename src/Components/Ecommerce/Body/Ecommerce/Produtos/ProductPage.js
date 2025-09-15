@@ -1,120 +1,165 @@
-// Dentro de src/Components/ClientView/Body/Produtos/ProductPage.js (caminho antigo)
-// Dentro de src/Components/ClientView/Body/Ecommerce/Produtos/ProductPage.js (caminho novo)
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../../../../../Firebase/config';
-import { useCart } from "../../../../../Context/CartContect";
+import productServices from '../../../../../dbServices/productServices';
+import { useCart } from "../../../../../Context/CartContext";
 import './ProductPage.css';
+import { FaShoppingCart, FaCheck, FaGem, FaShieldAlt } from 'react-icons/fa';
+
+const MediaGallery = ({ media, productName }) => {
+    const [selectedMedia, setSelectedMedia] = useState(media?.[0]);
+
+    useEffect(() => {
+        setSelectedMedia(media?.[0]);
+    }, [media]);
+
+    if (!selectedMedia) {
+        // Fallback caso não haja mídia
+        return (
+            <div className="product-media-gallery">
+                <div className="main-media-container">
+                    <img src="https://via.placeholder.com/600x600.png?text=Imagem+Indisponível" alt="Imagem do produto indisponível" className="main-media-item" />
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="product-media-gallery">
+            <div className="main-media-container">
+                {selectedMedia.type === 'video' ? (
+                    <video key={selectedMedia.url} src={selectedMedia.url} autoPlay muted loop controls className="main-media-item" />
+                ) : (
+                    <img src={selectedMedia.url} alt={productName} className="main-media-item" />
+                )}
+            </div>
+            <div className="thumbnail-container">
+                {media.map((item, index) => (
+                    <div key={index} className={`thumbnail-item ${selectedMedia.url === item.url ? 'active' : ''}`} onClick={() => setSelectedMedia(item)}>
+                        {item.type === 'video' ? (<video src={item.url} muted playsInline className="thumbnail-media"/>) : (<img src={item.url} alt={`Thumbnail ${index + 1}`} className="thumbnail-media"/>)}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+const ProductInfo = ({ product }) => {
+    const { addToCart } = useCart();
+    const [addedToCart, setAddedToCart] = useState(false);
+
+    const handleAddToCart = () => {
+        addToCart(product);
+        setAddedToCart(true);
+        setTimeout(() => setAddedToCart(false), 2000);
+    };
+
+    const formattedPrice = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.value);
+    const formattedPromoPrice = product.promotionValue ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.promotionValue) : '';
+    const salePrice = product.promotionValue || product.value;
+    const installmentPrice = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(salePrice / 10);
+
+    return (
+        <div className="product-details-container">
+            <h1 className="product-page-title">{product.name}</h1>
+            
+            <div className="price-section">
+                {product.promotionValue && <span className="promo-price">{formattedPromoPrice}</span>}
+                <span className={`original-price ${product.promotionValue ? 'on-sale' : ''}`}>{formattedPrice}</span>
+            </div>
+            <p className="installment-info-page">ou em até 10x de {installmentPrice} sem juros</p>
+
+            <p className="product-page-description">{product.description}</p>
+            
+            <button onClick={handleAddToCart} className={`buy-button ${addedToCart ? 'added' : ''}`} disabled={addedToCart}>
+                {addedToCart ? <><FaCheck /> Adicionado!</> : <><FaShoppingCart /> Adicionar ao Carrinho</>}
+            </button>
+        </div>
+    );
+};
+
+const ProductSpecs = ({ product }) => {
+    const { info } = product;
+    if (!info || (!info.material && !info.stones?.length)) return null;
+
+    return (
+        <div className="product-specs-section">
+            <h2 className="specs-title">Especificações Técnicas</h2>
+            <div className="specs-grid">
+                {product.itemType === 1 && info.material && (
+                    <div className="spec-item">
+                        <FaGem className="spec-icon" />
+                        <div>
+                            <strong>Material</strong>
+                            <span>{info.material}</span>
+                        </div>
+                    </div>
+                )}
+                {product.itemType === 1 && info.weightInGrams && (
+                    <div className="spec-item">
+                        <FaShieldAlt className="spec-icon" />
+                        <div>
+                            <strong>Peso</strong>
+                            <span>{info.weightInGrams}g</span>
+                        </div>
+                    </div>
+                )}
+                {info.stones?.map((stone, index) => (
+                    <React.Fragment key={index}>
+                        <div className="spec-item header"><strong>{`Gema ${index + 1}: ${stone.stoneType}`}</strong></div>
+                        <div className="spec-item"><span>Cor</span><span className="spec-value">{stone.color}</span></div>
+                        <div className="spec-item"><span>Quilates (ct)</span><span className="spec-value">{stone.carats}</span></div>
+                        <div className="spec-item"><span>Lapidação</span><span className="spec-value">{stone.cut}</span></div>
+                        <div className="spec-item"><span>Claridade</span><span className="spec-value">{stone.clarity}</span></div>
+                        <div className="spec-item"><span>Dimensões (mm)</span><span className="spec-value">{`${stone.lengthInMm} x ${stone.widthInMm} x ${stone.heightInMm}`}</span></div>
+                    </React.Fragment>
+                ))}
+            </div>
+        </div>
+    );
+};
 
 const ProductPage = () => {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-    const [selectedMedia, setSelectedMedia] = useState(null);
-    
-    const { addToCart } = useCart();
-    const [addedToCart, setAddedToCart] = useState(false);
 
     useEffect(() => {
         const fetchProduct = async () => {
+            if (!id) return;
             setLoading(true);
             setError(false);
             try {
-                const docRef = doc(db, 'products', id);
-                const docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    const productData = { id: docSnap.id, ...docSnap.data() };
-                    setProduct(productData);
-                    if (productData.media && productData.media.length > 0) {
-                        setSelectedMedia(productData.media[0]);
-                    }
-                } else {
-                    setError(true);
-                }
+                const productData = await productServices.getProductById(id);
+                const media = (productData.mediaUrls || []).map(url => ({ type: url.includes('.mp4') ? 'video' : 'image', url }));
+                setProduct({ ...productData, media });
             } catch (err) {
-                console.error("Erro ao buscar o produto:", err);
                 setError(true);
             } finally {
                 setLoading(false);
             }
         };
-
         fetchProduct();
     }, [id]);
 
-    const handleAddToCart = () => {
-        addToCart(product);
-        setAddedToCart(true); // Ativa o feedback visual
-        // Reseta o feedback após 2 segundos
-        setTimeout(() => {
-            setAddedToCart(false);
-        }, 2000);
-    };
-
-    if (loading) {
-        return <div className="page-loading-message">Carregando produto...</div>;
-    }
-
+    if (loading) return <div className="page-loading-message">Carregando detalhes da joia...</div>;
     if (error || !product) {
         return (
             <div className="product-not-found">
                 <h2 className="fonte-principal">Produto Não Encontrado</h2>
                 <p>O item que você está procurando não existe ou foi removido.</p>
-                <Link to="/gemas-brilhantes" className="back-to-store-link">Voltar para a Loja</Link>
+                <Link to="/gemas-preciosas" className="back-to-store-link">Voltar para a Loja</Link>
             </div>
         );
     }
 
-    const formattedPrice = new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    }).format(product.price);
-
     return (
         <div className="product-page-wrapper">
             <div className="product-page-container">
-                {/* Coluna da Mídia com Galeria */}
-                <div className="product-media-gallery">
-                    <div className="main-media-container">
-                        {selectedMedia?.type === 'video' ? (
-                            <video key={selectedMedia.url} src={selectedMedia.url} autoPlay muted loop controls className="main-media-item" />
-                        ) : (
-                            <img src={selectedMedia?.url} alt={product.name} className="main-media-item" />
-                        )}
-                    </div>
-                    <div className="thumbnail-container">
-                        {product.media?.map((item, index) => (
-                            <div 
-                                key={index} 
-                                className={`thumbnail-item ${selectedMedia?.url === item.url ? 'active' : ''}`}
-                                onClick={() => setSelectedMedia(item)}
-                            >
-                                {item.type === 'video' ? (
-                                    <video src={item.url} muted playsInline className="thumbnail-media"/>
-                                ) : (
-                                    <img src={item.url} alt={`Thumbnail ${index + 1}`} className="thumbnail-media"/>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Coluna dos Detalhes */}
-                <div className="product-details-container">
-                    <h1 className="product-page-title fonte-principal">{product.name}</h1>
-                    <p className="product-page-price">{formattedPrice}</p>
-                    <p className="product-page-description">{product.description}</p>
-                    
-                    {/* 3. Botão atualizado para adicionar ao carrinho */}
-                    <button onClick={handleAddToCart} className={`buy-button ${addedToCart ? 'added' : ''}`}>
-                        {addedToCart ? 'Adicionado!' : 'Adicionar ao Carrinho'}
-                    </button>
-                </div>
+                <MediaGallery media={product.media} productName={product.name} />
+                <ProductInfo product={product} />
             </div>
+            <ProductSpecs product={product} />
         </div>
     );
 };

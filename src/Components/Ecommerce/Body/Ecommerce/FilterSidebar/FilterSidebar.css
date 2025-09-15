@@ -1,124 +1,30 @@
-.filter-sidebar {
-    width: 100%;
-    max-width: 280px;
-    flex-shrink: 0;
-}
-
-.sidebar-title {
-    font-family: var(--font-primary);
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: var(--primary-color);
-    margin: 0 0 20px 0;
-}
-
-.filter-section {
-    border-bottom: 1px solid var(--border-color);
-    padding: 15px 0;
-}
-
-.section-header {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: var(--font-primary);
-    font-size: 1.1rem;
-    font-weight: 500;
-    padding: 10px 0;
-    color: var(--text-color);
-}
-
-.chevron-icon {
-    transition: transform 0.3s ease;
-}
-
-.filter-section.open .chevron-icon {
-    transform: rotate(180deg);
-}
-
-.section-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease-out;
-}
-
-.filter-section.open .section-content {
-    max-height: 500px;
-    transition: max-height 0.4s ease-in;
-}
-
-.filter-options {
-    padding-top: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.custom-radio {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.custom-radio input[type="radio"] {
-    opacity: 0;
-    position: absolute;
-    width: 1px;
-    height: 1px;
-}
-
-.custom-radio label {
-    font-family: var(--font-primary);
-    font-size: 0.95rem;
-    color: var(--light-text-color);
-    cursor: pointer;
-    padding-left: 30px;
-    transition: color 0.2s ease;
-}
-
-.custom-radio label:hover {
-    color: var(--primary-color);
-}
-
-.custom-radio label::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--border-color);
-    border-radius: 50%;
-    background-color: var(--white-color);
-    transition: border-color 0.2s ease;
-}
-
-.custom-radio label::after {
-    content: "";
-    position: absolute;
-    left: 5px;
-    top: 50%;
-    transform: translateY(-50%) scale(0);
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: var(--accent-color);
-    transition: transform 0.2s ease-in-out;
-}
-
-.custom-radio input[type="radio"]:checked+label::before {
-    border-color: var(--accent-color);
-}
-
-.custom-radio input[type="radio"]:checked+label::after {
-    transform: translateY(-50%) scale(1);
-}
-
-.custom-radio input[type="radio"]:focus-visible+label::before {
-    box-shadow: 0 0 0 3px rgba(76, 130, 195, 0.3);
-}
+.filter-sidebar { width: 100%; max-width: 280px; flex-shrink: 0; }
+.sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.sidebar-title { font-family: var(--font-primary); font-size: 1.4rem; font-weight: 600; color: var(--primary-color); margin: 0; }
+.clear-filters-btn { background: none; border: none; color: var(--text-light); cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+.clear-filters-btn:hover { color: var(--primary-color); }
+.filter-section { border-bottom: 1px solid var(--border-color); padding: 15px 0; }
+.section-header { width: 100%; display: flex; justify-content: space-between; align-items: center; background: none; border: none; cursor: pointer; font-family: var(--font-primary); font-size: 1.1rem; font-weight: 500; padding: 10px 0; color: var(--text-color); }
+.chevron-icon { transition: transform 0.3s ease; }
+.filter-section.open .chevron-icon { transform: rotate(180deg); }
+.section-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
+.filter-section.open .section-content { max-height: 1000px; /* Aumentado para acomodar mais filtros */ transition: max-height 0.4s ease-in; }
+.filter-options { padding-top: 10px; display: flex; flex-direction: column; gap: 12px; }
+.filter-options.scrollable { max-height: 200px; overflow-y: auto; padding-right: 10px; }
+.custom-radio, .custom-checkbox { position: relative; display: flex; align-items: center; }
+.custom-radio input, .custom-checkbox input { opacity: 0; position: absolute; }
+.custom-radio label, .custom-checkbox label { font-family: var(--font-primary); font-size: 0.95rem; color: var(--light-text-color); cursor: pointer; padding-left: 30px; transition: color 0.2s ease; }
+.custom-radio label:hover, .custom-checkbox label:hover { color: var(--primary-color); }
+.custom-radio label::before, .custom-checkbox label::before { content: ""; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; border: 2px solid var(--border-color); background-color: var(--white-color); transition: all 0.2s ease; }
+.custom-radio label::before { border-radius: 50%; }
+.custom-checkbox label::before { border-radius: 4px; }
+.custom-radio input:checked + label::before, .custom-checkbox input:checked + label::before { border-color: var(--accent-color); background-color: var(--accent-color); }
+.custom-checkbox label::after { content: "✔"; position: absolute; left: 3px; top: 50%; transform: translateY(-50%) scale(0); color: white; transition: transform 0.2s ease-in-out; font-size: 14px; }
+.custom-radio label::after { content: ""; position: absolute; left: 5px; top: 50%; transform: translateY(-50%) scale(0); width: 10px; height: 10px; border-radius: 50%; background-color: var(--white-color); transition: transform 0.2s ease-in-out; }
+.custom-radio input:checked + label::after, .custom-checkbox input:checked + label::after { transform: translateY(-50%) scale(1); }
+.advanced-filters { display: flex; flex-direction: column; gap: 15px; padding-top: 10px; }
+.advanced-filters label { font-size: 0.9rem; font-weight: 500; margin-bottom: -5px; }
+.advanced-filters select, .advanced-filters input { width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); font-family: var(--font-primary); font-size: 0.9rem; }
+.price-range { display: flex; align-items: center; gap: 8px; }
+.price-range input { text-align: center; }
+.price-range span { color: var(--text-light); }

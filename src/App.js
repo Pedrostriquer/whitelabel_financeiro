@@ -21,13 +21,18 @@ import MyGeanCashesPage from "./Components/MyGeanCashesPage/MyGeanCashesPage";
 import { NotificationsPage } from "./Components/Notifications/Notifications";
 import { NotificationDetailPage } from "./Components/Notifications/NotificationDetail";
 import Container from "./Components/Ecommerce/Container/Container";
-import { CartProvider } from "./Context/CartContect";
+import { CartProvider } from "./Context/CartContext";
+import { FavoritesProvider } from "./Context/FavoritesContext";
+import { PromotionsProvider } from "./Context/PromotionsContext";
 import Home from "./Components/Ecommerce/Body/Home/Home";
 import GemCash from "./Components/Ecommerce/Body/GemCash/GemCash";
 import GemasBrilhantes from "./Components/Ecommerce/Body/Ecommerce/GemasBrilhantes";
-import ProductPage from "./Components/Ecommerce/Body/Ecommerce/Produtos/ProductPage"
-import Personalizadas from "./Components/Ecommerce/Body/Personalizadas/Personalizadas"
-
+import ProductPage from "./Components/Ecommerce/Body/Ecommerce/Produtos/ProductPage";
+import Personalizadas from "./Components/Ecommerce/Body/Personalizadas/Personalizadas";
+import CartPage from "./Components/Ecommerce/Body/Ecommerce/CartPage/CartPage";
+import FavoritesPage from "./Components/Ecommerce/Body/Ecommerce/FavoritesPage/FavoritesPage";
+import MyOrdersPage from "./Components/Ecommerce/Body/Ecommerce/MyOrders/MyOrdersPage";
+import Blog from "./Components/Ecommerce/Body/Blog/Blog";
 
 function App() {
   return (
@@ -35,57 +40,52 @@ function App() {
       <LoadProvider>
         <AuthProvider>
           <CartProvider>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/redefine-password" element={<RedefinePassword />} />
+            <FavoritesProvider>
+              <PromotionsProvider>
+                <Routes>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/redefine-password" element={<RedefinePassword />} />
 
-              <Route element={<Container />}>
-                <Route path="/ecommerce" element={<Home />} />
-                <Route path="/ecommerce/home" element={<Home />} />
-                <Route path="/ecommerce/gemcash" element={<GemCash />} />
-                <Route path="/ecommerce/gemaspreciosas" element={<GemasBrilhantes />} />
-                <Route path="/ecommerce/product/:id" element={<ProductPage />} />
-                <Route path="/ecommerce/joias" element={<Personalizadas />} />
-              </Route>
+                  <Route element={<Container />}>
+                    <Route path="/ecommerce" element={<Home />} />
+                    <Route path="/ecommerce/home" element={<Home />} />
+                    <Route path="/ecommerce/gemcash" element={<GemCash />} />
+                    <Route path="/ecommerce/gemaspreciosas" element={<GemasBrilhantes />} />
+                    <Route path="/product/:id" element={<ProductPage />} />
+                    <Route path="/ecommerce/joias" element={<Personalizadas />} />
+                    <Route path="/cart" element={<CartPage />} />
+                    <Route path="/favorites" element={<FavoritesPage />} />
+                    <Route path="/meus-pedidos" element={<MyOrdersPage />} />
+                    <Route path="/blog" element={<Blog />} />
+                  </Route>
 
-              <Route path="/" element={<Navigate to="/ecommerce" />} />
+                  <Route path="/" element={<Navigate to="/ecommerce" />} />
 
-              <Route element={<ProtectedRoute />}>
-                <Route element={<MainLayout />}>
-                  <Route index element={<Navigate to="/dashboard" />} />
-                  <Route path="user" element={<UserPage />} />
-
-                  <Route path="dashboard" element={<Dashboard />} />
-                  <Route path="ordens-venda" element={<OrdensVenda />} />
-                  <Route path="ordens-compra" element={<OrdensCompra />} />
-                  <Route path="contratos" element={<ContratosPage />} />
-
-                  <Route path="gemcash" element={<ContratosPage />} />
-                  <Route path="gemcash/new" element={<ContratosPage />} />
-                  <Route
-                    path="gemcash/my-gem-cashes"
-                    element={<MyGeanCashesPage />}
-                  />
-                  <Route path="gemcash/solicitation" element={<Wallet />} />
-                  <Route path="gemcash/extract" element={<ExtratosPage />} />
-
-                  <Route path="notifications" element={<NotificationsPage />} />
-                  <Route
-                    path="notifications/:id"
-                    element={<NotificationDetailPage />}
-                  />
-
-                  <Route
-                    path="contratos/:id"
-                    element={<ContractDetailPage />}
-                  />
-                  <Route path="saques/:id" element={<WithdrawalDetailPage />} />
-                </Route>
-              </Route>
-              <Route path="*" element={<Navigate to="/ecommerce" />} />
-            </Routes>
+                  <Route element={<ProtectedRoute />}>
+                    <Route element={<MainLayout />}>
+                      <Route index element={<Navigate to="/dashboard" />} />
+                      <Route path="user" element={<UserPage />} />
+                      <Route path="dashboard" element={<Dashboard />} />
+                      <Route path="ordens-venda" element={<OrdensVenda />} />
+                      <Route path="ordens-compra" element={<OrdensCompra />} />
+                      <Route path="contratos" element={<ContratosPage />} />
+                      <Route path="gemcash" element={<ContratosPage />} />
+                      <Route path="gemcash/new" element={<ContratosPage />} />
+                      <Route path="gemcash/my-gem-cashes" element={<MyGeanCashesPage />} />
+                      <Route path="gemcash/solicitation" element={<Wallet />} />
+                      <Route path="gemcash/extract" element={<ExtratosPage />} />
+                      <Route path="notifications" element={<NotificationsPage />} />
+                      <Route path="notifications/:id" element={<NotificationDetailPage />} />
+                      <Route path="contratos/:id" element={<ContractDetailPage />} />
+                      <Route path="saques/:id" element={<WithdrawalDetailPage />} />
+                    </Route>
+                  </Route>
+                  <Route path="*" element={<Navigate to="/ecommerce" />} />
+                </Routes>
+              </PromotionsProvider>
+            </FavoritesProvider>
           </CartProvider>
         </AuthProvider>
       </LoadProvider>
