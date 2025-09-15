@@ -6,7 +6,7 @@ const colors = {
 };
 
 const dimensions = {
-    expanded: '350px',
+    expanded: '400px',
     collapsed: '88px',
     transitionSpeed: '0.3s',
 };

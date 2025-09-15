@@ -4,17 +4,33 @@ import style from "./ContractDetailPageStyle.js";
 import formatServices from "../../formatServices/formatServices.js";
 import ReinvestmentModal from "./ReinvestmentModal/ReinvestmentModal.js";
 import VerificationModal from "./VerificationModal.js";
+import PayModal from "../PayModal/PayModal.js";
 import verificationCodeService from "../../dbServices/verificationCodeService.js";
 import contractServices from "../../dbServices/contractServices.js";
 import withdrawServices from "../../dbServices/withdrawServices.js";
+import paymentServices from "../../dbServices/paymentServices.js";
 import { useAuth } from "../../Context/AuthContext.js";
 
 const STATUS_MAP = {
-  1: { text: "Pendente", style: { backgroundColor: "#ffc107", color: "#333" } },
+  1: {
+    text: "Aguardando Pagamento",
+    style: { backgroundColor: "#ffc107", color: "#333" },
+  },
   2: { text: "Valorizando", style: { backgroundColor: "#28a745" } },
   3: { text: "Cancelado", style: { backgroundColor: "#dc3545" } },
   4: { text: "Finalizado", style: { backgroundColor: "#6c757d" } },
   5: { text: "Recomprado", style: { backgroundColor: "#17a2b8" } },
+};
+
+const PAYMENT_STATUS_MAP = {
+  PENDING: {
+    text: "Pendente",
+    style: { backgroundColor: "#ffc107", color: "#333" },
+  },
+  RECEIVED: { text: "Recebido", style: { backgroundColor: "#28a745" } },
+  CONFIRMED: { text: "Confirmado", style: { backgroundColor: "#28a745" } },
+  OVERDUE: { text: "Vencido", style: { backgroundColor: "#dc3545" } },
+  REFUNDED: { text: "Estornado", style: { backgroundColor: "#6c757d" } },
 };
 
 const MediaViewerModal = ({ media, startIndex, onClose }) => {
@@ -70,19 +86,14 @@ const MediaViewerModal = ({ media, startIndex, onClose }) => {
 
 const checkWithdrawalWindow = (rules) => {
   if (!rules || !rules.isActive) return false;
-
   const now = new Date();
   const currentDay = now.getDate();
   const currentTime = now.getHours() * 60 + now.getMinutes();
-
   if (currentDay !== rules.day) return false;
-
   const [startH, startM] = rules.startHour.split(":").map(Number);
   const [stopH, stopM] = rules.stopHour.split(":").map(Number);
-
   const startTimeInMinutes = startH * 60 + startM;
   const stopTimeInMinutes = stopH * 60 + stopM;
-
   return currentTime >= startTimeInMinutes && currentTime <= stopTimeInMinutes;
 };
 
@@ -102,10 +113,13 @@ export default function ContractDetailPage() {
   const [viewerMedia, setViewerMedia] = useState(null);
   const [withdrawRules, setWithdrawRules] = useState(null);
   const [isWithdrawalOpen, setIsWithdrawalOpen] = useState(false);
+  const [paymentDetails, setPaymentDetails] = useState(null);
+  const [isPayModalOpen, setIsPayModalOpen] = useState(false);
 
   const fetchContractData = useCallback(async () => {
     if (!token) return;
     setIsPageLoading(true);
+    setPaymentDetails(null);
     try {
       const [contractData, rulesData] = await Promise.all([
         contractServices.obterContrato(token, id),
@@ -116,6 +130,26 @@ export default function ContractDetailPage() {
       setAutoReinvest(contractData.autoReinvest || false);
       setWithdrawRules(rulesData);
       setIsWithdrawalOpen(checkWithdrawalWindow(rulesData));
+
+      if (contractData.paymentId) {
+        try {
+          let detailsData;
+          if (contractData.paymentMethod?.toUpperCase() === "PIX") {
+            detailsData = await paymentServices.getPaymentDetails(
+              token,
+              contractData.paymentId
+            );
+          } else if (contractData.paymentMethod?.toUpperCase() === "BOLETO") {
+            detailsData = await paymentServices.getBoletoDetails(
+              token,
+              contractData.paymentId
+            );
+          }
+          setPaymentDetails(detailsData);
+        } catch (paymentError) {
+          console.error("Falha ao buscar detalhes do pagamento:", paymentError);
+        }
+      }
     } catch (err) {
       setError("Não foi possível carregar os detalhes do contrato.");
     } finally {
@@ -126,6 +160,16 @@ export default function ContractDetailPage() {
   useEffect(() => {
     fetchContractData();
   }, [fetchContractData]);
+
+  const handleShowPaymentModal = () => {
+    if (paymentDetails) {
+      setIsPayModalOpen(true);
+    } else {
+      alert(
+        "Detalhes do pagamento não encontrados. Tente recarregar a página."
+      );
+    }
+  };
 
   const handleAutoReinvestChange = async (newState) => {
     if (!contract) return;
@@ -213,10 +257,17 @@ export default function ContractDetailPage() {
       </div>
     );
 
-  const statusInfo = STATUS_MAP[contract.status] || {
+  const contractStatusInfo = STATUS_MAP[contract.status] || {
     text: "Desconhecido",
     style: {},
   };
+  const paymentStatusInfo = paymentDetails
+    ? PAYMENT_STATUS_MAP[paymentDetails.status] || {
+        text: paymentDetails.status,
+        style: { backgroundColor: "#6c757d" },
+      }
+    : null;
+
   const mediaItems =
     contract.rockData?.map((url) => ({
       type: url.includes(".mp4") ? "video" : "image",
@@ -224,7 +275,6 @@ export default function ContractDetailPage() {
     })) || [];
   const certificateItems =
     contract.certificados?.map((url) => ({ type: "image", url })) || [];
-
   const isReinvestDisabled = isLoading || !isWithdrawalOpen;
   const reinvestButtonStyle = {
     ...style.actionButton,
@@ -243,8 +293,8 @@ export default function ContractDetailPage() {
               </button>
               <h1 style={style.title}>Contrato #{contract.id}</h1>
             </div>
-            <span style={{ ...style.statusBadge, ...statusInfo.style }}>
-              {statusInfo.text}
+            <span style={{ ...style.statusBadge, ...contractStatusInfo.style }}>
+              {contractStatusInfo.text}
             </span>
           </div>
           <div style={style.detailsGrid}>
@@ -254,6 +304,21 @@ export default function ContractDetailPage() {
                 R${formatServices.formatCurrencyBR(contract.amount)}
               </span>
             </div>
+            {paymentStatusInfo && (
+              <div style={style.metricCard}>
+                <span style={style.metricLabel}>Status do Pagamento</span>
+                <span style={style.metricValue}>
+                  <span
+                    style={{
+                      ...style.paymentStatusBadge,
+                      ...paymentStatusInfo.style,
+                    }}
+                  >
+                    {paymentStatusInfo.text}
+                  </span>
+                </span>
+              </div>
+            )}
             <div style={style.metricCard}>
               <span style={style.metricLabel}>Lucro Disponível</span>
               <span style={style.metricValue}>
@@ -386,7 +451,29 @@ export default function ContractDetailPage() {
 
           <div style={style.actionsPanel}>
             <h2 style={style.actionsTitle}>Ações do Contrato</h2>
-
+            {paymentDetails?.status === "PENDING" && (
+              <>
+                {contract.paymentMethod?.toUpperCase() === "PIX" && (
+                  <button
+                    style={{ ...style.actionButton, ...style.payPixButton }}
+                    onClick={handleShowPaymentModal}
+                  >
+                    <i className="fa-brands fa-pix"></i> Visualizar PIX
+                  </button>
+                )}
+                {contract.paymentMethod?.toUpperCase() === "BOLETO" && (
+                  <button
+                    style={{
+                      ...style.actionButton,
+                      backgroundColor: "#007bff",
+                    }}
+                    onClick={handleShowPaymentModal}
+                  >
+                    <i className="fa-solid fa-barcode"></i> Visualizar Boleto
+                  </button>
+                )}
+              </>
+            )}
             {contract && contract.reivestmentAvaliable && (
               <>
                 <button
@@ -459,7 +546,6 @@ export default function ContractDetailPage() {
                 </div>
               </>
             )}
-
             <button
               style={{ ...style.actionButton, ...style.downloadButton }}
               onClick={() =>
@@ -494,6 +580,16 @@ export default function ContractDetailPage() {
           onClose={() => setViewerMedia(null)}
         />
       )}
+      <PayModal
+        isOpen={isPayModalOpen}
+        onClose={() => {
+          setIsPayModalOpen(false);
+          fetchContractData();
+        }}
+        details={paymentDetails}
+        value={contract?.amount}
+        paymentMethod={contract?.paymentMethod}
+      />
     </>
   );
 }
