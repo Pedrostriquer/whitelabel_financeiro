@@ -3,9 +3,11 @@ import style from "./ContratosPageStyle.js";
 import { useAuth } from "../../Context/AuthContext.js";
 import contractServices from "../../dbServices/contractServices.js";
 import verificationCodeService from "../../dbServices/verificationCodeService.js";
+import paymentServices from "../../dbServices/paymentServices.js";
 import SelectionStep from "./SelectionStep.js";
 import ConfigurationStep from "./ConfigurationStep.js";
 import VerificationModal from "./VerificationModal.js";
+import PayModal from "../PayModal/PayModal.js";
 import { useLocation } from "react-router-dom";
 
 const SuccessAnimation = () => {
@@ -45,6 +47,8 @@ export default function ContratosPage() {
   const contractRef = useRef();
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const location = useLocation();
+  const [isPayModalOpen, setIsPayModalOpen] = useState(false);
+  const [paymentDetails, setPaymentDetails] = useState(null);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -121,6 +125,7 @@ export default function ContratosPage() {
     if (!simulationResult) return;
     setIsLoading(true);
     setIsVerificationModalOpen(false);
+
     try {
       const contractData = {
         clientId: user.id,
@@ -131,18 +136,48 @@ export default function ContratosPage() {
         paymentMethod: paymentMethod,
         verificationCode: verificationCode,
       };
-      await contractServices.criarContrato(token, contractData);
 
-      setShowSuccessAnimation(true);
+      // A resposta agora contém TUDO que precisamos!
+      const response = await contractServices.criarContrato(
+        token,
+        contractData
+      );
 
-      setTimeout(() => {
-        window.location.href = "/gemcash/my-gem-cashes";
-      }, 4000);
+      // --- LÓGICA ATUALIZADA AQUI ---
+      let details = null;
+      if (response.paymentMethod?.toUpperCase() === "PIX") {
+        details = response.pixDetails; // Pega os detalhes do PIX direto da resposta
+      } else if (response.paymentMethod?.toUpperCase() === "BOLETO") {
+        details = response.boletoDetails; // Pega os detalhes do Boleto direto da resposta
+      }
+
+      // O resto da lógica continua igual
+      if (details) {
+        setPaymentDetails(details);
+        setIsPayModalOpen(true);
+        setIsLoading(false);
+      } else {
+        setShowSuccessAnimation(true);
+        setTimeout(() => {
+          window.location.href = "/gemcash/my-gem-cashes";
+        }, 4000);
+      }
     } catch (error) {
-      alert(error.response?.data?.message || "Erro ao comprar o contrato.");
+      // A mensagem de erro agora será mais direta do backend
+      const errorMessage =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Erro ao comprar o contrato.";
+      alert(errorMessage);
       setIsLoading(false);
       resetPage();
     }
+  };
+
+  const handleClosePayModal = () => {
+    setIsPayModalOpen(false);
+    setPaymentDetails(null);
+    window.location.href = "/gemcash/my-gem-cashes";
   };
 
   return (
@@ -185,6 +220,14 @@ export default function ContratosPage() {
         onClose={() => setIsVerificationModalOpen(false)}
         onSubmit={handleBuyContract}
         isLoading={isLoading}
+      />
+
+      <PayModal
+        isOpen={isPayModalOpen}
+        onClose={handleClosePayModal}
+        details={paymentDetails}
+        value={simulationResult?.initialAmount}
+        paymentMethod={paymentMethod}
       />
     </div>
   );

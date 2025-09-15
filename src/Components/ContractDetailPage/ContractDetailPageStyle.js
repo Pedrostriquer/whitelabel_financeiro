@@ -276,6 +276,20 @@ const style = {
     color: colors.primary,
     textDecoration: "none",
   },
+  // --- NOVOS ESTILOS ---
+  paymentStatusBadge: {
+    padding: "4px 12px",
+    borderRadius: "12px",
+    fontSize: "0.9rem",
+    fontWeight: "bold",
+    color: colors.white,
+    display: "inline-block",
+    marginTop: "5px",
+  },
+  payPixButton: {
+    backgroundColor: "#00c65e", // Verde PIX
+    color: colors.white,
+  },
 };
 
 export default style;
