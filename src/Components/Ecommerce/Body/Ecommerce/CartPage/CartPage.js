@@ -37,8 +37,9 @@ const CartPage = () => {
         return product.value;
     };
 
-    const originalSubtotal = cartItems.reduce((sum, item) => sum + (item.product || item).value * (item.quantity || 1), 0);
-    const subtotalWithDiscount = cartItems.reduce((sum, item) => sum + calculateSalePrice(item.product || item) * (item.quantity || 1), 0);
+    // Código simplificado pois a estrutura de 'cartItems' agora é confiável
+    const originalSubtotal = cartItems.reduce((sum, item) => sum + item.product.value * item.quantity, 0);
+    const subtotalWithDiscount = cartItems.reduce((sum, item) => sum + calculateSalePrice(item.product) * item.quantity, 0);
     const totalDiscount = originalSubtotal - subtotalWithDiscount;
 
     const processSale = useCallback(async (paymentDetails) => {
@@ -47,28 +48,22 @@ const CartPage = () => {
             clientId: user.id,
             consultantId: null,
             shippingAddress: shippingAddress,
-            paymentDetails: paymentDetails, // Envia o objeto detalhado do pagamento
+            paymentDetails: paymentDetails,
             items: cartItems.map(item => ({
-                productId: (item.product || item).id,
-                quantity: item.quantity || 1,
-                unitPrice: calculateSalePrice(item.product || item)
+                productId: item.product.id,
+                quantity: item.quantity,
+                unitPrice: calculateSalePrice(item.product)
             }))
         };
         
         try {
             await saleServices.createSale(saleData, token);
             alert('Pedido realizado com sucesso!');
-            await clearCart(); // Chama o clearCart do contexto para limpar localStorage e servidor
+            await clearCart();
             navigate('/meus-pedidos');
         } catch (error) {
             alert('Houve um erro ao finalizar seu pedido. Tente novamente.');
-            setIsSubmitting(false); // Reativa o botão em caso de erro no pagamento
-        } finally {
-            // Este bloco pode não ser alcançado se a navegação ocorrer,
-            // mas é uma boa prática para garantir a limpeza do estado.
-            setIsCheckoutPending(false);
-            setIsPaymentModalVisible(false);
-            sessionStorage.removeItem('checkoutPending');
+            setIsSubmitting(false);
         }
     }, [cartItems, shippingAddress, token, user, clearCart, navigate, getPromotionForProduct]);
 
@@ -80,13 +75,11 @@ const CartPage = () => {
         }
 
         if (!user) {
-            // Sinaliza para o CartContext não sincronizar o carrinho após o login
             sessionStorage.setItem('checkoutPending', 'true');
             hasProcessedOrder.current = false;
             setIsCheckoutPending(true);
             setIsAuthModalVisible(true);
         } else {
-            // Se o usuário já está logado, abre direto o modal de pagamento
             setIsPaymentModalVisible(true);
         }
     };
@@ -103,7 +96,6 @@ const CartPage = () => {
         setIsAuthModalVisible(false);
         if (!user) {
             setIsCheckoutPending(false);
-            // Limpa a "bandeira" se o usuário desistir do login
             sessionStorage.removeItem('checkoutPending');
         }
     };
@@ -112,7 +104,6 @@ const CartPage = () => {
         setIsPaymentModalVisible(false);
         setIsCheckoutPending(false);
         hasProcessedOrder.current = false;
-        // Limpa a "bandeira" se o usuário desistir do pagamento
         sessionStorage.removeItem('checkoutPending');
     };
 
@@ -140,12 +131,14 @@ const CartPage = () => {
                         <span className="header-total">Total</span>
                     </div>
                     {cartItems.map(item => {
-                        const product = item.product || item;
+                        // Não precisamos mais de 'item.product || item', pois a estrutura é garantida
+                        const { product, quantity } = item;
                         if (!product || !product.id) return null;
+
                         const salePrice = calculateSalePrice(product);
                         const originalPrice = product.value;
                         const onSale = salePrice < originalPrice;
-                        const quantity = item.quantity || 1;
+                        
                         return (
                             <div key={product.id} className="cart-item">
                                 <div className="cart-product-details">
@@ -210,7 +203,10 @@ const CartPage = () => {
                     onClose={handlePaymentModalClose}
                     onSubmit={processSale}
                     orderSummary={{
-                        items: cartItems,
+                        items: cartItems.map(item => ({
+                            ...item,
+                            salePrice: calculateSalePrice(item.product)
+                        })),
                         originalSubtotal,
                         totalDiscount,
                         subtotalWithDiscount
