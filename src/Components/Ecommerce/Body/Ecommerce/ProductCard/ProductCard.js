@@ -9,6 +9,23 @@ import { usePromotions } from "../../../../../Context/PromotionsContext";
 import { gsap } from "gsap";
 import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
 
+/**
+ * ✨ NOVA FUNÇÃO (MAIS INTELIGENTE) PARA DETECTAR VÍDEOS ✨
+ * Esta função verifica se uma URL é de um vídeo, ignorando parâmetros
+ * como os tokens do Firebase.
+ * @param {string} url A URL da mídia.
+ * @returns {boolean} Verdadeiro se for uma URL de vídeo.
+ */
+const isVideoUrl = (url) => {
+  if (!url) return false;
+  // Lista de extensões de vídeo que queremos aceitar
+  const videoExtensions = [".mp4", ".mov", ".webm", ".ogg"];
+  // Pega a URL antes de qualquer parâmetro (qualquer coisa depois do '?')
+  const mainUrl = url.toLowerCase().split('?')[0];
+  // Verifica se a URL "limpa" termina com uma das extensões da lista
+  return videoExtensions.some(ext => mainUrl.endsWith(ext));
+};
+
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
@@ -33,7 +50,17 @@ const ProductCard = ({ product }) => {
 
   const originalPrice = product.value;
   const isProductFavorite = isFavorite(product.id);
-  const mediaItems = (product.mediaUrls || []).map(url => ({ type: url.includes('.mp4') ? 'video' : 'image', url }));
+
+  /**
+   * ✨ LÓGICA ATUALIZADA AQUI ✨
+   * Usamos a nova função isVideoUrl para criar a lista de mídias,
+   * garantindo que o 'type' seja definido corretamente como 'video' ou 'image'.
+   */
+  const mediaItems = (product.mediaUrls || []).map(url => ({
+    type: isVideoUrl(url) ? 'video' : 'image',
+    url
+  }));
+
   const formattedSalePrice = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(salePrice);
   const formattedOriginalPrice = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(originalPrice);
   const installmentPrice = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(salePrice / 10);
@@ -210,7 +237,6 @@ const ProductCard = ({ product }) => {
           <svg className="morph" viewBox="0 0 64 13">
             <path d="M0 12C6 12 17 12 32 12C47.9024 12 58 12 64 12V13H0V12Z" />
           </svg>
-          {/* A ÚNICA MUDANÇA FOI AQUI DENTRO DESTA DIV 👇 */}
           <div className="shirt">
             <svg viewBox="0 0 640 640">
               <path 
