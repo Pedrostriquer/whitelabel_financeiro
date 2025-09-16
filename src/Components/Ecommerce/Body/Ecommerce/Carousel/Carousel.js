@@ -1,9 +1,11 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import "./Carousel.css";
 
 const Carousel = ({ mediaItems, productName }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  // Ref para o vídeo atualmente visível
+  const videoRef = useRef(null);
 
   const goToPrevious = useCallback(
     (e) => {
@@ -27,6 +29,17 @@ const Carousel = ({ mediaItems, productName }) => {
     [currentIndex, mediaItems.length]
   );
 
+  useEffect(() => {
+    // Garante que o vídeo toque quando se torna o slide atual
+    if (videoRef.current) {
+      videoRef.current.play().catch(error => {
+        // Autoplay pode ser bloqueado pelo navegador, o muted geralmente resolve.
+        console.log("Erro ao tentar tocar o vídeo:", error);
+      });
+    }
+  }, [currentIndex]);
+
+
   if (!mediaItems || mediaItems.length === 0) {
     return (
       <img
@@ -37,8 +50,6 @@ const Carousel = ({ mediaItems, productName }) => {
     );
   }
 
-  const currentMedia = mediaItems[currentIndex];
-
   return (
     <div className="carousel-wrapper">
       <div
@@ -47,23 +58,28 @@ const Carousel = ({ mediaItems, productName }) => {
       >
         {mediaItems.map((media, index) => (
           <div className="carousel-slide" key={media.url || index}>
+            {/* --- ALTERAÇÃO PRINCIPAL AQUI --- */}
             {media.type === "video" ? (
               <video
+                // Adicionamos a ref aqui se este for o vídeo atual
+                ref={index === currentIndex ? videoRef : null}
                 src={media.url}
                 className="product-media"
-                autoPlay
-                loop
-                muted
-                playsInline
-                alt={`Vídeo de ${productName}`}
+                autoPlay // Tenta iniciar automaticamente
+                loop     // Repete o vídeo
+                muted    // Essencial para o autoPlay funcionar na maioria dos navegadores
+                playsInline // Importante para o vídeo não abrir em tela cheia no iOS
+                aria-label={`Vídeo de ${productName}`}
               />
             ) : (
               <img
                 src={media.url}
                 alt={`Imagem ${index + 1} de ${productName}`}
                 className="product-media"
+                loading="lazy" // Boa prática para imagens em carrosséis
               />
             )}
+            {/* --- FIM DA ALTERAÇÃO --- */}
           </div>
         ))}
       </div>
@@ -89,6 +105,12 @@ const Carousel = ({ mediaItems, productName }) => {
               <div
                 key={index}
                 className={`dot ${currentIndex === index ? "active" : ""}`}
+                // Adicionei um onClick para os pontos, melhorando a usabilidade
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setCurrentIndex(index);
+                }}
               />
             ))}
           </div>
