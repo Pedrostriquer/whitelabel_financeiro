@@ -11,9 +11,12 @@ const paymentServices = {
    */
   getPaymentDetails: async (token, paymentId) => {
     try {
-      const response = await axios.get(`${BASE_ROUTE}payment/${paymentId}/details`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        `${BASE_ROUTE}payment/${paymentId}/details`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       return response.data;
     } catch (error) {
       console.error("Erro ao obter detalhes do PIX:", error);
@@ -29,15 +32,43 @@ const paymentServices = {
    */
   getBoletoDetails: async (token, paymentId) => {
     try {
-      const response = await axios.get(`${BASE_ROUTE}payment/${paymentId}/boleto-details`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        `${BASE_ROUTE}payment/${paymentId}/boleto-details`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       return response.data;
     } catch (error) {
       console.error("Erro ao obter detalhes do Boleto:", error);
       throw error;
     }
-  }
+  },
+
+  /**
+   * Força a verificação do status de um pagamento com o backend.
+   * O backend irá consultar o Mercado Pago e atualizar o status no banco de dados.
+   * @param {string} token - O token de autenticação do usuário.
+   * @param {string} paymentId - O ID do pagamento no Mercado Pago.
+   * @returns {Promise<object>} - A resposta do backend com o status atualizado.
+   */
+  syncPaymentStatus: async (token, paymentId) => {
+    try {
+      // Usamos POST, como definido no seu Controller. O segundo argumento {} é o corpo da requisição (vazio).
+      const response = await axios.post(
+        `${BASE_ROUTE}payment/${paymentId}/sync-status`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      // Não logamos o erro aqui para não poluir o console a cada 5s em caso de falha.
+      // A lógica que chama essa função pode decidir o que fazer.
+      throw error;
+    }
+  },
 };
 
 export default paymentServices;
