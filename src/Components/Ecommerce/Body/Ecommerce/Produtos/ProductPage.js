@@ -5,7 +5,17 @@ import { useCart } from "../../../../../Context/CartContext";
 import './ProductPage.css';
 import { FaShoppingCart, FaCheck, FaGem, FaShieldAlt } from 'react-icons/fa';
 
+// ✨ 1. ADICIONAMOS A MESMA FUNÇÃO AUXILIAR AQUI ✨
+// Ela garante a detecção correta de vídeos, mesmo com URLs complexas.
+const isVideoUrl = (url) => {
+  if (!url) return false;
+  const videoExtensions = [".mp4", ".mov", ".webm", ".ogg"];
+  const mainUrl = url.toLowerCase().split('?')[0];
+  return videoExtensions.some(ext => mainUrl.endsWith(ext));
+};
+
 const MediaGallery = ({ media, productName }) => {
+    // ... Nenhuma alteração necessária neste componente
     const [selectedMedia, setSelectedMedia] = useState(media?.[0]);
 
     useEffect(() => {
@@ -13,7 +23,6 @@ const MediaGallery = ({ media, productName }) => {
     }, [media]);
 
     if (!selectedMedia) {
-        // Fallback caso não haja mídia
         return (
             <div className="product-media-gallery">
                 <div className="main-media-container">
@@ -44,6 +53,7 @@ const MediaGallery = ({ media, productName }) => {
 };
 
 const ProductInfo = ({ product }) => {
+    // ... Nenhuma alteração necessária neste componente
     const { addToCart } = useCart();
     const [addedToCart, setAddedToCart] = useState(false);
 
@@ -78,6 +88,7 @@ const ProductInfo = ({ product }) => {
 };
 
 const ProductSpecs = ({ product }) => {
+    // ... Nenhuma alteração necessária neste componente
     const { info } = product;
     if (!info || (!info.material && !info.stones?.length)) return null;
 
@@ -131,7 +142,14 @@ const ProductPage = () => {
             setError(false);
             try {
                 const productData = await productServices.getProductById(id);
-                const media = (productData.mediaUrls || []).map(url => ({ type: url.includes('.mp4') ? 'video' : 'image', url }));
+                
+                // ✨ 2. USAMOS A FUNÇÃO isVideoUrl AQUI ✨
+                // Trocamos a lógica antiga pela nova, garantindo que o 'type' seja correto.
+                const media = (productData.mediaUrls || []).map(url => ({
+                    type: isVideoUrl(url) ? 'video' : 'image',
+                    url
+                }));
+
                 setProduct({ ...productData, media });
             } catch (err) {
                 setError(true);

@@ -64,7 +64,7 @@
 }
 
 .product-card:hover .product-media {
-  transform: scale(1.08);
+  transform: scale(1.0);
 }
 
 /* --- Overlay e Badges --- */
