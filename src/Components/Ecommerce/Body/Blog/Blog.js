@@ -33,25 +33,19 @@ const useOnScreen = (options) => {
 // --- HOOK DO CONTADOR DE VISUALIZAÇÕES ATUALIZADO ---
 const useViewCount = (initialViews, postId) => {
   const [views, setViews] = useState(initialViews);
-  // Lógica de localStorage removida para facilitar os testes.
   const [hasViewed, setHasViewed] = useState(false);
   const [animate, setAnimate] = useState(false);
-  // Requisito mais estrito: 100% do card precisa estar visível.
   const [ref, isVisible] = useOnScreen({ threshold: 1.0 });
 
   useEffect(() => {
     if (isVisible && !hasViewed) {
-      // Adiciona um delay de 1 segundo antes de contar a view.
       const viewTimeout = setTimeout(() => {
         setViews(prevViews => prevViews + 1);
-        setHasViewed(true); // Marca como visualizado apenas nesta sessão.
-
+        setHasViewed(true);
         setAnimate(true);
         const animationTimeout = setTimeout(() => setAnimate(false), 500);
         return () => clearTimeout(animationTimeout);
-
-      }, 1000); // Delay de 1000ms (1 segundo)
-
+      }, 1000);
       return () => clearTimeout(viewTimeout);
     }
   }, [isVisible, hasViewed, postId]);
@@ -269,10 +263,11 @@ const BlogPostCard = ({ post }) => {
   );
 };
 
-const TimelineItem = ({ post }) => {
+// **ALTERAÇÃO**: A classe `timeline-item` foi renomeada para `blog-post-wrapper`
+const PostWrapper = ({ post }) => {
     const [ref, isVisible] = useOnScreen({ threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
     return (
-      <div ref={ref} className={`timeline-item ${isVisible ? 'is-visible' : ''}`}>
+      <div ref={ref} className={`blog-post-wrapper ${isVisible ? 'is-visible' : ''}`}>
         <BlogPostCard post={post} />
       </div>
     );
@@ -381,8 +376,9 @@ const Blog = () => {
       </section>
 
       <main className="blog-main-content">
-        <div className="blog-timeline">
-          {visiblePosts.map(post => <TimelineItem key={post.id} post={post} />)}
+        {/* **ALTERAÇÃO**: A classe `blog-timeline` foi renomeada para `blog-posts-container` */}
+        <div className="blog-posts-container">
+          {visiblePosts.map(post => <PostWrapper key={post.id} post={post} />)}
         </div>
         
         {hasMore && <div ref={loadMoreTriggerRef} />}
