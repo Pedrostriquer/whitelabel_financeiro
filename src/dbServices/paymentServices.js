@@ -17,6 +17,8 @@ const paymentServices = {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
+      console.log(response.data)
       return response.data;
     } catch (error) {
       console.error("Erro ao obter detalhes do PIX:", error);
@@ -66,6 +68,31 @@ const paymentServices = {
     } catch (error) {
       // Não logamos o erro aqui para não poluir o console a cada 5s em caso de falha.
       // A lógica que chama essa função pode decidir o que fazer.
+      throw error;
+    }
+  },
+
+   /**
+   * Busca os detalhes de um pagamento já existente pelo seu ID.
+   * Usado na página de detalhes do pedido para reabrir o modal de pagamento.
+   * @param {string} token - O token de autenticação do usuário.
+   * @param {string} paymentId - O ID do pagamento (MercadoPago ID).
+   * @returns {Promise<object>} - Os detalhes do pagamento (PIX ou Boleto).
+   */
+   getPaymentDetailsByPaymentId: async (token, paymentId) => {
+    try {
+      // Chama o novo endpoint que criamos no backend
+      const response = await axios.get(
+        `${BASE_ROUTE}payment/${paymentId}/details-by-paymentid`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      console.log(response.data)
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao obter detalhes do pagamento existente:", error);
       throw error;
     }
   },

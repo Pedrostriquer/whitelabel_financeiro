@@ -168,11 +168,10 @@ export const CartProvider = ({ children }) => {
 
         try {
             if (isAuthenticated && token && previousCart.length > 0) {
-                // Idealmente, você teria um endpoint para limpar o carrinho de uma vez
-                // Se não, você precisaria iterar e remover um por um
                 await cartServices.clearCart(token);
             }
             localStorage.removeItem('cart');
+            await fetchCart();
         } catch (error) {
             console.error("Falha ao limpar o carrinho no servidor, revertendo.", error);
             setCartItems(previousCart);
@@ -186,6 +185,7 @@ export const CartProvider = ({ children }) => {
         removeFromCart,
         updateItemQuantity,
         clearCart,
+        fetchCart
     };
 
     return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

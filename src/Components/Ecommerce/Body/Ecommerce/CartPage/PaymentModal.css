@@ -1,3 +1,4 @@
+/* PaymentModal.css */
 .payment-modal-backdrop {
     position: fixed;
     top: 0;
@@ -9,7 +10,6 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    /* padding-top: 40px; */
 }
 
 .payment-modal-content {
@@ -19,13 +19,20 @@
     width: 90%;
     max-width: 800px;
     position: relative;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
     animation: fadeIn 0.3s ease-out;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .payment-modal-close {
@@ -51,11 +58,13 @@
     gap: 30px;
 }
 
-.order-summary-section, .payment-options-section {
+.order-summary-section,
+.payment-options-section {
     flex: 1;
 }
 
-.order-summary-section h3, .payment-options-section h3 {
+.order-summary-section h3,
+.payment-options-section h3 {
     font-size: 1.2rem;
     color: #333;
     margin-bottom: 15px;
@@ -105,20 +114,23 @@
 
 .payment-methods {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 15px;
     margin-bottom: 20px;
 }
 
 .method-box {
     display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 10px;
-    padding: 12px;
+    padding: 15px;
     border: 1px solid #ccc;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
+    min-height: 80px;
 }
 
 .method-box:hover {
@@ -130,43 +142,6 @@
     border-color: #007bff;
     background-color: #e7f1ff;
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
-.card-form-container {
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #fafafa;
-    animation: slideDown 0.4s ease-out;
-}
-
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.card-form-container .form-group {
-    margin-bottom: 15px;
-}
-
-.card-form-container label {
-    display: block;
-    margin-bottom: 5px;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-.card-form-container input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
-}
-
-.card-form-container .form-row {
-    display: flex;
-    gap: 15px;
 }
 
 .payment-modal-footer {
@@ -235,6 +210,18 @@
     animation: slideDown 0.4s ease-out;
 }
 
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .balance-input-wrapper .input-group {
     display: flex;
     align-items: center;
@@ -290,15 +277,26 @@
     text-align: center;
 }
 
+.full-payment-message {
+    text-align: center;
+    padding: 20px;
+    background-color: #e7f1ff;
+    border: 1px solid #b3d7ff;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.full-payment-message p {
+    margin: 0;
+    font-weight: 500;
+    color: #004085;
+}
+
+
 /* --- Media Queries para Responsividade do Modal --- */
 
-/* Para tablets e celulares (telas de até 768px de largura) */
 @media (max-width: 768px) {
-    /* .payment-modal-backdrop{
-        padding-top: 10px;
-    } */
     .payment-modal-content {
-        /* Permite que o modal cresça em altura, com rolagem interna */
         max-height: 90vh;
         overflow-y: auto;
         padding: 20px;
@@ -306,53 +304,38 @@
     }
 
     .payment-modal-body {
-        /* Transforma o layout de duas colunas em uma única coluna */
         flex-direction: column;
         gap: 25px;
     }
 
     .order-summary-section {
-        /* Garante que o resumo do pedido venha primeiro */
         order: 1;
     }
 
     .payment-options-section {
-        /* Garante que as opções de pagamento venham depois */
         order: 2;
     }
 
     .summary-items-list {
-        /* Remove a altura fixa para que a lista se expanda conforme necessário */
         max-height: none;
     }
 }
 
-/* Ajustes finos para celulares pequenos (telas de até 480px de largura) */
 @media (max-width: 480px) {
-    .payment-modal-backdrop{
+    .payment-modal-backdrop {
         padding-top: 10px;
     }
+
     .payment-modal-content h2 {
-        font-size: 1.5rem; /* Reduz o título principal */
+        font-size: 1.5rem;
     }
 
     .summary-total-row.grand-total {
-        font-size: 1.1rem; /* Reduz a fonte do total a pagar */
+        font-size: 1.1rem;
     }
 
-    .card-form-container .form-row {
-        /* Empilha os campos 'Validade' e 'CVC' para não ficarem espremidos */
-        flex-direction: column;
-        gap: 15px;
-    }
-    
     .finalize-payment-btn {
-        font-size: 1rem; /* Reduz a fonte do botão principal */
+        font-size: 1rem;
         padding: 12px;
-    }
-
-    .payment-methods {
-        /* Garante que os métodos de pagamento fiquem com um tamanho mínimo bom */
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     }
 }

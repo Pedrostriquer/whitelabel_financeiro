@@ -142,9 +142,16 @@ export default function PayModal({
   const isBoleto = paymentMethod?.toUpperCase() === "BOLETO";
 
   // URL do boleto vindo diretamente dos detalhes do pagamento
-  const bankSlipUrl =
+  var bankSlipUrl =
     details?.mercadoPagoResponseObject?.transaction_details
       .external_resource_url;
+
+  if(!bankSlipUrl){
+    bankSlipUrl = details.bankSlipUrl;
+  }
+
+  console.log(bankSlipUrl)
+
 
   const handleCopy = () => {
     let textToCopy = "";
@@ -256,3 +263,5 @@ export default function PayModal({
     </div>
   );
 }
+
+

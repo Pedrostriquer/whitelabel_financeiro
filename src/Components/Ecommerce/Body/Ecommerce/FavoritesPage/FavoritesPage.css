@@ -3,6 +3,7 @@
     margin: 0 auto;
     padding: 60px 40px;
     animation: fadeIn 0.5s ease-in-out;
+    min-height: 80vh;
 }
 
 .favorites-title {

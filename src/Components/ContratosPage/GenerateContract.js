@@ -1,49 +1,28 @@
+// GeneratedContract.js (MODIFICADO)
 import React from "react";
 import style from "./ContratosPageStyle";
-import formatServices from "../../formatServices/formatServices";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFileAlt } from "@fortawesome/free-solid-svg-icons";
 
 const GeneratedContract = ({
-  contract,
+  // contract, // Não precisamos mais dele aqui
   handleBuy,
   termsAccepted,
   setTermsAccepted,
   paymentMethod,
   setPaymentMethod,
-  contractRef,
-  user,
+  // contractRef, // Não é mais passado por aqui
+  // user, // Não precisamos mais dele aqui
+  onViewContract, // <<=== NOVA PROP PARA ABRIR O MODAL
 }) => (
   <div style={style.generatedContractWrapper}>
-    <div ref={contractRef} style={style.contractTextBox}>
-      <h4>Termos & Condições</h4>
-      <p>
-        <strong>CONTRATANTE:</strong> {user.name}, CPF/CNPJ:{" "}
-        {formatServices.formatCpfCnpj(user.cpfCnpj)}.
-      </p>
-      <p>
-        <strong>CONTRATADA:</strong> Gemas Brilhantes Co., CNPJ:
-        12.345.678/0001-99.
-      </p>
-      <p>
-        <strong>OBJETO:</strong> O presente contrato tem por objeto a aquisição
-        de um plano GemCash no valor de{" "}
-        <strong>
-          R$ {formatServices.formatCurrencyBR(contract.initialAmount)}
-        </strong>
-        , com prazo de <strong>{contract.months} meses</strong> e uma taxa de
-        valorização mensal de{" "}
-        <strong>{contract.monthlyPercentage.toFixed(2)}%</strong>.
-      </p>
-      <p>
-        A CONTRATADA se compromete a gerir os recursos aportados pelo
-        CONTRATANTE, aplicando-os em operações no mercado de pedras preciosas,
-        visando a obtenção da rentabilidade acordada. O valor final estimado do
-        contrato é de{" "}
-        <strong>
-          R$ {formatServices.formatCurrencyBR(contract.finalAmount)}
-        </strong>
-        .
-      </p>
-    </div>
+    {/* O TEXTO DO CONTRATO FOI REMOVIDO DAQUI */}
+
+    {/* BOTÃO PARA VISUALIZAR O CONTRATO */}
+    <button onClick={onViewContract} style={style.viewContractButton}>
+      <FontAwesomeIcon icon={faFileAlt} style={{ marginRight: "10px" }} />
+      Visualizar Minuta do Contrato
+    </button>
 
     <div style={style.paymentSection}>
       <h4 style={style.paymentSectionH3}>Método de Pagamento</h4>
