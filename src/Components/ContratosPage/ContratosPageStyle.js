@@ -325,6 +325,28 @@ const style = {
     textAlign: "right",
     width: "100%",
   },
+  viewContractButton: {
+    width: "100%",
+    padding: "15px 20px",
+    backgroundColor: "#f0f2f5",
+    color: "#0056b3",
+    border: "1px solid #d1d9e6",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontSize: "1rem",
+    fontWeight: "600",
+    textAlign: "center",
+    marginBottom: "20px", // Espaçamento para a próxima seção
+    transition: "background-color 0.2s, color 0.2s",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    // Adicionando um hover para ficar mais interativo
+    ":hover": {
+      backgroundColor: "#e2e6ea",
+      color: "#003d82",
+    },
+  },
 };
 
 export default style;

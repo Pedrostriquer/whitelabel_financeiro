@@ -2,6 +2,7 @@
 
 .cart-page-wrapper {
     max-width: 1200px;
+    min-height: 80vh;
     margin: 50px auto;
     padding: 0 40px;
     font-family: 'Poppins', sans-serif;

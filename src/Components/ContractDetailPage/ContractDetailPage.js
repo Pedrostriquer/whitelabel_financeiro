@@ -140,10 +140,12 @@ export default function ContractDetailPage() {
               contractData.paymentId
             );
           } else if (contractData.paymentMethod?.toUpperCase() === "BOLETO") {
-            detailsData = await paymentServices.getBoletoDetails(
+            console.log("boletin")
+            detailsData = await paymentServices.getPaymentDetails(
               token,
               contractData.paymentId
             );
+            console.log(detailsData)
           }
           setPaymentDetails(detailsData);
         } catch (paymentError) {
@@ -281,6 +283,7 @@ export default function ContractDetailPage() {
     ...style.reinvestButton,
     ...(isReinvestDisabled && { opacity: 0.6, cursor: "not-allowed" }),
   };
+
 
   return (
     <>
@@ -556,9 +559,7 @@ export default function ContractDetailPage() {
               (PDF)
             </button>
           </div>
-          <button onClick={() => navigate(-1)} style={style.backLink}>
-            &larr; Voltar
-          </button>
+
         </div>
       </div>
       <ReinvestmentModal

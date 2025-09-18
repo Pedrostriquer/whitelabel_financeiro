@@ -1,3 +1,5 @@
+/* src/Components/Ecommerce/Body/Ecommerce/MyOrders/MyOrdersPage.css */
+
 .orders-container {
     max-width: 900px;
     margin: 50px auto;
@@ -7,8 +9,15 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .orders-title {
@@ -24,11 +33,21 @@
     gap: 20px;
 }
 
+/* O card inteiro agora é um link */
+.order-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
 .order-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
     background-color: #fff;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
-    overflow: hidden;
+    padding: 20px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -37,13 +56,22 @@
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
+.order-card-image img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.order-card-details {
+    flex-grow: 1;
+}
+
 .order-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 8px;
 }
 
 .order-card-header h3 {
@@ -52,29 +80,25 @@
     color: #122C4F;
 }
 
-.order-card-header p {
-    margin: 5px 0 0;
+.order-card-date,
+.order-card-items-count {
+    font-size: 0.9em;
+    color: #6c757d;
+    margin: 4px 0;
+}
+
+.order-card-total {
+    text-align: right;
+}
+
+.order-card-total span {
+    display: block;
     font-size: 0.9em;
     color: #6c757d;
 }
 
-.order-card-body {
-    padding: 20px;
-    font-size: 0.95em;
-    color: #495057;
-}
-
-.order-card-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    background-color: #f8f9fa;
-    border-top: 1px solid #e9ecef;
-    font-size: 1.1em;
-}
-
-.order-card-footer strong {
+.order-card-total strong {
+    font-size: 1.2em;
     color: #122C4F;
     font-weight: 700;
 }
@@ -88,11 +112,29 @@
     text-transform: capitalize;
 }
 
-/* Cores dos Status - ajuste os nomes conforme os status da sua API */
-.status-pendingpayment, .status-processing { background-color: #ffc107; color: #333; }
-.status-shipped { background-color: #17a2b8; }
-.status-delivered { background-color: #28a745; }
-.status-cancelled, .status-refunded { background-color: #dc3545; }
+.status-pendingpayment,
+.status-processing {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.status-shipped {
+    background-color: #17a2b8;
+}
+
+.status-delivered {
+    background-color: #28a745;
+}
+
+.status-cancelled,
+.status-refunded {
+    background-color: #dc3545;
+}
+
+.status-processing {
+    background-color: #007bff;
+}
+
 
 /* Estados de loading e vazio */
 .orders-container.loading,

@@ -1,9 +1,10 @@
+// src/pages/ContratosPage/ContratosPage.js (Arquivo completo e atualizado)
+
 import React, { useState, useRef, useEffect } from "react";
 import style from "./ContratosPageStyle.js";
 import { useAuth } from "../../Context/AuthContext.js";
 import contractServices from "../../dbServices/contractServices.js";
 import verificationCodeService from "../../dbServices/verificationCodeService.js";
-import paymentServices from "../../dbServices/paymentServices.js";
 import SelectionStep from "./SelectionStep.js";
 import ConfigurationStep from "./ConfigurationStep.js";
 import VerificationModal from "./VerificationModal.js";
@@ -50,6 +51,9 @@ export default function ContratosPage() {
   const [isPayModalOpen, setIsPayModalOpen] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState(null);
 
+  // <<== NOVO ESTADO PARA ARMAZENAR O PDF EM BASE64 ==>>
+  const [contractPdf, setContractPdf] = useState(null);
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const fromSite = params.get("fromSite");
@@ -87,6 +91,7 @@ export default function ContratosPage() {
     setSimulationResult(null);
     setTermsAccepted(false);
     setWithGem(false);
+    setContractPdf(null); // <<== Limpa o PDF ao resetar
   };
 
   const handleSimulationChange = (simulation) => {
@@ -103,11 +108,16 @@ export default function ContratosPage() {
     setSimulationResult(null);
   };
 
-  const handleOpenVerificationModal = async () => {
+  // <<== FUNÇÃO ATUALIZADA PARA RECEBER O PDF ==>>
+  const handleOpenVerificationModal = async (pdfBase64) => {
     if (!termsAccepted) {
       alert("Você precisa aceitar os termos do contrato para continuar.");
       return;
     }
+
+    // <<== ARMAZENA O PDF NO ESTADO ANTES DE ABRIR O MODAL ==>>
+    setContractPdf(pdfBase64);
+
     setIsLoading(true);
     try {
       await verificationCodeService.enviarCodigoDeVerificacao(token);
@@ -121,8 +131,9 @@ export default function ContratosPage() {
     }
   };
 
+  // <<== FUNÇÃO ATUALIZADA PARA ENVIAR O PDF ==>>
   const handleBuyContract = async (verificationCode) => {
-    if (!simulationResult) return;
+    if (!simulationResult || !contractPdf) return; // Garante que temos o PDF
     setIsLoading(true);
     setIsVerificationModalOpen(false);
 
@@ -135,23 +146,21 @@ export default function ContratosPage() {
         description: "Contrato criado via plataforma",
         paymentMethod: paymentMethod,
         verificationCode: verificationCode,
+        pdfBase64: contractPdf, // <<== ENVIA O PDF PARA O BACKEND AQUI!
       };
 
-      // A resposta agora contém TUDO que precisamos!
       const response = await contractServices.criarContrato(
         token,
         contractData
       );
 
-      // --- LÓGICA ATUALIZADA AQUI ---
       let details = null;
       if (response.paymentMethod?.toUpperCase() === "PIX") {
-        details = response.pixDetails; // Pega os detalhes do PIX direto da resposta
+        details = response.pixDetails;
       } else if (response.paymentMethod?.toUpperCase() === "BOLETO") {
-        details = response.boletoDetails; // Pega os detalhes do Boleto direto da resposta
+        details = response.boletoDetails;
       }
 
-      // O resto da lógica continua igual
       if (details) {
         setPaymentDetails(details);
         setIsPayModalOpen(true);
@@ -163,7 +172,6 @@ export default function ContratosPage() {
         }, 4000);
       }
     } catch (error) {
-      // A mensagem de erro agora será mais direta do backend
       const errorMessage =
         error.response?.data?.error ||
         error.response?.data?.message ||
@@ -206,7 +214,7 @@ export default function ContratosPage() {
           simulation={simulationResult}
           onBack={handleBackToSelection}
           user={user}
-          handleBuy={handleOpenVerificationModal}
+          handleBuy={handleOpenVerificationModal} // Passa a função atualizada
           termsAccepted={termsAccepted}
           setTermsAccepted={setTermsAccepted}
           paymentMethod={paymentMethod}

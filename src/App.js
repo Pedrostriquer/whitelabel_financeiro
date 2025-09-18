@@ -33,6 +33,36 @@ import CartPage from "./Components/Ecommerce/Body/Ecommerce/CartPage/CartPage";
 import FavoritesPage from "./Components/Ecommerce/Body/Ecommerce/FavoritesPage/FavoritesPage";
 import MyOrdersPage from "./Components/Ecommerce/Body/Ecommerce/MyOrders/MyOrdersPage";
 import Blog from "./Components/Ecommerce/Body/Blog/Blog";
+import OrderDetailPage from "./Components/Ecommerce/Body/Ecommerce/MyOrders/OrderDetailPage"; // <-- NOVO IMPORT
+import ContractComponent from "./Components/ContractComponent/ContractComponent";
+import AnimatedContract from "./Components/ContractComponent/ContractComponent";
+
+
+const mockClientData = {
+  name: "João da Silva",
+  cpfCnpj: "123.456.789-00",
+  rg: "98.765.432-1", // Você pode deixar como "" se não houver RG
+  address: {
+    fullAddress: "Rua das Flores, 100 - Centro, São Paulo-SP, CEP 01000-000"
+  },
+  // Outros campos da sua classe Client, se precisar
+  email: "joao.silva@exemplo.com",
+  phoneNumber: "(11) 98765-4321",
+  birthDate: "1990-05-15T00:00:00Z"
+};
+
+// Objeto contractData falso com os campos do seu modelo Contract
+const mockContractData = {
+  amount: 5000.00,
+  finalAmount: 5000.00 * (1 + 0.0175 * 12),
+  gainPercentage: 1.75,
+  duration: 12,
+  activationDate: "2025-09-18T00:00:00Z",
+  // Outros campos da sua classe Contract, se precisar
+  allowWithdraw: true,
+  autoReinvest: false,
+  status: 1
+};
 
 function App() {
   return (
@@ -47,6 +77,7 @@ function App() {
                   <Route path="/register" element={<Register />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/redefine-password" element={<RedefinePassword />} />
+                  <Route path="/minuta" element={<ContractComponent clientData={mockClientData} contractData={mockContractData} />} />
 
                   <Route element={<Container />}>
                     <Route path="/ecommerce" element={<Home />} />
@@ -58,6 +89,7 @@ function App() {
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/favorites" element={<FavoritesPage />} />
                     <Route path="/meus-pedidos" element={<MyOrdersPage />} />
+                    <Route path="/meus-pedidos/:id" element={<OrderDetailPage />} /> 
                     <Route path="/blog" element={<Blog />} />
                   </Route>
 
