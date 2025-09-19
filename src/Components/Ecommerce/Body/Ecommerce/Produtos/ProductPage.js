@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import productServices from '../../../../../dbServices/productServices';
 import { useCart } from "../../../../../Context/CartContext";
 import './ProductPage.css';
 import { FaShoppingCart, FaCheck, FaGem, FaShieldAlt } from 'react-icons/fa';
 
-// ✨ 1. ADICIONAMOS A MESMA FUNÇÃO AUXILIAR AQUI ✨
-// Ela garante a detecção correta de vídeos, mesmo com URLs complexas.
+// Função auxiliar para detecção de vídeos
 const isVideoUrl = (url) => {
   if (!url) return false;
   const videoExtensions = [".mp4", ".mov", ".webm", ".ogg"];
@@ -14,13 +13,49 @@ const isVideoUrl = (url) => {
   return videoExtensions.some(ext => mainUrl.endsWith(ext));
 };
 
+// ========================================================================
+// ✨ COMPONENTE ATUALIZADO COM LÓGICA DE ZOOM ✨
+// ========================================================================
 const MediaGallery = ({ media, productName }) => {
-    // ... Nenhuma alteração necessária neste componente
     const [selectedMedia, setSelectedMedia] = useState(media?.[0]);
 
+    // Estados e Ref para a funcionalidade de zoom
+    const [isZooming, setIsZooming] = useState(false);
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+    const containerRef = useRef(null);
+    
+    // Nível de ampliação (2.5 = 250% do tamanho original)
+    const zoomLevel = 2.6;
+
     useEffect(() => {
+        // Reseta a mídia selecionada quando o produto muda
         setSelectedMedia(media?.[0]);
     }, [media]);
+
+    // Funções para lidar com os eventos do mouse no contêiner da imagem
+    const handleMouseEnter = () => {
+        // Ativa o zoom apenas se a mídia selecionada for uma imagem
+        if (selectedMedia?.type === 'image') {
+            setIsZooming(true);
+        }
+    };
+
+    const handleMouseLeave = () => {
+        setIsZooming(false);
+    };
+
+    const handleMouseMove = (e) => {
+        if (!containerRef.current) return;
+        
+        // Pega o tamanho e a posição do contêiner da imagem na tela
+        const { left, top, width, height } = containerRef.current.getBoundingClientRect();
+        
+        // Calcula a posição do cursor relativa ao contêiner (de 0 a 'width' e 0 a 'height')
+        const x = e.clientX - left;
+        const y = e.clientY - top;
+
+        setMousePosition({ x, y });
+    };
 
     if (!selectedMedia) {
         return (
@@ -32,13 +67,41 @@ const MediaGallery = ({ media, productName }) => {
         );
     }
 
+    // Estilo dinâmico para a imagem ampliada
+    const zoomImageStyle = {
+        opacity: isZooming ? 1 : 0,
+        visibility: isZooming ? 'visible' : 'hidden',
+        // O cálculo move a imagem ampliada na direção oposta ao cursor,
+        // criando a ilusão de uma lente de aumento.
+        top: `-${mousePosition.y * (zoomLevel - 1)}px`,
+        left: `-${mousePosition.x * (zoomLevel - 1)}px`,
+        // Garante que a imagem de zoom tenha a mesma fonte da imagem principal
+        backgroundImage: `url(${selectedMedia.url})`
+    };
+
     return (
         <div className="product-media-gallery">
-            <div className="main-media-container">
+            <div 
+                className="main-media-container"
+                ref={containerRef}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+                onMouseMove={handleMouseMove}
+            >
                 {selectedMedia.type === 'video' ? (
                     <video key={selectedMedia.url} src={selectedMedia.url} autoPlay muted loop controls className="main-media-item" />
                 ) : (
-                    <img src={selectedMedia.url} alt={productName} className="main-media-item" />
+                    <>
+                        {/* Imagem base, sempre visível */}
+                        <img src={selectedMedia.url} alt={productName} className="main-media-item" />
+                        
+                        {/* Elemento de Zoom: Uma div com a mesma imagem como background.
+                            Isso evita carregar a imagem duas vezes e é mais performático. */}
+                        <div 
+                            className="zoom-image" 
+                            style={zoomImageStyle}
+                        />
+                    </>
                 )}
             </div>
             <div className="thumbnail-container">
@@ -52,8 +115,11 @@ const MediaGallery = ({ media, productName }) => {
     );
 };
 
+
+// ========================================================================
+// COMPONENTES SEM ALTERAÇÃO
+// ========================================================================
 const ProductInfo = ({ product }) => {
-    // ... Nenhuma alteração necessária neste componente
     const { addToCart } = useCart();
     const [addedToCart, setAddedToCart] = useState(false);
 
@@ -88,7 +154,6 @@ const ProductInfo = ({ product }) => {
 };
 
 const ProductSpecs = ({ product }) => {
-    // ... Nenhuma alteração necessária neste componente
     const { info } = product;
     if (!info || (!info.material && !info.stones?.length)) return null;
 
@@ -129,6 +194,10 @@ const ProductSpecs = ({ product }) => {
     );
 };
 
+
+// ========================================================================
+// COMPONENTE PRINCIPAL DA PÁGINA
+// ========================================================================
 const ProductPage = () => {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
@@ -143,8 +212,7 @@ const ProductPage = () => {
             try {
                 const productData = await productServices.getProductById(id);
                 
-                // ✨ 2. USAMOS A FUNÇÃO isVideoUrl AQUI ✨
-                // Trocamos a lógica antiga pela nova, garantindo que o 'type' seja correto.
+                // Transforma as URLs de mídia em um objeto com 'type' e 'url'
                 const media = (productData.mediaUrls || []).map(url => ({
                     type: isVideoUrl(url) ? 'video' : 'image',
                     url

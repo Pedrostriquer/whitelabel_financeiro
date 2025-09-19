@@ -31,27 +31,26 @@
     gap: 15px; 
     position: sticky; 
     top: 40px;
-    max-width: 500px; /* Limita a largura da galeria */
-    margin: 0 auto; /* Centraliza se a tela for maior */
+    max-width: 500px;
+    margin: 0 auto;
 }
 
-/* ✨ CORREÇÃO AQUI ✨ */
+/* ✨ MODIFICAÇÃO AQUI: Adicionado 'position: relative' ✨ */
 .main-media-container { 
+    position: relative; /* Essencial para o posicionamento do zoom */
     width: 100%; 
     aspect-ratio: 1 / 1; 
     border-radius: 16px; 
-    overflow: hidden; 
+    overflow: hidden; /* Essencial para "cortar" a imagem ampliada */
     box-shadow: 0 15px 40px rgba(0,0,0,0.08); 
-    /* Fundo cinza claro para servir de placeholder e evitar o "pulo" */
     background-color: #e9ecef; 
+    cursor: zoom-in; /* Indica visualmente que o zoom está disponível */
 }
 
-/* ✨ E CORREÇÃO AQUI ✨ */
 .main-media-item { 
     width: 100%; 
     height: 100%; 
     object-fit: cover; 
-    /* Garante que o elemento de mídia se comporte como um bloco */
     display: block; 
 }
 
@@ -85,6 +84,32 @@
     width: 100%; 
     height: 100%; 
     object-fit: cover; 
+}
+
+/* 
+============================================
+✨ NOVOS ESTILOS PARA O EFEITO DE ZOOM ✨
+============================================
+*/
+.zoom-image {
+    /* Posiciona o elemento de zoom por cima da imagem principal */
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    /* Tamanho ampliado (corresponde ao 'zoomLevel' no JavaScript) */
+    width: 250%;
+    height: 250%;
+    
+    /* Impede que este elemento interfira nos eventos do mouse, evitando piscadas */
+    pointer-events: none; 
+
+    /* Configura a imagem de fundo que será ampliada */
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    /* Transição suave para o efeito de aparecer/desaparecer */
+    transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
 /* --- Detalhes do Produto --- */
