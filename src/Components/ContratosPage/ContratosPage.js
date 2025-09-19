@@ -1,4 +1,4 @@
-// src/pages/ContratosPage/ContratosPage.js (Arquivo completo e atualizado)
+// src/pages/ContratosPage/ContratosPage.js (Versão 100% atualizada e simplificada)
 
 import React, { useState, useRef, useEffect } from "react";
 import style from "./ContratosPageStyle.js";
@@ -45,16 +45,16 @@ export default function ContratosPage() {
   const [withGem, setWithGem] = useState(false);
   const { token, user } = useAuth();
   const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
-  const contractRef = useRef();
+  // const contractRef = useRef(); // Não é mais necessário
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const location = useLocation();
   const [isPayModalOpen, setIsPayModalOpen] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState(null);
 
-  // <<== NOVO ESTADO PARA ARMAZENAR O PDF EM BASE64 ==>>
-  const [contractPdf, setContractPdf] = useState(null);
+  // O estado 'contractPdf' foi REMOVIDO daqui.
 
   useEffect(() => {
+    // ... (useEffect continua o mesmo)
     const params = new URLSearchParams(location.search);
     const fromSite = params.get("fromSite");
 
@@ -76,7 +76,6 @@ export default function ContratosPage() {
           setStep("configuration");
         } catch (error) {
           console.error("Erro ao pré-preencher simulação:", error);
-          setStep("selection");
         } finally {
           setIsLoading(false);
         }
@@ -91,7 +90,7 @@ export default function ContratosPage() {
     setSimulationResult(null);
     setTermsAccepted(false);
     setWithGem(false);
-    setContractPdf(null); // <<== Limpa o PDF ao resetar
+    // setContractPdf(null); // Não é mais necessário
   };
 
   const handleSimulationChange = (simulation) => {
@@ -108,15 +107,12 @@ export default function ContratosPage() {
     setSimulationResult(null);
   };
 
-  // <<== FUNÇÃO ATUALIZADA PARA RECEBER O PDF ==>>
-  const handleOpenVerificationModal = async (pdfBase64) => {
+  // Função simplificada: não recebe nem armazena PDF
+  const handleOpenVerificationModal = async () => {
     if (!termsAccepted) {
       alert("Você precisa aceitar os termos do contrato para continuar.");
       return;
     }
-
-    // <<== ARMAZENA O PDF NO ESTADO ANTES DE ABRIR O MODAL ==>>
-    setContractPdf(pdfBase64);
 
     setIsLoading(true);
     try {
@@ -131,9 +127,9 @@ export default function ContratosPage() {
     }
   };
 
-  // <<== FUNÇÃO ATUALIZADA PARA ENVIAR O PDF ==>>
+  // Função simplificada: não envia mais o PDF
   const handleBuyContract = async (verificationCode) => {
-    if (!simulationResult || !contractPdf) return; // Garante que temos o PDF
+    if (!simulationResult) return;
     setIsLoading(true);
     setIsVerificationModalOpen(false);
 
@@ -146,7 +142,7 @@ export default function ContratosPage() {
         description: "Contrato criado via plataforma",
         paymentMethod: paymentMethod,
         verificationCode: verificationCode,
-        pdfBase64: contractPdf, // <<== ENVIA O PDF PARA O BACKEND AQUI!
+        // A propriedade 'pdfBase64' foi REMOVIDA daqui.
       };
 
       const response = await contractServices.criarContrato(
@@ -214,12 +210,12 @@ export default function ContratosPage() {
           simulation={simulationResult}
           onBack={handleBackToSelection}
           user={user}
-          handleBuy={handleOpenVerificationModal} // Passa a função atualizada
+          handleBuy={handleOpenVerificationModal} // Passa a função simplificada
           termsAccepted={termsAccepted}
           setTermsAccepted={setTermsAccepted}
           paymentMethod={paymentMethod}
           setPaymentMethod={setPaymentMethod}
-          contractRef={contractRef}
+          // A prop 'contractRef' foi REMOVIDA.
         />
       )}
 

@@ -1,73 +1,38 @@
-// ConfigurationStep.js (MODIFICADO)
-import React, { useState } from "react"; // <<=== Importa o useState
+// src/pages/ContratosPage/ConfigurationStep.js (Versão 100% atualizada e simplificada)
+
+import React, { useState } from "react";
 import style from "./ContratosPageStyle";
-import GeneratedContract from "./GenerateContract"; // Ou este
+// A importação do GeneratedContract pode variar, ajuste se necessário
+import GeneratedContract from "./GenerateContract";
 import formatServices from "../../formatServices/formatServices";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileSignature } from "@fortawesome/free-solid-svg-icons";
-import html2pdf from "html2pdf.js";
 
+// Importa apenas o modal para visualização
 import MinutaModal from "./MinutaModal/MinutaModal";
-import ContractComponent from "../ContractComponent/ContractComponent"; // Precisamos dele para o PDF
 
 const ConfigurationStep = ({
   simulation,
-  handleBuy,
+  handleBuy, // Recebe a função diretamente da página pai
   onBack,
   termsAccepted,
   setTermsAccepted,
   paymentMethod,
   setPaymentMethod,
-  contractRef,
   user,
 }) => {
-  // Estado para controlar a visibilidade do nosso novo modal
   const [isMinutaModalOpen, setIsMinutaModalOpen] = useState(false);
 
   if (!simulation) return null;
 
-  const generatePdf = (action) => {
-    // A lógica do PDF continua a mesma, pois o contractRef vai apontar para o
-    // componente oculto que vamos adicionar abaixo.
-    const element = contractRef.current;
-    if (!element) {
-      console.error("Elemento do contrato não encontrado para gerar o PDF.");
-      return;
-    }
-
-    const opt = {
-      margin: 1,
-      filename: `contrato-gemcash-${user.id}.pdf`,
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-    };
-
-    const pdfPromise = html2pdf().from(element).set(opt);
-
-    if (action === "save") {
-      return pdfPromise.save();
-    }
-    if (action === "open") {
-      return pdfPromise.output("bloburl").then((bloburl) => {
-        window.open(bloburl, "_blank");
-      });
-    }
-    return pdfPromise.output("datauristring");
-  };
-
-  const handleBuyWithPdf = async () => {
+  // A função para o botão "Finalizar Compra" agora é simplificada
+  const handleProceedToBuy = () => {
     if (!termsAccepted) {
       alert("Você precisa aceitar os termos do contrato para continuar.");
       return;
     }
-    try {
-      const pdfBase64 = await generatePdf("base64");
-      handleBuy(pdfBase64);
-    } catch (error) {
-      console.error("Erro ao gerar o PDF:", error);
-      alert("Ocorreu um erro ao gerar o contrato em PDF. Tente novamente.");
-    }
+    // Apenas chama a função que veio do ContratosPage.js
+    handleBuy();
   };
 
   return (
@@ -110,17 +75,16 @@ const ConfigurationStep = ({
         </div>
 
         <GeneratedContract
-          handleBuy={handleBuyWithPdf}
+          handleBuy={handleProceedToBuy} // Passa a função simplificada
           termsAccepted={termsAccepted}
           setTermsAccepted={setTermsAccepted}
           paymentMethod={paymentMethod}
           setPaymentMethod={setPaymentMethod}
-          onViewContract={() => setIsMinutaModalOpen(true)} // <<=== Passando a função para abrir o modal
-          // Não passamos mais 'contract', 'user' ou 'contractRef'
+          onViewContract={() => setIsMinutaModalOpen(true)}
         />
       </div>
 
-      {/* RENDERIZA O MODAL AQUI */}
+      {/* O modal de visualização continua funcionando normalmente */}
       <MinutaModal
         isOpen={isMinutaModalOpen}
         onClose={() => setIsMinutaModalOpen(false)}
@@ -128,21 +92,7 @@ const ConfigurationStep = ({
         contract={simulation}
       />
 
-      {/*
-        TRUQUE MÁGICO: Renderizamos o contrato completo fora da tela
-        para que a função html2pdf possa encontrá-lo e gerar o PDF.
-      */}
-      <div style={{ position: "absolute", left: "-9999px", top: "-9999px" }}>
-        <div ref={contractRef}>
-          <ContractComponent
-            clientData={user}
-            contractData={{
-              amount: simulation.initialAmount,
-              duration: simulation.months,
-            }}
-          />
-        </div>
-      </div>
+      {/* O DIV OCULTO FOI REMOVIDO DAQUI */}
     </div>
   );
 };

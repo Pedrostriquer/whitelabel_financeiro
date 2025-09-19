@@ -18,7 +18,6 @@ const paymentServices = {
         }
       );
 
-      console.log(response.data)
       return response.data;
     } catch (error) {
       console.error("Erro ao obter detalhes do PIX:", error);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import style from "./ContractDetailPageStyle.js";
 import formatServices from "../../formatServices/formatServices.js";
@@ -9,7 +9,11 @@ import verificationCodeService from "../../dbServices/verificationCodeService.js
 import contractServices from "../../dbServices/contractServices.js";
 import withdrawServices from "../../dbServices/withdrawServices.js";
 import paymentServices from "../../dbServices/paymentServices.js";
+import clientServices from "../../dbServices/clientServices.js";
 import { useAuth } from "../../Context/AuthContext.js";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+import ContractComponent from "../ContractComponent/ContractComponent.js";
 
 const STATUS_MAP = {
   1: {
@@ -102,6 +106,8 @@ export default function ContractDetailPage() {
   const { token } = useAuth();
   const navigate = useNavigate();
   const [contract, setContract] = useState(null);
+  const [clientData, setClientData] = useState(null);
+  const [isClientDataLoading, setIsClientDataLoading] = useState(true);
   const [autoReinvest, setAutoReinvest] = useState(false);
   const [isReinvestmentModalOpen, setIsReinvestmentModalOpen] = useState(false);
   const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
@@ -110,11 +116,14 @@ export default function ContractDetailPage() {
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [error, setError] = useState("");
   const [isUpdatingAutoReinvest, setIsUpdatingAutoReinvest] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [viewerMedia, setViewerMedia] = useState(null);
   const [withdrawRules, setWithdrawRules] = useState(null);
   const [isWithdrawalOpen, setIsWithdrawalOpen] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState(null);
   const [isPayModalOpen, setIsPayModalOpen] = useState(false);
+
+  const contractPrintRef = useRef(null);
 
   const fetchContractData = useCallback(async () => {
     if (!token) return;
@@ -140,12 +149,10 @@ export default function ContractDetailPage() {
               contractData.paymentId
             );
           } else if (contractData.paymentMethod?.toUpperCase() === "BOLETO") {
-            console.log("boletin")
             detailsData = await paymentServices.getPaymentDetails(
               token,
               contractData.paymentId
             );
-            console.log(detailsData)
           }
           setPaymentDetails(detailsData);
         } catch (paymentError) {
@@ -153,6 +160,7 @@ export default function ContractDetailPage() {
         }
       }
     } catch (err) {
+      console.error(err);
       setError("Não foi possível carregar os detalhes do contrato.");
     } finally {
       setIsPageLoading(false);
@@ -160,8 +168,96 @@ export default function ContractDetailPage() {
   }, [id, token]);
 
   useEffect(() => {
+    const fetchClient = async () => {
+      if (token) {
+        setIsClientDataLoading(true);
+        try {
+          const clientInfo = await clientServices.obterCliente(token);
+          setClientData(clientInfo);
+        } catch (err) {
+          console.error(
+            "Não foi possível buscar os dados do cliente para o PDF."
+          );
+        } finally {
+          setIsClientDataLoading(false);
+        }
+      }
+    };
+    fetchClient();
+  }, [token]);
+
+  useEffect(() => {
     fetchContractData();
   }, [fetchContractData]);
+
+  const generateAndUploadPdf = async () => {
+    if (!contractPrintRef.current) {
+      alert("Erro: O template do contrato não pôde ser carregado.");
+      return;
+    }
+
+    setIsGeneratingPdf(true);
+    try {
+      const canvas = await html2canvas(contractPrintRef.current, {
+        scale: 2,
+        useCORS: true, // Adicione esta linha
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+
+      if (imgData.length < 100) {
+        // Uma imagem válida tem milhares de caracteres
+        throw new Error(
+          "A imagem gerada do contrato está vazia ou corrompida."
+        );
+      }
+
+      const pdf = new jsPDF({ orientation: "p", unit: "mm", format: "a4" });
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, imgHeight);
+      heightLeft -= pdf.internal.pageSize.getHeight();
+
+      while (heightLeft > 0) {
+        position = -heightLeft;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, pdfWidth, imgHeight);
+        heightLeft -= pdf.internal.pageSize.getHeight();
+      }
+
+      const pdfBlob = pdf.output("blob");
+      const pdfFile = new File([pdfBlob], `contrato_${contract.id}.pdf`, {
+        type: "application/pdf",
+      });
+
+      const updatedContract = await contractServices.uploadContractPdf(
+        token,
+        contract.id,
+        pdfFile
+      );
+
+      setContract(updatedContract);
+      window.open(updatedContract.contractPdfUrl, "_blank");
+    } catch (err) {
+      alert(
+        "Ocorreu um erro ao gerar o PDF. Verifique o console para mais detalhes."
+      );
+      console.error("Erro detalhado na geração do PDF:", err);
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
+
+  const handleViewPdf = () => {
+    if (contract?.contractPdfUrl) {
+      window.open(contract.contractPdfUrl, "_blank");
+    } else {
+      generateAndUploadPdf();
+    }
+  };
 
   const handleShowPaymentModal = () => {
     if (paymentDetails) {
@@ -284,7 +380,6 @@ export default function ContractDetailPage() {
     ...(isReinvestDisabled && { opacity: 0.6, cursor: "not-allowed" }),
   };
 
-
   return (
     <>
       <div style={style.page}>
@@ -304,7 +399,7 @@ export default function ContractDetailPage() {
             <div style={style.metricCard}>
               <span style={style.metricLabel}>Valor Investido</span>
               <span style={style.metricValue}>
-                R${formatServices.formatCurrencyBR(contract.amount)}
+                {formatServices.formatCurrencyBR(contract.amount)}
               </span>
             </div>
             {paymentStatusInfo && (
@@ -325,13 +420,13 @@ export default function ContractDetailPage() {
             <div style={style.metricCard}>
               <span style={style.metricLabel}>Lucro Disponível</span>
               <span style={style.metricValue}>
-                R${formatServices.formatCurrencyBR(contract.currentIncome)}
+                {formatServices.formatCurrencyBR(contract.currentIncome)}
               </span>
             </div>
             <div style={style.metricCard}>
               <span style={style.metricLabel}>Lucro Total</span>
               <span style={style.metricValue}>
-                R${formatServices.formatCurrencyBR(contract.totalIncome)}
+                {formatServices.formatCurrencyBR(contract.totalIncome)}
               </span>
             </div>
             <div style={style.metricCard}>
@@ -551,15 +646,34 @@ export default function ContractDetailPage() {
             )}
             <button
               style={{ ...style.actionButton, ...style.downloadButton }}
-              onClick={() =>
-                alert('Função "Baixar Contrato" a ser implementada!')
+              onClick={handleViewPdf}
+              disabled={
+                isGeneratingPdf ||
+                (!contract.contractPdfUrl &&
+                  (isClientDataLoading || !clientData))
               }
             >
-              <i className="fa-solid fa-file-arrow-down"></i>Baixar Contrato
-              (PDF)
+              {isGeneratingPdf ? (
+                <>
+                  <i className="fa-solid fa-spinner fa-spin"></i> Gerando PDF...
+                </>
+              ) : contract.contractPdfUrl ? (
+                <>
+                  <i className="fa-solid fa-file-pdf"></i> Visualizar Contrato
+                </>
+              ) : isClientDataLoading ? (
+                <>
+                  <i className="fa-solid fa-spinner fa-spin"></i> Carregando
+                  Dados...
+                </>
+              ) : (
+                <>
+                  <i className="fa-solid fa-file-arrow-down"></i> Gerar Contrato
+                  (PDF)
+                </>
+              )}
             </button>
           </div>
-
         </div>
       </div>
       <ReinvestmentModal
@@ -591,6 +705,11 @@ export default function ContractDetailPage() {
         value={contract?.amount}
         paymentMethod={contract?.paymentMethod}
       />
+      <div style={style.hiddenContractContainer} ref={contractPrintRef}>
+        {clientData && contract && (
+          <ContractComponent clientData={clientData} contractData={contract} />
+        )}
+      </div>
     </>
   );
 }

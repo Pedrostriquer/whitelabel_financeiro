@@ -55,12 +55,36 @@ const contractServices = {
     }
   },
 
-  simulateContract: async (data) => { // for site
+  simulateContract: async (data) => {
+    // for site
     try {
       const response = await axios.post(`${BASE_ROUTE}contract/simulate`, data);
       return response.data;
     } catch (error) {
       console.error("Erro ao simular contrato:", error);
+      throw error;
+    }
+  },
+
+  uploadContractPdf: async (token, contractId, pdfFile) => {
+    try {
+      const formData = new FormData();
+      // O nome 'pdfFile' deve ser o mesmo esperado pelo parâmetro no Controller C#
+      formData.append("pdfFile", pdfFile);
+
+      const response = await axios.post(
+        `${BASE_ROUTE}contract/${contractId}/upload-pdf`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data", // Essencial para upload de arquivos
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao fazer upload do PDF do contrato:", error);
       throw error;
     }
   },

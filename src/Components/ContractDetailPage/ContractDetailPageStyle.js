@@ -12,6 +12,7 @@ const colors = {
 };
 
 const style = {
+  // ... (todo o seu código de estilo existente vai aqui, sem alterações)
   page: {
     display: "flex",
     flexDirection: "column",
@@ -276,7 +277,6 @@ const style = {
     color: colors.primary,
     textDecoration: "none",
   },
-  // --- NOVOS ESTILOS ---
   paymentStatusBadge: {
     padding: "4px 12px",
     borderRadius: "12px",
@@ -287,8 +287,17 @@ const style = {
     marginTop: "5px",
   },
   payPixButton: {
-    backgroundColor: "#00c65e", // Verde PIX
+    backgroundColor: "#00c65e",
     color: colors.white,
+  },
+
+  // <<< NOVO ESTILO ADICIONADO AQUI NO FINAL >>>
+  hiddenContractContainer: {
+    position: "absolute",
+    left: "-9999px", // Joga o componente para bem longe da tela
+    top: 0,
+    width: "210mm", // Força a largura de um A4 para a renderização do PDF ficar melhor
+    backgroundColor: "white", // Garante um fundo branco caso o estilo padrão seja diferente
   },
 };
 
