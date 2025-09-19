@@ -27,7 +27,7 @@ const GeneratedContract = ({
     <div style={style.paymentSection}>
       <h4 style={style.paymentSectionH3}>Método de Pagamento</h4>
       <div style={style.paymentOptions}>
-        {["PIX", "BOLETO", "DEPÓSITO"].map((method) => {
+        {["PIX", "BOLETO", "DEPOSITO"].map((method) => {
           const isActive = paymentMethod === method;
           return (
             <button

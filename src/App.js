@@ -36,6 +36,7 @@ import Blog from "./Components/Ecommerce/Body/Blog/Blog";
 import OrderDetailPage from "./Components/Ecommerce/Body/Ecommerce/MyOrders/OrderDetailPage"; // <-- NOVO IMPORT
 import ContractComponent from "./Components/ContractComponent/ContractComponent";
 import AnimatedContract from "./Components/ContractComponent/ContractComponent";
+import DepositAccounts from "./Components/DepositAccounts/DepositAccounts";
 
 
 const mockClientData = {
@@ -112,6 +113,7 @@ function App() {
                       <Route path="notifications/:id" element={<NotificationDetailPage />} />
                       <Route path="contratos/:id" element={<ContractDetailPage />} />
                       <Route path="saques/:id" element={<WithdrawalDetailPage />} />
+                      <Route path="depositar" element={<DepositAccounts />} />
                     </Route>
                   </Route>
                   <Route path="*" element={<Navigate to="/ecommerce" />} />

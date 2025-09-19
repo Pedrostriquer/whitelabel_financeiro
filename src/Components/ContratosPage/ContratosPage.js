@@ -1,5 +1,3 @@
-// src/pages/ContratosPage/ContratosPage.js (Versão 100% atualizada e simplificada)
-
 import React, { useState, useRef, useEffect } from "react";
 import style from "./ContratosPageStyle.js";
 import { useAuth } from "../../Context/AuthContext.js";
@@ -9,7 +7,8 @@ import SelectionStep from "./SelectionStep.js";
 import ConfigurationStep from "./ConfigurationStep.js";
 import VerificationModal from "./VerificationModal.js";
 import PayModal from "../PayModal/PayModal.js";
-import { useLocation } from "react-router-dom";
+// --- 1. IMPORTAR O useNavigate ---
+import { useLocation, useNavigate } from "react-router-dom";
 
 const SuccessAnimation = () => {
   const diamonds = Array.from({ length: 50 }).map((_, index) => {
@@ -45,16 +44,15 @@ export default function ContratosPage() {
   const [withGem, setWithGem] = useState(false);
   const { token, user } = useAuth();
   const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
-  // const contractRef = useRef(); // Não é mais necessário
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const location = useLocation();
   const [isPayModalOpen, setIsPayModalOpen] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState(null);
 
-  // O estado 'contractPdf' foi REMOVIDO daqui.
+  // --- 2. INICIALIZAR O HOOK DE NAVEGAÇÃO ---
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // ... (useEffect continua o mesmo)
     const params = new URLSearchParams(location.search);
     const fromSite = params.get("fromSite");
 
@@ -90,7 +88,6 @@ export default function ContratosPage() {
     setSimulationResult(null);
     setTermsAccepted(false);
     setWithGem(false);
-    // setContractPdf(null); // Não é mais necessário
   };
 
   const handleSimulationChange = (simulation) => {
@@ -107,7 +104,6 @@ export default function ContratosPage() {
     setSimulationResult(null);
   };
 
-  // Função simplificada: não recebe nem armazena PDF
   const handleOpenVerificationModal = async () => {
     if (!termsAccepted) {
       alert("Você precisa aceitar os termos do contrato para continuar.");
@@ -127,7 +123,7 @@ export default function ContratosPage() {
     }
   };
 
-  // Função simplificada: não envia mais o PDF
+  // --- 3. FUNÇÃO handleBuyContract ATUALIZADA ---
   const handleBuyContract = async (verificationCode) => {
     if (!simulationResult) return;
     setIsLoading(true);
@@ -142,7 +138,6 @@ export default function ContratosPage() {
         description: "Contrato criado via plataforma",
         paymentMethod: paymentMethod,
         verificationCode: verificationCode,
-        // A propriedade 'pdfBase64' foi REMOVIDA daqui.
       };
 
       const response = await contractServices.criarContrato(
@@ -150,22 +145,33 @@ export default function ContratosPage() {
         contractData
       );
 
-      let details = null;
-      if (response.paymentMethod?.toUpperCase() === "PIX") {
-        details = response.pixDetails;
-      } else if (response.paymentMethod?.toUpperCase() === "BOLETO") {
-        details = response.boletoDetails;
-      }
+      const method = response.paymentMethod?.toUpperCase();
 
-      if (details) {
-        setPaymentDetails(details);
-        setIsPayModalOpen(true);
-        setIsLoading(false);
-      } else {
+      if (method === "PIX" || method === "BOLETO") {
+        // Lógica para PIX e Boleto: abre o modal de pagamento
+        const details =
+          method === "PIX" ? response.pixDetails : response.boletoDetails;
+        if (details) {
+          setPaymentDetails(details);
+          setIsPayModalOpen(true);
+          setIsLoading(false); // Pausa o loading para o usuário interagir com o modal
+        } else {
+          throw new Error(
+            `Detalhes de pagamento para ${method} não foram recebidos.`
+          );
+        }
+      } else if (method === "DEPOSITO" || method === "DEPÓSITO") {
+        // Lógica para Depósito: mostra sucesso e redireciona
         setShowSuccessAnimation(true);
         setTimeout(() => {
-          window.location.href = "/gemcash/my-gem-cashes";
-        }, 4000);
+          navigate("/depositar"); // Redireciona para a página de contas de depósito
+        }, 3000); // Espera 3s para a animação
+      } else {
+        // Fallback: caso genérico de sucesso (se houver outro método)
+        setShowSuccessAnimation(true);
+        setTimeout(() => {
+          navigate("/gemcash/my-gem-cashes"); // Redireciona para a lista de contratos
+        }, 3000);
       }
     } catch (error) {
       const errorMessage =
@@ -181,7 +187,8 @@ export default function ContratosPage() {
   const handleClosePayModal = () => {
     setIsPayModalOpen(false);
     setPaymentDetails(null);
-    window.location.href = "/gemcash/my-gem-cashes";
+    // Usando navigate para ser consistente
+    navigate("/gemcash/my-gem-cashes");
   };
 
   return (
@@ -210,12 +217,11 @@ export default function ContratosPage() {
           simulation={simulationResult}
           onBack={handleBackToSelection}
           user={user}
-          handleBuy={handleOpenVerificationModal} // Passa a função simplificada
+          handleBuy={handleOpenVerificationModal}
           termsAccepted={termsAccepted}
           setTermsAccepted={setTermsAccepted}
           paymentMethod={paymentMethod}
           setPaymentMethod={setPaymentMethod}
-          // A prop 'contractRef' foi REMOVIDA.
         />
       )}
 
