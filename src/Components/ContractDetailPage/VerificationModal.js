@@ -47,7 +47,7 @@ const VerificationModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
           <form onSubmit={handleSubmit}>
             <div style={style.modalBody}>
               <p>
-                Para sua segurança, enviamos um código para o seu e-mail.
+                Para sua segurança, enviamos um código para o seu e-mail. (Verifique Caixa de SPAM)
                 Insira-o abaixo para validar a operação.
               </p>
               <input
