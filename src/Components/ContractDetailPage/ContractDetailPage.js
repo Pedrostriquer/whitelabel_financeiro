@@ -200,13 +200,12 @@ export default function ContractDetailPage() {
     try {
       const canvas = await html2canvas(contractPrintRef.current, {
         scale: 2,
-        useCORS: true, // Adicione esta linha
+        useCORS: true,
       });
 
       const imgData = canvas.toDataURL("image/png");
 
       if (imgData.length < 100) {
-        // Uma imagem válida tem milhares de caracteres
         throw new Error(
           "A imagem gerada do contrato está vazia ou corrompida."
         );
@@ -443,7 +442,7 @@ export default function ContractDetailPage() {
             </div>
             <div style={style.metricCard}>
               <span style={style.metricLabel}>Ganho Mensal</span>
-              <span style={{ ...style.metricValue, fontSize: "1.5rem" }}>
+              <span style={{ ...style.metricValue, fontSize: "1.js" }}>
                 {formatServices.formatarPercentual(contract.gainPercentage)}
               </span>
             </div>
@@ -549,8 +548,13 @@ export default function ContractDetailPage() {
 
           <div style={style.actionsPanel}>
             <h2 style={style.actionsTitle}>Ações do Contrato</h2>
-            {paymentDetails?.status === "PENDING" && (
+
+            {/* --- INÍCIO DA LÓGICA DE PAGAMENTO --- */}
+
+            {/* Se o contrato está aguardando pagamento (status 1) */}
+            {contract.status === 1 && (
               <>
+                {/* E o método é PIX */}
                 {contract.paymentMethod?.toUpperCase() === "PIX" && (
                   <button
                     style={{ ...style.actionButton, ...style.payPixButton }}
@@ -559,6 +563,8 @@ export default function ContractDetailPage() {
                     <i className="fa-brands fa-pix"></i> Visualizar PIX
                   </button>
                 )}
+
+                {/* E o método é BOLETO */}
                 {contract.paymentMethod?.toUpperCase() === "BOLETO" && (
                   <button
                     style={{
@@ -570,8 +576,26 @@ export default function ContractDetailPage() {
                     <i className="fa-solid fa-barcode"></i> Visualizar Boleto
                   </button>
                 )}
+
+                {/* E o método é DEPÓSITO */}
+                {(contract.paymentMethod?.toUpperCase() === "DEPOSITO" ||
+                  contract.paymentMethod?.toUpperCase() === "DEPÓSITO") && (
+                  <button
+                    style={{
+                      ...style.actionButton,
+                      backgroundColor: "#17a2b8",
+                    }} // Usando uma cor 'info'
+                    onClick={() => navigate("/depositar")}
+                  >
+                    <i className="fa-solid fa-landmark"></i> Ver Contas para
+                    Depósito
+                  </button>
+                )}
               </>
             )}
+
+            {/* --- FIM DA LÓGICA DE PAGAMENTO --- */}
+
             {contract && contract.reivestmentAvaliable && (
               <>
                 <button
