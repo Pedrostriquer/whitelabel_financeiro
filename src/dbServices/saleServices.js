@@ -52,20 +52,28 @@ const saleServices = {
   },
 
   /**
-   * Busca todos os pedidos associados ao cliente logado.
+   * ✨ FUNÇÃO ATUALIZADA PARA O CLIENTE ✨
+   * Busca todos os pedidos associados ao cliente logado, com filtros.
    * @param {string} token - O token de autenticação do usuário.
-   * @param {number} pageNumber - O número da página a ser buscada.
+   * @param {number} pageNumber - O número da página.
    * @param {number} pageSize - A quantidade de itens por página.
-   * @returns {Promise<object>} Um objeto contendo a lista de pedidos e dados de paginação.
+   * @param {number|null} status - O status do pedido (como número) ou null para todos.
+   * @returns {Promise<object>} Um objeto com a lista de pedidos e dados de paginação.
    */
-  getMySales: async (token, pageNumber = 1, pageSize = 100) => {
+  getMySales: async (token, pageNumber = 1, pageSize = 10, status = null) => {
     try {
       const params = new URLSearchParams({
-        PageNumber: pageNumber,
-        PageSize: pageSize,
+        pageNumber: pageNumber,
+        pageSize: pageSize,
       });
-      // ✨ CORREÇÃO AQUI: Removido o "/my" do final da URL.
-      const url = `${API_BASE_URL}Sale?${params.toString()}`;
+
+      // Adiciona o status aos parâmetros APENAS se ele for um número válido
+      if (status !== null && !isNaN(status)) {
+        params.append("status", status);
+      }
+
+      // Chama o novo endpoint correto: /my-sales
+      const url = `${API_BASE_URL}Sale/my-sales?${params.toString()}`;
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
