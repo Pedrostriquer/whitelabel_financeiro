@@ -189,7 +189,7 @@ export default function Dashboard() {
             <div style={cardContentStyle}>
               <div style={style.cardInfoList}>
                 <AnimatedInfoItem
-                  label="Total Na Plataforma"
+                  label="Total na Plataforma"
                   value={informacoesCarteira?.totalBalance}
                   isCurrency
                   isLoading={isLoading}
@@ -286,7 +286,7 @@ export default function Dashboard() {
           />
           <ActionButton
             title="Comprar Pedras Preciosas"
-            description="Adquira gemas gemas exclusivas de nossa curadoria."
+            description="Adquira gemas exclusivas de nossa curadoria."
             icon={faGem}
             onClick={() => navigate("/ecommerce")}
           />
