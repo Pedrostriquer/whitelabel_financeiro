@@ -24,7 +24,7 @@ const ShopHeader = () => (
 const LoadingSpinner = () => (
     <div className="spinner-container">
         <div className="loading-spinner"></div>
-        <p>Carregando Joias...</p>
+        <p>Carregando Gemas Preciosas...</p>
     </div>
 );
 

@@ -1,7 +1,15 @@
+// src/Components/Login/Login.js
+
 import React, { useState, useEffect } from "react";
-import style from "./LoginStyle";
 import { useAuth } from "../../Context/AuthContext";
 import { useLocation } from "react-router-dom";
+
+// Importa os estilos do arquivo separado
+import style from "./LoginStyle";
+
+// Importa o componente da logo animada
+import LoginIcon from "./LoginIcon"; 
+
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -41,14 +49,16 @@ export default function Login() {
   return (
     <div style={style.loginPage}>
       <div style={style.loginContainer}>
+        {/* Painel de Informações com a Logo Animada */}
         <div style={style.infoPanel}>
-          <h1 style={style.infoTitle}>Seu Dashboard</h1>
+          <LoginIcon />
           <p style={style.infoSubtitle}>
             Acesse sua conta para visualizar insights, gerenciar contratos e
             acompanhar seu progresso financeiro.
           </p>
         </div>
 
+        {/* Painel do Formulário */}
         <div style={style.formPanel}>
           <form style={style.form} onSubmit={handleSubmit}>
             <img src="/img/logo.png" alt="Logo" style={style.logo} />

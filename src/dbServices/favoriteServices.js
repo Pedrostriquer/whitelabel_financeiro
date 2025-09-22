@@ -1,13 +1,18 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://gemasbackend.demelloagent.app/api";
+// CORREÇÃO: A URL base da API agora é lida diretamente da sua variável de ambiente.
+const API_BASE_URL = process.env.REACT_APP_BASE_ROUTE;
+
+// BOA PRÁTICA: Verificação para garantir que a variável de ambiente foi carregada.
+if (!API_BASE_URL) {
+    console.error("ERRO CRÍTICO: A variável de ambiente REACT_APP_BASE_ROUTE não está definida!");
+}
 
 const favoriteServices = {
     getFavorites: async (token) => {
         try {
-            // ✨✨✨ CORREÇÃO AQUI, MIGA! ✨✨✨
-            // A rota correta é "/Favorite" (singular), como no Swagger
-            const response = await axios.get(`${API_BASE_URL}/Favorite`, {
+            // CORREÇÃO: URL dinâmica e sem barra inicial
+            const response = await axios.get(`${API_BASE_URL}Favorite`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             return response.data;
@@ -19,7 +24,8 @@ const favoriteServices = {
 
     addToFavorites: async (token, productId) => {
         try {
-            await axios.post(`${API_BASE_URL}/Favorite/add/${productId}`, {}, {
+            // CORREÇÃO: URL dinâmica e sem barra inicial
+            await axios.post(`${API_BASE_URL}Favorite/add/${productId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` },
             });
         } catch (error)
@@ -31,7 +37,8 @@ const favoriteServices = {
 
     removeFromFavorites: async (token, productId) => {
         try {
-            await axios.delete(`${API_BASE_URL}/Favorite/remove/${productId}`, {
+            // CORREÇÃO: URL dinâmica e sem barra inicial
+            await axios.delete(`${API_BASE_URL}Favorite/remove/${productId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
         } catch (error) {

@@ -1,3 +1,5 @@
+// src/Components/Login/LoginStyle.js
+
 const colors = {
   primary: '#122C4F',
   primaryDark: '#122C4F',
@@ -181,7 +183,7 @@ const style = {
   },
 };
 
-// Keyframes for the spinner animation
+// Keyframes para a animação do spinner
 const keyframes = `
 @keyframes spin {
   0% { transform: rotate(0deg); }
@@ -189,9 +191,9 @@ const keyframes = `
 }
 `;
 
-// Inject keyframes into the document head
-const styleSheet = document.styleSheets[0];
-if (styleSheet) {
+// Injeta os keyframes na folha de estilo do documento
+if (typeof document !== 'undefined' && document.styleSheets[0]) {
+  const styleSheet = document.styleSheets[0];
   styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
 }
 

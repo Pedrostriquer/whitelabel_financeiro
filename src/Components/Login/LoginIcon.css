@@ -1,0 +1,34 @@
+/* O path (caminho) do seu SVG */
+.logo-path {
+    /* PASSO IMPORTANTE: Obter o comprimento do path */
+    /* Você precisa descobrir o comprimento exato do seu path. */
+    /* Use o DevTools do navegador para isso (explicação abaixo). */
+    /* Por enquanto, usaremos um valor grande como placeholder. */
+    stroke-dasharray: 8433;
+    stroke-dashoffset: 8433;
+  
+    /* Animação de desenho (3 segundos) */
+    animation: draw-logo 9s ease-in-out forwards, 
+               /* Animação de preenchimento (1 segundo, com atraso de 3s) */
+               fill-logo 1s ease-in forwards 3s;
+  }
+  
+  /* Keyframes para a animação de "desenho" */
+  @keyframes draw-logo {
+    to {
+      /* Ao final, o 'offset' é 0, revelando o traço completo */
+      stroke-dashoffset: 0;
+    }
+  }
+  
+  /* Keyframes para a animação de preenchimento */
+  @keyframes fill-logo {
+    from {
+      fill: transparent;
+    }
+    to {
+      /* Ao final, preenche com a cor original */
+      fill: #ffffff;
+    }
+  }
+  
