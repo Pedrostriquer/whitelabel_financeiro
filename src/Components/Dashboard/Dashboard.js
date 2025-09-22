@@ -118,6 +118,7 @@ export default function Dashboard() {
           type: offer.categoryName,
           title: offer.title,
           description: offer.description,
+          mideaRedirect: offer.mideaRedirect,
           imageUrl: offer.mideaUrl,
           mediaType: offer.mideaType,
         });
