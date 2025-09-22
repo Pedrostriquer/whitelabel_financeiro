@@ -60,7 +60,7 @@ function DepositAccounts() {
         <h1 style={styles.title}>Contas para Depósito</h1>
         <p style={styles.subtitle}>
           Utilize uma das contas abaixo para realizar o depósito ou
-          transferência referente ao seu contrato. Após o pagamento, envie o
+          transferência referente a sua compra. Após o pagamento, envie o
           comprovante para nossa equipe.
         </p>
       </header>
