@@ -37,14 +37,14 @@ const IntroSection = ({ data }) => {
                         />
                         
                         {/* O conteúdo sobreposto permanece o mesmo */}
-                        <div className="overlay-content">
+                        {/* <div className="overlay-content">
                             <div className={`overlay-text ${isTextVisible ? 'visible' : ''}`}>
                                 <h3 className='overlay-title'>Descubra o Poder do seu Ativo</h3>
                                 <button className="overlay-button">
                                     Seu Brilho Lucrativo!
                                 </button>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>
