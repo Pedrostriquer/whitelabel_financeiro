@@ -15,7 +15,8 @@
     padding: 15px 40px;
 }
 
-.header-left, .header-right {
+.header-left,
+.header-right {
     flex: 1;
 }
 
@@ -38,7 +39,8 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    gap: 25px; /* Espaçamento entre os ícones e o menu */
+    gap: 25px;
+    /* Espaçamento entre os ícones e o menu */
 }
 
 .platform-button {
@@ -88,6 +90,47 @@
     font-weight: bold;
     border: 2px solid #FFFFFF;
 }
+
+/* --- ✨ NOVOS ESTILOS PARA BOTÕES DE AUTENTICAÇÃO ✨ --- */
+.auth-buttons-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.auth-btn {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    padding: 8px 18px;
+    border-radius: 20px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid #122C4F;
+    white-space: nowrap;
+    /* Impede que o texto quebre */
+}
+
+.login-btn {
+    background-color: transparent;
+    color: #122C4F;
+}
+
+.login-btn:hover {
+    background-color: #f8f9fa;
+}
+
+.register-btn {
+    background-color: #122C4F;
+    color: #FFFFFF;
+}
+
+.register-btn:hover {
+    background-color: #1a3c6d;
+    border-color: #1a3c6d;
+}
+
 
 /* --- Navegação de Desktop --- */
 .header-nav-desktop {
@@ -197,29 +240,23 @@
 
 /* --- Media Queries para Responsividade --- */
 
-/* Para tablets e telas médias (entre 901px e 1100px)
-  - Reduz o espaçamento do menu principal para evitar quebra de linha.
-*/
 @media (max-width: 1100px) {
     .header-nav-desktop ul {
-        gap: 40px; /* Diminui o espaço entre os links */
+        gap: 40px;
     }
 }
 
-
-/* Para tablets e celulares (abaixo de 900px)
-  - Esconde o menu de desktop e o botão da plataforma.
-  - Exibe o botão de menu hamburger.
-  - Garante que o logo fique perfeitamente centralizado.
-*/
 @media (max-width: 900px) {
+
     .header-nav-desktop,
-    .platform-button {
-        display: none; /* Esconde o menu e o botão de desktop */
+    .platform-button,
+    .auth-buttons-container {
+        /* Esconde os botões de login no mobile */
+        display: none;
     }
 
     .hamburger-button {
-        display: block; /* Mostra o botão hamburger */
+        display: block;
     }
 
     .header-top-row {
@@ -230,50 +267,43 @@
         height: 53px;
     }
 
-    /* >>> CORREÇÃO IMPORTANTE PARA CENTRALIZAR O LOGO <<<
-      Removemos a propriedade flex: 1 para que a div da esquerda (vazia) 
-      e a da direita (com os ícones) não empurrem o logo para fora do centro.
-    */
-    .header-left, .header-right {
-        flex: none; 
+    .header-left,
+    .header-right {
+        flex: none;
     }
-    
+
     .header-left {
-      justify-content: flex-start;
-      width: 60px; /* Apenas para garantir um espaço mínimo para alinhamento */
+        justify-content: flex-start;
+        width: 60px;
     }
 
     .header-right {
-      justify-content: flex-end;
-      width: auto; /* Largura baseada no conteúdo */
+        justify-content: flex-end;
+        width: auto;
     }
 
     .header-center {
-      flex: 1; /* O centro agora ocupa todo o espaço restante, garantindo a centralização do logo */
-      display: flex;
-      justify-content: center;
+        flex: 1;
+        display: flex;
+        justify-content: center;
     }
 }
 
-
-/* Para celulares com telas pequenas (abaixo de 480px)
-  - Reduz o espaçamento entre os ícones e o tamanho do logo.
-*/
 @media (max-width: 480px) {
     .header-right {
-        gap: 20px; /* Diminui o espaço entre os ícones */
+        gap: 20px;
     }
 
     .header-logo {
-        height: 48px; /* Logo um pouco menor */
+        height: 48px;
         margin-right: 3px;
     }
 
     .mobile-nav-overlay a {
-      font-size: 2em; /* Diminui a fonte do menu mobile */
+        font-size: 2em;
     }
 
     .mobile-nav-overlay li {
-      margin-bottom: 30px;
+        margin-bottom: 30px;
     }
 }
