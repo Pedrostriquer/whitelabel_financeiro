@@ -68,6 +68,13 @@ const Carousel = ({ slides, variant = "dark" }) => {
   };
   const arrowStyle = { ...style.arrow, ...(isLight && style.lightArrow) };
 
+  const abrirUrlEmNovaAba = (url) => {
+    if(url && url.trim() != "")
+      window.open(url, '_blank');
+  };
+
+  console.log(currentItem)
+
   return (
     <div
       style={style.featuredContainer}
@@ -75,7 +82,7 @@ const Carousel = ({ slides, variant = "dark" }) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       {renderMedia(currentItem)}
-      <div style={overlayStyle}>
+      <div onClick={() => abrirUrlEmNovaAba(currentItem.mideaRedirect)} style={overlayStyle}>
         <span style={tagStyle}>{currentItem.type}</span>
         <h3 style={titleStyle}>{currentItem.title}</h3>
         <p style={descriptionStyle}>{currentItem.description}</p>
