@@ -30,9 +30,9 @@ const Header = () => {
   const menuItems = [
     { name: "HOME", path: "/ecommerce/home" },
     { name: "GEMAS PRECIOSAS", path: "/ecommerce/gemaspreciosas" },
-    { name: "JOIAS", path: "/ecommerce/joias" },
-    { name: "BLOG", path: "/blog" },
     { name: "GEMCASH", path: "/ecommerce/gemcash" },
+    { name: "JOIAS", path: "/ecommerce/joias" },
+    { name: "BLOG", path: "/blog" }
   ];
 
   const handleLinkClick = () => {
