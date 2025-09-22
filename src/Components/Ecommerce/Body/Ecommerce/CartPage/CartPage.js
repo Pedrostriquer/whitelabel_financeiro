@@ -5,11 +5,11 @@ import { usePromotions } from "../../../../../Context/PromotionsContext";
 import { Link, useNavigate } from "react-router-dom";
 import AddressForm from "./AddressForm";
 import saleServices from "../../../../../dbServices/saleServices";
-import verificationCodeService from "../../../../../dbServices/verificationCodeService"; // Importar o serviço de verificação
+import verificationCodeService from "../../../../../dbServices/verificationCodeService";
 import Modal from "../../AuthModal/Modal";
 import PaymentModal from "./PaymentModal";
 import PayModal from "../../../../PayModal/PayModal";
-import VerificationModal from "./VerificationModal"; // Importar o novo modal
+import VerificationModal from "./VerificationModal";
 import "./CartPage.css";
 import { FaPlus, FaMinus, FaTrashAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -22,15 +22,14 @@ const CartPage = () => {
     updateItemQuantity,
     loadingCart,
     clearCart,
-    fetchCart
   } = useCart();
   const { token, user } = useAuth();
   const { getPromotionForProduct } = usePromotions();
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Mantemos o navigate para outros usos se necessário
   const { startLoading, stopLoading } = useLoad();
 
   const hasProcessedOrder = useRef(false);
-  const paymentDetailsRef = useRef(null); // Usar ref para guardar detalhes de pagamento entre os modais
+  const paymentDetailsRef = useRef(null);
 
   // --- ESTADOS GERENCIADOS ---
   const [isAddressVisible, setIsAddressVisible] = useState(false);
@@ -50,7 +49,7 @@ const CartPage = () => {
   const [isAuthModalVisible, setIsAuthModalVisible] = useState(false);
   const [isCheckoutPending, setIsCheckoutPending] = useState(false);
   const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
-  const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false); // NOVO estado
+  const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
   const [isPayModalVisible, setIsPayModalVisible] = useState(false);
 
   // Estados para os detalhes do pagamento gerado
@@ -78,7 +77,6 @@ const CartPage = () => {
   );
   const totalDiscount = originalSubtotal - subtotalWithDiscount;
 
-  // ETAPA 3: A função final que realmente cria a venda após a verificação
   const processSale = useCallback(
     async (verificationCode) => {
       setIsSubmitting(true);
@@ -92,14 +90,14 @@ const CartPage = () => {
           productId: item.product.id,
           quantity: item.quantity,
         })),
-        ...paymentDetailsRef.current, // Pega os detalhes do pagamento (método, valor do saldo) guardados
-        verificationCode: verificationCode, // Inclui o código de verificação
+        ...paymentDetailsRef.current,
+        verificationCode: verificationCode,
       };
 
       try {
-        startLoading()
+        startLoading();
         const response = await saleServices.createSale(saleData, token);
-        await clearCart();
+
         if (response.pixDetails || response.boletoDetails) {
           toast.success("Pedido criado! Finalize o pagamento.");
           const details = response.pixDetails || response.boletoDetails;
@@ -111,7 +109,9 @@ const CartPage = () => {
           setIsPayModalVisible(true);
         } else {
           toast.success("Compra finalizada com sucesso utilizando o saldo!");
-          navigate("/meus-pedidos");
+          // SOLUÇÃO A: Limpa o carrinho e força o recarregamento
+          await clearCart();
+          window.location.href = '/meus-pedidos';
         }
       } catch (error) {
         toast.error(
@@ -124,19 +124,19 @@ const CartPage = () => {
         stopLoading();
       }
     },
-    [cartItems, shippingAddress, token, user, clearCart, navigate]
+    // Removido `navigate` das dependências, já que não é mais usado para a navegação final
+    [cartItems, shippingAddress, token, user, clearCart, startLoading, stopLoading]
   );
 
-  // ETAPA 2: Abre o modal de verificação e envia o código de confirmação
   const handleOpenVerificationModal = async (paymentDetails) => {
-    paymentDetailsRef.current = paymentDetails; // Guarda os detalhes do pagamento para usar depois
-    setIsPaymentModalVisible(false); // Fecha o modal de pagamento
+    paymentDetailsRef.current = paymentDetails;
+    setIsPaymentModalVisible(false);
     setIsSubmitting(true);
     try {
       startLoading();
       await verificationCodeService.enviarCodigoDeVerificacao(token);
       toast.success("Código de verificação enviado para o seu e-mail!");
-      setIsVerificationModalOpen(true); // Abre o modal de verificação
+      setIsVerificationModalOpen(true);
     } catch (error) {
       toast.error(error.message || "Não foi possível enviar o código.");
     } finally {
@@ -145,7 +145,6 @@ const CartPage = () => {
     }
   };
 
-  // ETAPA 1: O fluxo inicial de checkout que abre o modal de pagamento
   const handleCheckout = () => {
     if (
       !shippingAddress.street ||
@@ -153,9 +152,7 @@ const CartPage = () => {
       !shippingAddress.zipcode ||
       !shippingAddress.city
     ) {
-      toast.warn(
-        "Por favor, preencha todos os campos obrigatórios do endereço."
-      );
+      toast.warn("Por favor, preencha todos os campos obrigatórios do endereço.");
       setIsAddressVisible(true);
       return;
     }
@@ -191,10 +188,13 @@ const CartPage = () => {
     sessionStorage.removeItem("checkoutPending");
   };
 
-  const handlePayModalClose = () => {
+  // Função chamada ao fechar o modal de PIX/Boleto
+  const handlePayModalClose = async () => {
     setIsPayModalVisible(false);
     setPaymentGeneratedDetails(null);
-    navigate("/meus-pedidos");
+    // SOLUÇÃO A: Limpa o carrinho e força o recarregamento
+    await clearCart();
+    window.location.href = '/meus-pedidos';
   };
 
   if (loadingCart) {
