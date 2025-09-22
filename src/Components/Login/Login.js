@@ -53,8 +53,7 @@ export default function Login() {
         <div style={style.infoPanel}>
           <LoginIcon />
           <p style={style.infoSubtitle}>
-            Acesse sua conta para visualizar insights, gerenciar contratos e
-            acompanhar seu progresso financeiro.
+            Acesse sua conta para visualizar suas compras e acompanhar informações e vantagens sobre Gemas Brilhantes.
           </p>
         </div>
 
