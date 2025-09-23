@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
+// ✨ CORREÇÃO AQUI: Ajustamos o caminho e o casing para corresponder à estrutura do seu projeto.
 import { db } from '../../../Firebase/config'; 
 import './Footer.css';
 
@@ -27,6 +28,7 @@ const Footer = () => {
         fetchFooterData();
     }, []);
 
+    // Mostra um rodapé simplificado ou nada enquanto carrega
     if (loading) {
         return (
             <footer className="footer-wrapper placeholder">
@@ -37,10 +39,12 @@ const Footer = () => {
         );
     }
     
+    // Não renderiza nada se não houver dados após o carregamento
     if (!footerData) {
         return null; 
     }
 
+    // Prepara o link do WhatsApp removendo caracteres não numéricos
     const whatsappLink = `https://wa.me/${(footerData.whatsappNumber || '').replace(/\D/g, '')}`;
 
     return (
@@ -51,14 +55,6 @@ const Footer = () => {
                     <h3 className="footer-title fonte-principal">Entre em Contato</h3>
                     {footerData.phone && <p className="footer-text">Telefone: {footerData.phone}</p>}
                     {footerData.email && <a href={`mailto:${footerData.email}`} className="footer-link">Email: {footerData.email}</a>}
-                    
-                    {/* LÓGICA ATUALIZADA PARA EXIBIR O TÍTULO */}
-                    {footerData.addressLink && (
-                        <a href={footerData.addressLink} target="_blank" rel="noopener noreferrer" className="footer-link">
-                            <i className="fas fa-map-marker-alt" style={{ marginRight: '8px' }}></i>
-                            {footerData.addressTitle || 'Nosso Endereço'}
-                        </a>
-                    )}
                 </div>
 
                 {/* Coluna 2: Mensagem WhatsApp */}
@@ -84,16 +80,6 @@ const Footer = () => {
                         {footerData.facebook && (
                             <a href={footerData.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook">
                                 <i className="fab fa-facebook-f"></i>
-                            </a>
-                        )}
-                        {footerData.tiktok && (
-                            <a href={footerData.tiktok} target="_blank" rel="noopener noreferrer" aria-label="TikTok">
-                                <i className="fab fa-tiktok"></i>
-                            </a>
-                        )}
-                        {footerData.youtube && (
-                            <a href={footerData.youtube} target="_blank" rel="noopener noreferrer" aria-label="YouTube">
-                                <i className="fab fa-youtube"></i>
                             </a>
                         )}
                     </div>
