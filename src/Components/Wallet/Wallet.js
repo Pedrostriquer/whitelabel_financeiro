@@ -34,7 +34,7 @@ const AnimatedInfoItem = ({ label, brlValue, usdValue, isLoading }) => {
       ) : (
         <>
           <span style={style.infoValueUsd}>
-            U$ {formatServices.formatCurrencyBR(currentUsdValue)}
+            {/* U$ {formatServices.formatCurrencyBR(currentUsdValue)} */}
           </span>
           <span style={{ ...style.infoValueBrl, color: animatedColor }}>
             R$ {formatServices.formatCurrencyBR(currentBrlValue)}
@@ -282,7 +282,7 @@ export default function Wallet() {
           </div>
           <div style={style.infoBlocks}>
             <div style={style.infoBlock}>
-              <h4 style={style.infoBlockTitle}>VALOR NA CARTEIRA</h4>
+              <h4 style={style.infoBlockTitle}>VALOR DE COMPRA</h4>
               <div style={style.infoRow}>
                 <AnimatedInfoItem
                   label="VALOR INTEIRO"

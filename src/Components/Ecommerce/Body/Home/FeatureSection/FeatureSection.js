@@ -1,13 +1,15 @@
-// Dentro de src/Components/ClientView/Body/Home/FeatureSection/FeatureSection.js
-
 import React from 'react';
-import { Link } from 'react-router-dom'; // Usaremos Link para a navegação
+import { Link } from 'react-router-dom';
 import './FeatureSection.css';
 
-// O componente agora recebe todas as informações via props
 const FeatureSection = ({ title, text, buttonText, buttonLink, mediaSrc, mediaType, layout = 'default' }) => {
     
-    // Função para renderizar a mídia (imagem ou vídeo)
+    // Se não houver uma fonte de mídia ou um título, não renderiza a seção para evitar blocos vazios.
+    if (!mediaSrc || !title) {
+        return null;
+    }
+
+    // Função para renderizar a mídia (imagem ou vídeo) de forma limpa.
     const renderMedia = () => {
         if (mediaType === 'video') {
             return (
@@ -16,7 +18,8 @@ const FeatureSection = ({ title, text, buttonText, buttonLink, mediaSrc, mediaTy
                     src={mediaSrc}
                     autoPlay 
                     muted
-                    playsInline
+                    loop // Adicionado loop para vídeos decorativos
+                    playsInline // Essencial para autoplay em dispositivos móveis
                 />
             );
         }
@@ -35,9 +38,12 @@ const FeatureSection = ({ title, text, buttonText, buttonLink, mediaSrc, mediaTy
                 <div className="feature-text-col">
                     <h2 className="feature-title fonte-principal">{title}</h2>
                     <p className="feature-text">{text}</p>
-                    <Link to={buttonLink} className="feature-button">
-                        {buttonText}
-                    </Link>
+                    {/* O botão só é renderizado se houver texto e um link */}
+                    {buttonText && buttonLink && (
+                        <Link to={buttonLink} className="feature-button">
+                            {buttonText}
+                        </Link>
+                    )}
                 </div>
             </div>
         </section>

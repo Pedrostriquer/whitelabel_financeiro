@@ -1,17 +1,35 @@
-// Dentro de src/Components/ClientView/FloatingWhatsApp/FloatingWhatsApp.js
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../../Firebase/config'; // Verifique se este caminho está correto
 import './FloatingWhatsApp.css';
 
-// O componente recebe os dados do 'footer' para reutilizar o número do WhatsApp
-const FloatingWhatsApp = ({ number }) => {
-    // Se nenhum número for fornecido, não renderiza o botão
-    if (!number) {
+const FloatingWhatsApp = () => {
+    const [whatsappNumber, setWhatsappNumber] = useState('');
+
+    useEffect(() => {
+        // Função para buscar apenas o número do WhatsApp do documento 'footer'
+        const fetchWhatsAppNumber = async () => {
+            const docRef = doc(db, 'siteContent', 'footer');
+            try {
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists() && docSnap.data().whatsappNumber) {
+                    setWhatsappNumber(docSnap.data().whatsappNumber);
+                }
+            } catch (error) {
+                console.error("Erro ao buscar número do WhatsApp para o botão flutuante:", error);
+            }
+        };
+
+        fetchWhatsAppNumber();
+    }, []); // Array vazio para rodar apenas uma vez
+
+    // Se nenhum número foi encontrado no Firebase, o botão não é renderizado.
+    if (!whatsappNumber) {
         return null;
     }
 
     // Prepara o link do WhatsApp
-    const whatsappLink = `https://wa.me/${number.replace(/\D/g, '')}`;
+    const whatsappLink = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}`;
 
     return (
         <a 
