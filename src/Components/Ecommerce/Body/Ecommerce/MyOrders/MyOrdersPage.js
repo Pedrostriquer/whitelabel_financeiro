@@ -127,7 +127,7 @@ const MyOrdersPage = () => {
       <header className="account-view-header">
         <div className="account-view-header-content">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/ecommerce/gemaspreciosas")}
             className="account-view-back-btn"
           >
             <i className="fas fa-arrow-left"></i>

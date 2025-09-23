@@ -135,9 +135,16 @@
 
 .original-price { 
     font-family: 'Poppins', sans-serif; 
-    font-size: 1.5rem; 
+    font-size: 2rem; 
     font-weight: 400; 
     color: #888; 
+}
+
+.product-value{
+    font-family: 'Poppins', sans-serif; 
+    font-size: 2rem; 
+    font-weight: 600; 
+    color: #0c0000; 
 }
 
 .original-price.on-sale { 
@@ -165,7 +172,10 @@
     background-color: var(--primary-color); 
     color: #FFFFFF; 
     border: none; 
-    padding: 16px 35px; 
+    /* padding: 16px 35px;  */
+    height: 60px;
+    padding: 0 35px;
+    box-sizing: border-box;
     border-radius: 50px; 
     font-family: 'Poppins', sans-serif; 
     font-weight: 500; 
@@ -279,6 +289,59 @@
     text-decoration: none; 
     border-bottom: 2px solid var(--primary-color); 
     padding-bottom: 3px; 
+}
+
+.cart-qtt-container{
+    display: flex;
+    gap: 15px;
+    justify-content: start;
+}
+
+.qtt-controller{
+    display: flex;
+    gap: 10px;
+}
+
+.qtt-controller-view{
+    width: 60px;
+    height: 60px;
+    background: rgb(255, 255, 255);
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.09);
+    box-shadow: 3px 3px 2px rgba(0,0,0,0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.controllers{
+    display: grid;
+    height: 60px;
+    grid-template-rows: 2fr 2fr;
+    gap: 6px;
+}
+
+.controller-button{
+    width: 60px;
+    height: 100%;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 12px;
+    box-shadow: 3px 3px 2px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: .3s;
+    font-size: 20px;
+    font-weight: 600;
+    color: #0c00009c;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+}
+
+.controller-button:hover{
+    background-color: rgb(70, 211, 250);
 }
 
 @media (max-width: 900px) { 

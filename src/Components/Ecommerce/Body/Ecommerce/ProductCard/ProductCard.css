@@ -120,6 +120,7 @@
   text-align: center;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
   background-color: var(--white-color);
   flex-grow: 1;
 }
@@ -143,7 +144,7 @@
   font-family: var(--font-primary);
   font-size: 0.9rem;
   color: var(--light-text-color);
-  margin: -4px 0 8px 0;
+  /* margin: -4px 0 8px 0; */
 }
 
 .price-container {
@@ -151,19 +152,22 @@
   justify-content: center;
   align-items: baseline;
   gap: 10px;
-  margin-bottom: 4px;
+  margin: 0 !important;
 }
 
 .product-price-original {
   font-size: 0.9rem;
   color: var(--light-text-color);
   text-decoration: line-through;
+  margin: 0% !important;
+
 }
 
 .product-price-sale {
   font-size: 1.3rem;
   font-weight: 600;
   color: var(--sale-color);
+  margin: 0% !important;
 }
 
 .installment-info {
@@ -361,4 +365,10 @@
   --svg-stroke: var(--cart-tick-color);
   stroke-dasharray: 10px;
   stroke-dashoffset: var(--cart-tick-offset);
+}
+
+.stock-info {
+  color: rgba(0,0,0,0.4);
+  margin: 0 !important;
+  font-size: 12px;
 }
