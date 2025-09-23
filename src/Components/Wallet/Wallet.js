@@ -70,8 +70,9 @@ const WithdrawalInfoPanel = ({ rules, isOpen }) => {
         <div style={style.infoPanelRow}>
           <span style={style.infoPanelLabel}>Dia de Saque</span>
           <span style={style.infoPanelValue}>
-            Todo dia {rules.day} de cada mês
-          </span>
+            {/* Todo dia {rules.day} de cada mês */}
+            <u>Primeiro dia útil de cada mês</u>
+            </span>
         </div>
         <div style={style.infoPanelRow}>
           <span style={style.infoPanelLabel}>Horário</span>
