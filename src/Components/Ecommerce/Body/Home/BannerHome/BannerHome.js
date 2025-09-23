@@ -4,44 +4,25 @@ import './BannerHome.css';
 
 const BannerHome = ({ slides, speed, showArrows, width, height, onReady }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
-    
-    // Filtra apenas os slides que são vídeos para monitorarmos o carregamento
-    const videoSlides = useMemo(() => 
-        (slides || []).filter(slide => slide && slide.src && slide.type === 'video'),
-    [slides]);
+    // Ref para armazenar as referências dos elementos <video> do DOM
+    const videoRefs = useRef([]);
 
-    // Usamos useRef para contar quantos vídeos já carregaram sem causar re-renderizações
-    const loadedVideosCount = useRef(0);
-    // Flag para garantir que onReady seja chamado apenas uma vez
-    const hasFiredOnReady = useRef(false); 
-
-    // Efeito para verificar se o banner está pronto para ser exibido
-    useEffect(() => {
-        // Se a prop onReady não for passada, não faz nada
-        if (!onReady) return;
-
-        console.log(`BANNER: Esperando carregar ${videoSlides.length} vídeo(s).`);
-
-        // Se não houver vídeos, considera o banner pronto imediatamente
-        if (videoSlides.length === 0) {
-            console.log("BANNER: Nenhum vídeo para carregar, considerando pronto.");
-            onReady();
-            hasFiredOnReady.current = true;
-        }
-    }, [videoSlides.length, onReady]);
-
-
-    // Memo para garantir que estamos trabalhando apenas com slides válidos
+    // Memo para garantir que estamos trabalhando apenas com slides válidos e completos
     const validSlides = useMemo(() => 
         (slides || []).filter(slide => slide && slide.src && slide.src.trim() !== ''), 
     [slides]);
 
-    // Funções de navegação do carrossel
+    // Efeito para garantir que o array de refs tenha o tamanho correto
+    useEffect(() => {
+        videoRefs.current = videoRefs.current.slice(0, validSlides.length);
+    }, [validSlides]);
+
+    // Funções de navegação do carrossel (memoizadas para estabilidade)
     const goToNext = useCallback(() => {
         if (validSlides.length <= 1) return;
         const isLastSlide = currentIndex === validSlides.length - 1;
         setCurrentIndex(isLastSlide ? 0 : currentIndex + 1);
-    }, [currentIndex, validSlides]);
+    }, [currentIndex, validSlides.length]);
 
     const goToPrevious = () => {
         if (validSlides.length <= 1) return;
@@ -49,56 +30,83 @@ const BannerHome = ({ slides, speed, showArrows, width, height, onReady }) => {
         setCurrentIndex(isFirstSlide ? validSlides.length - 1 : currentIndex - 1);
     };
 
-    // Efeito para o timer da troca automática de slides
+    // EFEITO 1: CONTROLA O PLAY/PAUSE E REINÍCIO DOS VÍDEOS
+    // Este efeito é acionado sempre que o slide ativo (currentIndex) muda.
     useEffect(() => {
-        if (speed > 0 && validSlides.length > 1) {
-            const timer = setTimeout(goToNext, speed);
-            return () => clearTimeout(timer);
-        }
-    }, [currentIndex, goToNext, speed, validSlides.length]);
+        videoRefs.current.forEach((video, index) => {
+            if (video) {
+                // Se o vídeo corresponde ao slide atual, ele deve tocar do início.
+                if (index === currentIndex) {
+                    video.currentTime = 0; // REINICIA o vídeo para o segundo 0
+                    video.play().catch(error => {
+                        // O erro 'AbortError' acontece se o usuário navegar rápido, é seguro ignorar.
+                        if (error.name !== 'AbortError') {
+                            console.error("Erro ao tentar dar play no vídeo:", error);
+                        }
+                    });
+                } else {
+                    // Se não for o slide atual, o vídeo deve ser pausado.
+                    video.pause();
+                }
+            }
+        });
+    }, [currentIndex, validSlides]); // Depende do slide atual
 
-    // Se não houver slides válidos, não renderiza nada
+    // EFEITO 2: TIMER INTELIGENTE PARA A TROCA AUTOMÁTICA DE SLIDES
+    // Gerencia a troca automática baseada na configuração de cada slide.
+    useEffect(() => {
+        const currentSlide = validSlides[currentIndex];
+        // Não faz nada se não houver um slide válido ou se houver apenas um slide.
+        if (!currentSlide || validSlides.length <= 1) return;
+
+        // CASO A: VÍDEO COM A OPÇÃO "EXIBIR ATÉ O FINAL"
+        if (currentSlide.type === 'video' && currentSlide.playUntilEnd) {
+            const videoElement = videoRefs.current[currentIndex];
+            if (videoElement) {
+                // Função que será chamada quando o vídeo terminar
+                const handleVideoEnd = () => {
+                    goToNext();
+                };
+                // Adiciona o listener para o evento 'ended'
+                videoElement.addEventListener('ended', handleVideoEnd);
+                
+                // Função de limpeza: remove o listener quando o componente desmontar ou o slide mudar
+                return () => {
+                    videoElement.removeEventListener('ended', handleVideoEnd);
+                };
+            }
+        } 
+        // CASO B: IMAGEM OU VÍDEO COM DURAÇÃO FIXA
+        else {
+            // Usa a duração específica do slide, ou um fallback para a velocidade global (do Firebase)
+            const duration = currentSlide.duration || speed || 5000;
+            if (duration > 0) {
+                const timer = setTimeout(goToNext, duration);
+                // Função de limpeza: cancela o timer se o componente desmontar ou o slide mudar
+                return () => clearTimeout(timer);
+            }
+        }
+    }, [currentIndex, goToNext, validSlides, speed]);
+
+    
+    // Se não houver slides, informa que está "pronto" e não renderiza nada
     if (!validSlides || validSlides.length === 0) {
+        if (onReady) onReady();
         return null;
     }
     
-    // Função que será chamada pelo evento 'onCanPlayThrough' ou 'onError' de cada vídeo
-    const handleVideoLoaded = (event) => {
-        // Se a função onReady já foi disparada, não faz mais nada para evitar chamadas múltiplas
-        if (hasFiredOnReady.current) return;
-
-        // Se o evento foi de erro, logamos para saber qual vídeo falhou
-        if (event.type === 'error') {
-            console.error(`BANNER: Falha ao carregar o vídeo: ${event.target.src}`);
-        }
-
-        loadedVideosCount.current += 1;
-        console.log(`BANNER: Evento de vídeo recebido (${event.type}). Contagem: ${loadedVideosCount.current} de ${videoSlides.length}`);
-        
-        // Quando o número de vídeos carregados (com sucesso ou erro) for igual ao total de vídeos...
-        if (loadedVideosCount.current >= videoSlides.length) {
-            console.log("BANNER: Contagem atingida! Chamando onReady.");
-            onReady();
-            hasFiredOnReady.current = true; // Marca que já chamou para não chamar de novo
-        }
-    };
-
-    // Função que renderiza a mídia (imagem ou vídeo) de cada slide
-    const renderSlideMedia = (slide) => {
+    // Função que renderiza a mídia, agora passando o índice para a ref do vídeo
+    const renderSlideMedia = (slide, index) => {
         if (slide.type === 'video') {
             return (
                 <video 
+                    ref={el => videoRefs.current[index] = el} // Associa o elemento <video> à nossa ref
                     className="home-banner-slide-media" 
                     src={slide.src} 
-                    autoPlay 
                     muted 
-                    loop 
                     playsInline 
                     preload="auto"
-                    // Evento que dispara quando o navegador acredita que pode tocar o vídeo
-                    onCanPlayThrough={handleVideoLoaded} 
-                    // MUDANÇA CRUCIAL: Se um vídeo der erro, também chamamos a função para não travar
-                    onError={handleVideoLoaded}
+                    // autoPlay e loop foram removidos, pois agora são controlados via JavaScript
                 />
             );
         }
@@ -118,9 +126,9 @@ const BannerHome = ({ slides, speed, showArrows, width, height, onReady }) => {
                 {validSlides.map((slide, index) => (
                     <div className={`home-banner-slide ${index === currentIndex ? 'active' : ''}`} key={slide.id}>
                         {(slide.overlay?.show === false && slide.link) ? (
-                            <Link to={slide.link}>{renderSlideMedia(slide)}</Link>
+                            <Link to={slide.link}>{renderSlideMedia(slide, index)}</Link>
                         ) : (
-                            renderSlideMedia(slide)
+                            renderSlideMedia(slide, index)
                         )}
                         
                         {(slide.overlay?.show !== false && slide.overlay?.title) && (

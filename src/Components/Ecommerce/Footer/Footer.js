@@ -49,10 +49,18 @@ const Footer = () => {
                 {/* Coluna 1: Entre em Contato */}
                 <div className="footer-column">
                     <h3 className="footer-title fonte-principal">Entre em Contato</h3>
-                    {footerData.phone && <p className="footer-text">Telefone: {footerData.phone}</p>}
+                    
+                    {/* LÓGICA CORRIGIDA PARA EXIBIR OS TELEFONES DO ARRAY */}
+                    {footerData.phones && footerData.phones.map((phone, index) => (
+                        phone.number && (
+                            <p key={index} className="footer-text">
+                                Telefone: {phone.number} {phone.label && `(${phone.label})`}
+                            </p>
+                        )
+                    ))}
+
                     {footerData.email && <a href={`mailto:${footerData.email}`} className="footer-link">Email: {footerData.email}</a>}
                     
-                    {/* LÓGICA ATUALIZADA PARA EXIBIR O TÍTULO */}
                     {footerData.addressLink && (
                         <a href={footerData.addressLink} target="_blank" rel="noopener noreferrer" className="footer-link">
                             <i className="fas fa-map-marker-alt" style={{ marginRight: '8px' }}></i>

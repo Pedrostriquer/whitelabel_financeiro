@@ -136,7 +136,8 @@ export default function ExtratosPage() {
       <div style={style.pageHeader}>
         <h1 style={style.pageTitle}>Extrato da Conta</h1>
         <p style={style.pageSubtitle}>
-          Visualize todas as transações, rendimentos e saques da sua conta.
+          Visualize todas as transações, compras e saques da sua conta.
+
         </p>
       </div>
 

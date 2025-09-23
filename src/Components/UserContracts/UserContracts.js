@@ -7,7 +7,7 @@ import style from "./UserContractsStyle.js";
 
 const STATUS_MAP = {
   1: { text: "Pendente", styleKey: "statusPendente" },
-  2: { text: "Valorizando", styleKey: "statusValorizando" },
+  2: { text: "Remunerando", styleKey: "statusValorizando" },
   3: { text: "Cancelado", styleKey: "statusCancelado" },
   4: { text: "Finalizado", styleKey: "statusFinalizado" },
   5: { text: "Recomprado", styleKey: "statusRecomprado" },
@@ -61,7 +61,7 @@ const UserContracts = ({
 
   return (
     <div style={style.userContractsSection}>
-      <h2 style={style.pageTitle}>Seus Contratos</h2>
+      <h2 style={style.pageTitle}>Minhas Compras</h2>
       <div style={style.controlsPanel}>
         <div style={style.filtersContainer}>
           <input
