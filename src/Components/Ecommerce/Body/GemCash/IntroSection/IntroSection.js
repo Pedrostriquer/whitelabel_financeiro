@@ -29,13 +29,10 @@ const IntroSection = ({ data }) => {
                 <div className="intro-media-card-col">
                     <div className="media-card">
                         {/* --- A MUDANÇA PRINCIPAL ESTÁ AQUI --- */}
-                        {/* A tag <img> foi substituída pela tag <video> */}
-                        <video 
+                        {/* A tag <video> foi substituída pela tag <img> */}
+                        <img 
                             className="intro-media" 
-                            src="/img/WhatsApp Video 2025-09-22 at 15.38.17.mp4"
-                            autoPlay
-                            muted
-                            playsInline
+                            src="/ecommerce/img/Gemini_Generated_Image_4lnr884lnr884lnr (1).png"
                             alt="Visual representativo do GemCash"
                         />
                         
