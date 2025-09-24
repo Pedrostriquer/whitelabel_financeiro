@@ -5,7 +5,7 @@ const style = {
     backgroundColor: "#fdfdfd",
     display: "flex",
     justifyContent: "center",
-    padding: "40px",
+    padding: "clamp(1rem, 5vw, 2.5rem)", // Padding fluido
     boxSizing: "border-box",
     fontFamily: "'Poppins', sans-serif",
   },
@@ -14,14 +14,14 @@ const style = {
     maxWidth: "1400px",
     display: "flex",
     flexDirection: "column",
-    gap: "40px",
+    gap: "clamp(1.5rem, 4vw, 2.5rem)", // Gap fluido
   },
   headerRow: {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
     boxSizing: "border-box",
-    marginBottom: "10px",
+    marginBottom: "0.5rem",
   },
   headerLogoContainer: {
     flex: 1,
@@ -29,16 +29,16 @@ const style = {
     justifyContent: "center",
   },
   headerLogo: {
-    height: "80px",
+    height: "clamp(50px, 12vw, 80px)", // Altura fluida
     marginLeft: "auto",
     marginRight: "auto",
-    paddingLeft: "50px",
+    paddingLeft: "3rem", // Ajustado para centralização
   },
   notificationBell: {
     position: "relative",
     cursor: "pointer",
-    width: "50px",
-    height: "50px",
+    width: "3rem",
+    height: "3rem",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -50,13 +50,13 @@ const style = {
   },
   notificationBadge: {
     position: "absolute",
-    top: "8px",
-    right: "8px",
+    top: "0.5rem",
+    right: "0.5rem",
     backgroundColor: "#ef4444",
     color: "white",
     borderRadius: "50%",
-    width: "18px",
-    height: "18px",
+    width: "1.2rem",
+    height: "1.2rem",
     fontSize: "0.7rem",
     fontWeight: "bold",
     display: "flex",
@@ -67,44 +67,48 @@ const style = {
   },
   tooltip: {
     position: "absolute",
-    bottom: "-35px",
+    bottom: "-2.2rem",
     left: "50%",
     transform: "translateX(-50%)",
     backgroundColor: "#1e293b",
     color: "white",
-    padding: "5px 12px",
-    borderRadius: "6px",
+    padding: "0.4rem 0.8rem",
+    borderRadius: "0.4rem",
     fontSize: "0.8rem",
     whiteSpace: "nowrap",
     zIndex: "10",
     animation: "fadeInUpTooltip 0.3s ease-out",
   },
-  dashboardRow: { display: "flex", gap: "30px", width: "100%" },
-
+  dashboardRow: {
+    display: "flex",
+    flexWrap: "wrap", // Essencial para responsividade
+    gap: "clamp(1.5rem, 4vw, 2rem)", // Gap fluido
+    width: "100%",
+  },
   dashboardCard: {
-    flex: 1,
+    flex: "1 1 300px", // Permite que os cards cresçam, encolham e tenham uma base de 300px
     background: "white",
-    borderRadius: "16px",
+    borderRadius: "1rem",
     boxShadow: "0 8px 32px rgba(0, 0, 0, 0.05)",
-    padding: "30px",
+    padding: "clamp(1.5rem, 4vw, 2rem)", // Padding fluido
     display: "flex",
     flexDirection: "column",
     color: "#333",
     border: "1px solid #f0f0f0",
     transition: "min-height 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
   },
-  dashboardCardCollapsed: { minHeight: "98px" },
+  dashboardCardCollapsed: { minHeight: "6rem" },
   cardHeader: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    paddingBottom: "15px",
+    paddingBottom: "1rem",
     borderBottom: "1px solid #f1f5f9",
     cursor: "pointer",
   },
   cardHeaderH3: {
-    fontSize: "1.1rem",
+    fontSize: "clamp(1rem, 2.5vw, 1.1rem)", // Tipografia fluida
     margin: 0,
     color: "#1e293b",
     fontWeight: 600,
@@ -120,35 +124,35 @@ const style = {
     transition:
       "max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1), margin-top 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease-in-out",
   },
-  cardContentExpanded: { maxHeight: "1000px", marginTop: "25px", opacity: 1 },
-  cardContentCollapsed: { maxHeight: "52px", marginTop: "15px", opacity: 1 },
+  cardContentExpanded: { maxHeight: "1000px", marginTop: "1.5rem", opacity: 1 },
+  cardContentCollapsed: { maxHeight: "3.25rem", marginTop: "1rem", opacity: 1 },
   cardInfoList: {
     width: "100%",
     display: "flex",
     flexDirection: "column",
-    gap: "12px",
+    gap: "0.75rem",
   },
   cardInfoItem: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    fontSize: "1rem",
+    fontSize: "clamp(0.9rem, 2vw, 1rem)", // Tipografia fluida
   },
   cardInfoLabel: { color: "#64748b" },
-  cardInfoValue: { fontWeight: "600", fontSize: "1.1rem", color: "#0f172a" },
-
+  cardInfoValue: { fontWeight: "600", fontSize: "clamp(1rem, 2.2vw, 1.1rem)", color: "#0f172a" }, // Tipografia fluida
   mainActionsContainer: {
     display: "flex",
-    gap: "30px",
+    flexWrap: "wrap", // Essencial para responsividade
+    gap: "clamp(1.5rem, 4vw, 2rem)", // Gap fluido
     width: "100%",
     animation: "fadeInUp 0.8s ease-out forwards",
   },
   actionButton: {
-    flex: 1,
+    flex: "1 1 320px", // Permite que os botões cresçam, encolham e tenham uma base
     position: "relative",
-    padding: "40px",
-    borderRadius: "20px",
+    padding: "clamp(1.5rem, 5vw, 2.5rem)", // Padding fluido
+    borderRadius: "1.25rem",
     border: "none",
     textAlign: "left",
     cursor: "pointer",
@@ -166,121 +170,45 @@ const style = {
   },
   actionButtonText: { zIndex: 2, position: "relative" },
   actionButtonTitle: {
-    fontSize: "1.8rem",
+    fontSize: "clamp(1.5rem, 4vw, 1.8rem)", // Tipografia fluida
     fontWeight: "bold",
-    margin: "0 0 8px 0",
+    margin: "0 0 0.5rem 0",
   },
   actionButtonDescription: {
-    fontSize: "1rem",
+    fontSize: "clamp(0.9rem, 2.5vw, 1rem)", // Tipografia fluida
     margin: 0,
     opacity: 0.8,
-    maxWidth: "80%",
+    maxWidth: "85%",
   },
   actionButtonIcon: {
     position: "absolute",
-    bottom: "-20px",
-    right: "-20px",
-    fontSize: "100px",
+    bottom: "-1.25rem",
+    right: "-1.25rem",
+    fontSize: "clamp(80px, 20vw, 100px)", // Ícone fluido
     color: "rgba(255, 255, 255, 0.1)",
     transform: "rotate(-20deg)",
     transition: "transform 0.4s ease",
   },
-
   dashboardContentBlockLarge: {
-    flex: 2,
+    flex: "2 1 60%", // Prioriza o crescimento, base de 60%
     position: "relative",
     minHeight: "400px",
   },
   dashboardContentBlockSmall: {
-    flex: 1,
+    flex: "1 1 35%", // Prioriza o crescimento, base de 35%
     position: "relative",
     minHeight: "400px",
   },
-
-  productsSection: { width: "100%", marginTop: "20px" },
-  sectionHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "40px",
-  },
-  sectionTitle: {
-    fontSize: "2.2rem",
-    fontWeight: 700,
-    color: "#1e293b",
-    margin: 0,
-  },
-  seeMoreButton: {
-    background: "transparent",
-    color: "#3b82f6",
-    border: "none",
-    fontWeight: "600",
-    fontSize: "1rem",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-  },
+  // As seções de produtos foram removidas do JSX, então os estilos foram comentados.
+  // Se você reativá-los, pode usar um grid responsivo como abaixo:
+  /*
   productsGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)",
-    gap: "30px",
+    // Cria colunas que têm no mínimo 280px, e se ajustam para preencher o espaço.
+    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+    gap: "2rem",
   },
-  productCard: {
-    background: "white",
-    borderRadius: "16px",
-    overflow: "hidden",
-    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.05)",
-    transition: "transform 0.3s ease, box-shadow 0.3s ease",
-    cursor: "pointer",
-    border: "1px solid #f0f0f0",
-  },
-  productImageContainer: {
-    position: "relative",
-    height: "350px",
-    overflow: "hidden",
-  },
-  productImage: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    transition: "transform 0.5s ease",
-  },
-  productOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    background:
-      "linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 50%)",
-    display: "flex",
-    alignItems: "flex-end",
-    justifyContent: "center",
-    padding: "20px",
-    opacity: 0,
-    transition: "opacity 0.4s ease",
-  },
-  productButton: {
-    background: "white",
-    color: "#1e293b",
-    border: "none",
-    borderRadius: "50px",
-    padding: "12px 24px",
-    fontWeight: "600",
-    cursor: "pointer",
-    transform: "translateY(20px)",
-    transition: "transform 0.4s ease, background-color 0.3s",
-  },
-  productInfo: { padding: "25px" },
-  productName: {
-    fontSize: "1.25rem",
-    fontWeight: 600,
-    color: "#1e293b",
-    margin: "0 0 8px 0",
-  },
-  productPrice: { fontSize: "1.1rem", color: "#64748b", margin: 0 },
-
+  */
   "@keyframes fadeInUp": {
     from: { opacity: 0, transform: "translateY(20px)" },
     to: { opacity: 1, transform: "translateY(0)" },

@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import "./GemasBrilhantes.css";
 import ProductCard from "./ProductCard/ProductCard";
 import FilterSidebar from "./FilterSidebar/FilterSidebar";
 import productServices from "../../../../dbServices/productServices";
 import { FaFilter, FaTimes } from "react-icons/fa";
 
-// --- Componente do Header da Página ---
+// --- Sub-componente: Header da Página ---
 const ShopHeader = () => (
     <header className="shop-intro-header">
         <div className="shop-intro-content">
@@ -14,13 +14,11 @@ const ShopHeader = () => (
                 Explore nossa curadoria exclusiva de gemas brilhantes e certificadas.
                 Cada pedra é selecionada por especialistas que avaliam rigorosamente seu brilho, pureza e autenticidade. Nosso compromisso é oferecer gemas que não apenas encantam pela beleza, mas também carregam valor de mercado sólido e duradouro.
             </p>
-            <p className="shop-intro-text">
-                Com nossas Gemas Preciosas, você tem acesso a um acervo único, onde cada detalhe é pensado para entregar sofisticação, segurança e exclusividade em cada aquisição.
-            </p>
         </div>
     </header>
 );
 
+// --- Sub-componente: Spinner de Carregamento ---
 const LoadingSpinner = () => (
     <div className="spinner-container">
         <div className="loading-spinner"></div>
@@ -28,67 +26,95 @@ const LoadingSpinner = () => (
     </div>
 );
 
+// --- Sub-componente: Paginação ---
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+    if (totalPages <= 1) {
+        return null;
+    }
+    const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+    return (
+        <nav className="pagination-container" aria-label="Navegação de página de produtos">
+            <ul className="pagination">
+                {pageNumbers.map(number => (
+                    <li key={number} className={`page-item ${currentPage === number ? 'active' : ''}`}>
+                        <button onClick={() => onPageChange(number)} className="page-link">
+                            {number}
+                        </button>
+                    </li>
+                ))}
+            </ul>
+        </nav>
+    );
+};
+
+
+// --- Componente Principal: GemasBrilhantes ---
 const GemasBrilhantes = () => {
-    const [allProducts, setAllProducts] = useState([]);
-    const [filteredProducts, setFilteredProducts] = useState([]);
+    // --- ESTADOS ---
+    const [apiProducts, setApiProducts] = useState([]); // Guarda o resultado PURO da API para a página atual
     const [categories, setCategories] = useState([]);
     const [filterOptions, setFilterOptions] = useState({ materials: [], weights: [], stoneTypes: [], colors: [], cuts: [], clarities: [] });
     const [loading, setLoading] = useState(true);
     const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
     
+    // Estados de Paginação
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const [totalResults, setTotalResults] = useState(0);
+    const PAGE_SIZE = 12;
+
+    // Estado unificado para TODOS os filtros (backend e frontend)
     const [filters, setFilters] = useState({
-        searchTerm: '', itemType: 'Todos', categories: [], material: '', weight: '', stoneType: '', color: '', cut: '', clarity: '', minPrice: '', maxPrice: '', minCarats: '', maxCarats: '', sort: 'date_desc'
+        // Filtros que serão enviados para o BACKEND
+        searchTerm: '',
+        itemType: 'Todos',
+        categories: [],
+        sort: 'date_desc',
+        justPromotions: false,
+        
+        // Filtros que serão aplicados no FRONTEND
+        stoneType: '',
+        color: '',
+        cut: '',
+        clarity: '',
+        minPrice: '',
+        maxPrice: '',
     });
 
-    const fetchInitialData = useCallback(async () => {
+    // --- LÓGICA DE DADOS ---
+
+    // 1. BUSCA DE DADOS (API)
+    // Esta função é chamada quando um filtro de BACKEND ou a página muda.
+    // Usamos useCallback para que a função só seja recriada quando um filtro de backend mudar.
+    const fetchProducts = useCallback(async (pageToFetch) => {
         setLoading(true);
         try {
-            const [initialProductData, catData] = await Promise.all([
-                productServices.searchProducts({ sort: 'date_desc' }, 1, 1000),
-                productServices.getAllCategories()
-            ]);
-            
-            const products = initialProductData.items || [];
-            setAllProducts(products);
-            
-            const options = await productServices.getAllFilterOptions(products);
-            setFilterOptions(options);
-            setCategories(catData || []);
+            // O serviço já sabe quais filtros enviar para a API
+            const data = await productServices.searchProducts(filters, pageToFetch, PAGE_SIZE);
+            setApiProducts(data.items || []); // Armazena os resultados puros da API
+            setTotalPages(data.totalPages || 0);
+            setTotalResults(data.totalCount || 0);
+            setCurrentPage(data.pageNumber || 1);
         } catch (error) {
-            console.error("Erro ao buscar dados iniciais:", error);
+            console.error("Erro ao buscar produtos da API:", error);
+            setApiProducts([]); // Limpa os produtos em caso de erro
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [filters.searchTerm, filters.itemType, filters.categories, filters.sort, filters.justPromotions]); // Dependências: Apenas filtros de backend!
 
+    // Dispara a busca à API quando um filtro de backend é alterado
     useEffect(() => {
-        fetchInitialData();
-    }, [fetchInitialData]);
+        fetchProducts(1); // Sempre volta para a página 1 ao aplicar novo filtro de backend
+    }, [fetchProducts]);
 
-    useEffect(() => {
-        let items = [...allProducts];
+    // 2. FILTRAGEM SECUNDÁRIA (FRONTEND)
+    // Pega os produtos da API e aplica os filtros restantes usando useMemo para eficiência.
+    // Este código só é re-executado se os produtos da API ou um filtro de frontend mudar.
+    const displayedProducts = useMemo(() => {
+        let items = [...apiProducts];
 
-        if (filters.searchTerm) {
-            items = items.filter(p => p.name.toLowerCase().includes(filters.searchTerm.toLowerCase()));
-        }
-        if (filters.itemType !== 'Todos') {
-            items = items.filter(p => p.itemType === parseInt(filters.itemType));
-        }
-        if (filters.categories.length > 0) {
-            items = items.filter(p => p.categories && filters.categories.every(catId => p.categories.includes(catId)));
-        }
-        if (filters.minPrice) {
-            items = items.filter(p => p.value >= parseFloat(filters.minPrice));
-        }
-        if (filters.maxPrice) {
-            items = items.filter(p => p.value <= parseFloat(filters.maxPrice));
-        }
-        if (filters.material) {
-            items = items.filter(p => p.info?.material === filters.material);
-        }
-        if (filters.weight) {
-            items = items.filter(p => p.info?.weightInGrams === parseFloat(filters.weight));
-        }
+        // Aplica os filtros que a API não suporta
         if (filters.stoneType) {
             items = items.filter(p => p.info?.stones?.some(s => s.stoneType === filters.stoneType));
         }
@@ -101,16 +127,34 @@ const GemasBrilhantes = () => {
         if (filters.clarity) {
             items = items.filter(p => p.info?.stones?.some(s => s.clarity === filters.clarity));
         }
-        if (filters.minCarats) {
-            items = items.filter(p => p.info?.stones?.some(s => s.carats >= parseFloat(filters.minCarats)));
+        if (filters.minPrice) {
+            items = items.filter(p => p.value >= parseFloat(filters.minPrice));
         }
-        if (filters.maxCarats) {
-            items = items.filter(p => p.info?.stones?.some(s => s.carats <= parseFloat(filters.maxCarats)));
+        if (filters.maxPrice) {
+            items = items.filter(p => p.value <= parseFloat(filters.maxPrice));
         }
+        
+        return items;
+    }, [apiProducts, filters.stoneType, filters.color, filters.cut, filters.clarity, filters.minPrice, filters.maxPrice]); // Dependências: Produtos da API e filtros de frontend
 
-        setFilteredProducts(items);
+    // Efeito para buscar dados iniciais (opções de filtro, categorias) - Roda apenas 1 vez
+    useEffect(() => {
+        const fetchInitialData = async () => {
+            try {
+                const [catData, optionsData] = await Promise.all([
+                    productServices.getAllCategories(),
+                    productServices.getAllFilterOptions()
+                ]);
+                setCategories(catData || []);
+                setFilterOptions(optionsData);
+            } catch (error) {
+                console.error("Erro ao carregar dados iniciais de filtro:", error);
+            }
+        };
+        fetchInitialData();
+    }, []); // Array vazio garante que rode apenas uma vez
 
-    }, [filters, allProducts]);
+    // --- HANDLERS ---
 
     const handleFilterChange = (filterName, value) => {
         setFilters(prev => ({ ...prev, [filterName]: value }));
@@ -124,13 +168,21 @@ const GemasBrilhantes = () => {
             return { ...prev, categories: newCategories };
         });
     };
-
+    
+    const handlePageChange = (pageNumber) => {
+        fetchProducts(pageNumber);
+        window.scrollTo({ top: 300, behavior: 'smooth' });
+    };
+    
     const clearFilters = () => {
         setFilters({
-            searchTerm: '', itemType: 'Todos', categories: [], material: '', weight: '', stoneType: '', color: '', cut: '', clarity: '', minPrice: '', maxPrice: '', minCarats: '', maxCarats: '', sort: 'date_desc'
+            searchTerm: '', itemType: 'Todos', categories: [], sort: 'date_desc', justPromotions: false,
+            stoneType: '', color: '', cut: '', clarity: '', minPrice: '', maxPrice: '',
         });
     };
 
+    // --- RENDERIZAÇÃO ---
+    // O componente agora renderiza 'displayedProducts'
     return (
         <div className="shop-page-wrapper">
             <ShopHeader />
@@ -167,7 +219,8 @@ const GemasBrilhantes = () => {
                     <header className="content-header">
                         <input type="text" placeholder="Buscar por sua joia..." className="shop-search-input" value={filters.searchTerm} onChange={(e) => handleFilterChange('searchTerm', e.target.value)} />
                         <div className="header-controls">
-                            <span className="results-count">{filteredProducts.length} resultados</span>
+                            {/* O total de resultados vem do backend, mostrando o total real */}
+                            <span className="results-count">{totalResults} resultados</span>
                             <select className="sort-select" value={filters.sort} onChange={(e) => handleFilterChange('sort', e.target.value)}>
                                 <option value="date_desc">Mais Recentes</option>
                                 <option value="price_asc">Menor Preço</option>
@@ -177,16 +230,23 @@ const GemasBrilhantes = () => {
                         </div>
                     </header>
                     {loading ? <LoadingSpinner /> : (
-                        <div className="product-grid">
-                            {filteredProducts.length > 0 ? (
-                                filteredProducts.map((product) => <ProductCard key={product.id} product={product} />)
-                            ) : (
-                                <div className="no-products-found">
-                                    <h3>Nenhuma Joia Encontrada</h3>
-                                    <p>Tente ajustar seus filtros ou termo de busca.</p>
-                                </div>
-                            )}
-                        </div>
+                        <>
+                            <div className="product-grid">
+                                {displayedProducts.length > 0 ? (
+                                    displayedProducts.map((product) => <ProductCard key={product.id} product={product} />)
+                                ) : (
+                                    <div className="no-products-found">
+                                        <h3>Nenhuma Joia Encontrada</h3>
+                                        <p>Tente ajustar seus filtros ou pesquisar novamente.</p>
+                                    </div>
+                                )}
+                            </div>
+                            <Pagination 
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                onPageChange={handlePageChange}
+                            />
+                        </>
                     )}
                 </main>
             </div>

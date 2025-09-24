@@ -12,12 +12,11 @@ const colors = {
 };
 
 const style = {
-  // ... (todo o seu código de estilo existente vai aqui, sem alterações)
   page: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: "40px 20px",
+    padding: "clamp(1.5rem, 5vw, 2.5rem)", // <-- Padding fluido
     backgroundColor: colors.background,
   },
   container: { width: "100%", maxWidth: "900px" },
@@ -25,14 +24,16 @@ const style = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: "30px",
+    flexWrap: 'wrap', // <-- Garante quebra de linha em telas pequenas
+    gap: '1rem', // <-- Espaçamento para quando quebrar
+    marginBottom: "2rem",
   },
-  headerLeft: { display: "flex", alignItems: "center", gap: "20px" },
+  headerLeft: { display: "flex", alignItems: "center", gap: "1rem" },
   backButton: {
     background: colors.white,
     border: `1px solid ${colors.border}`,
-    width: "44px",
-    height: "44px",
+    width: "2.75rem", // 44px
+    height: "2.75rem",
     borderRadius: "50%",
     display: "flex",
     alignItems: "center",
@@ -44,64 +45,68 @@ const style = {
     boxShadow: `0 2px 4px ${colors.shadow}`,
   },
   title: {
-    fontSize: "2.5rem",
+    fontSize: "clamp(1.8rem, 5vw, 2.5rem)", // <-- Tipografia fluida
     fontWeight: 700,
     color: colors.textDark,
     margin: 0,
   },
   statusBadge: {
-    padding: "8px 18px",
+    padding: "0.5rem 1.2rem",
     borderRadius: "20px",
-    fontSize: "1rem",
+    fontSize: "clamp(0.9rem, 2.5vw, 1rem)", // <-- Tipografia fluida
     fontWeight: "bold",
     color: colors.white,
   },
   detailsGrid: {
     display: "grid",
+    // Esta linha já é perfeitamente responsiva, mantemos ela!
     gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-    gap: "25px",
-    marginBottom: "30px",
+    gap: "clamp(1rem, 4vw, 1.5rem)", // <-- Gap fluido
+    marginBottom: "2rem",
   },
   metricCard: {
     backgroundColor: colors.white,
-    padding: "25px",
+    padding: "clamp(1rem, 4vw, 1.5rem)", // <-- Padding fluido
     borderRadius: "12px",
     border: `1px solid ${colors.border}`,
     boxShadow: `0 4px 12px ${colors.shadow}`,
   },
   metricLabel: {
-    fontSize: "0.9rem",
+    fontSize: "clamp(0.85rem, 2vw, 0.9rem)", // <-- Tipografia fluida
     color: colors.textLight,
-    marginBottom: "8px",
+    marginBottom: "0.5rem",
     display: "block",
     fontWeight: 500,
   },
-  metricValue: { fontSize: "1.8rem", fontWeight: 700, color: colors.textDark },
-
+  metricValue: { 
+    fontSize: "clamp(1.5rem, 4vw, 1.8rem)", // <-- Tipografia fluida
+    fontWeight: 700, 
+    color: colors.textDark 
+  },
   trackingCard: {
     backgroundColor: colors.white,
-    padding: "25px",
+    padding: "1.5rem",
     borderRadius: "12px",
     border: `1px solid ${colors.border}`,
     boxShadow: `0 4px 12px ${colors.shadow}`,
-    marginBottom: "30px",
+    marginBottom: "2rem",
   },
   trackingTitle: {
-    fontSize: "1.5rem",
+    fontSize: "clamp(1.2rem, 4vw, 1.5rem)", // <-- Tipografia fluida
     fontWeight: 600,
     color: colors.textDark,
-    margin: "0 0 15px 0",
+    margin: "0 0 1rem 0",
   },
   trackingBody: {
     display: "flex",
     flexDirection: "column",
-    gap: "10px",
+    gap: "0.5rem",
     fontSize: "1rem",
   },
   trackingLink: {
     display: "inline-block",
-    marginTop: "10px",
-    padding: "10px 20px",
+    marginTop: "0.75rem",
+    padding: "0.75rem 1.25rem",
     backgroundColor: colors.primary,
     color: colors.white,
     textDecoration: "none",
@@ -110,30 +115,30 @@ const style = {
     textAlign: "center",
     transition: "background-color 0.3s",
   },
-
   mediaSection: {
     display: "flex",
     flexDirection: "column",
-    gap: "30px",
-    marginBottom: "30px",
+    gap: "2rem",
+    marginBottom: "2rem",
   },
   mediaCard: {
     backgroundColor: colors.white,
-    padding: "25px",
+    padding: "1.5rem",
     borderRadius: "12px",
     border: `1px solid ${colors.border}`,
     boxShadow: `0 4px 12px ${colors.shadow}`,
   },
   mediaTitle: {
-    fontSize: "1.5rem",
+    fontSize: "clamp(1.2rem, 4vw, 1.5rem)", // <-- Tipografia fluida
     fontWeight: 600,
     color: colors.textDark,
-    margin: "0 0 20px 0",
+    margin: "0 0 1.25rem 0",
   },
   mediaGrid: {
     display: "grid",
+    // Esta linha também já é perfeitamente responsiva
     gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))",
-    gap: "15px",
+    gap: "1rem",
   },
   mediaItem: {
     position: "relative",
@@ -161,7 +166,6 @@ const style = {
     color: "rgba(255,255,255,0.8)",
     zIndex: 1,
   },
-
   mediaViewerOverlay: {
     position: "fixed",
     top: 0,
@@ -199,26 +203,25 @@ const style = {
     cursor: "pointer",
     zIndex: 2001,
   },
-
   actionsPanel: {
     backgroundColor: colors.white,
-    padding: "30px",
+    padding: "clamp(1.5rem, 5vw, 2rem)", // <-- Padding fluido
     borderRadius: "12px",
     border: `1px solid ${colors.border}`,
     boxShadow: `0 4px 12px ${colors.shadow}`,
     display: "flex",
     flexDirection: "column",
-    gap: "20px",
+    gap: "1.25rem",
   },
   actionsTitle: {
-    fontSize: "1.5rem",
+    fontSize: "clamp(1.2rem, 4vw, 1.5rem)", // <-- Tipografia fluida
     fontWeight: 600,
     color: colors.textDark,
-    margin: "0 0 10px 0",
+    margin: "0 0 0.5rem 0",
     textAlign: "center",
   },
   actionButton: {
-    padding: "15px 25px",
+    padding: "1rem",
     fontSize: "1rem",
     fontWeight: "bold",
     border: "none",
@@ -228,7 +231,7 @@ const style = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "10px",
+    gap: "0.75rem",
   },
   reinvestButton: { backgroundColor: colors.success, color: colors.white },
   downloadButton: { backgroundColor: colors.info, color: colors.white },
@@ -236,7 +239,9 @@ const style = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: "15px",
+    flexWrap: 'wrap', // <-- Garante quebra de linha
+    gap: '1rem',
+    padding: "1rem",
     backgroundColor: "#f8f9fa",
     borderRadius: "8px",
   },
@@ -270,34 +275,25 @@ const style = {
     transition: ".4s",
     borderRadius: "50%",
   },
-  backLink: {
-    display: "inline-block",
-    marginTop: "30px",
-    fontWeight: 600,
-    color: colors.primary,
-    textDecoration: "none",
-  },
   paymentStatusBadge: {
-    padding: "4px 12px",
+    padding: "0.25rem 0.8rem",
     borderRadius: "12px",
     fontSize: "0.9rem",
     fontWeight: "bold",
     color: colors.white,
     display: "inline-block",
-    marginTop: "5px",
+    marginTop: "0.25rem",
   },
   payPixButton: {
     backgroundColor: "#00c65e",
     color: colors.white,
   },
-
-  // <<< NOVO ESTILO ADICIONADO AQUI NO FINAL >>>
   hiddenContractContainer: {
     position: "absolute",
-    left: "-9999px", // Joga o componente para bem longe da tela
+    left: "-9999px",
     top: 0,
-    width: "210mm", // Força a largura de um A4 para a renderização do PDF ficar melhor
-    backgroundColor: "white", // Garante um fundo branco caso o estilo padrão seja diferente
+    width: "210mm", // NÃO ALTERAR: Essencial para a geração correta do PDF.
+    backgroundColor: "white",
   },
 };
 

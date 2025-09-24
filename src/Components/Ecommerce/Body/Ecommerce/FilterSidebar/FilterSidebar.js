@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react"; // 1. Importe o 'memo'
 import "./FilterSidebar.css";
 import { FaChevronDown, FaUndo } from "react-icons/fa";
 
+// O componente FilterSection não precisa de alterações.
 const FilterSection = ({ title, children, defaultOpen = false }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   return (
@@ -15,7 +16,12 @@ const FilterSection = ({ title, children, defaultOpen = false }) => {
   );
 };
 
-const FilterSidebar = ({ categories, filterOptions, filters, onFilterChange, onCategoryToggle, onClearFilters }) => {
+// 2. Envolva a declaração do seu componente principal com memo(...)
+const FilterSidebar = memo(({ categories, filterOptions, filters, onFilterChange, onCategoryToggle, onClearFilters }) => {
+    // Adicionamos um console.log para você ver quando ele renderiza.
+    // Você vai notar que ele renderiza muito menos vezes agora.
+    console.log("Renderizando FilterSidebar...");
+
     return (
         <aside className="filter-sidebar">
             <div className="sidebar-header">
@@ -25,6 +31,7 @@ const FilterSidebar = ({ categories, filterOptions, filters, onFilterChange, onC
             
             <FilterSection title="Tipo de Produto" defaultOpen={true}>
                 <div className="filter-options">
+                    {/* O segredo está aqui: o `checked` agora vai funcionar de primeira! */}
                     <div className="custom-radio"><input type="radio" id="type-all" name="itemType" value="Todos" checked={filters.itemType === 'Todos'} onChange={(e) => onFilterChange('itemType', e.target.value)} /><label htmlFor="type-all">Todos</label></div>
                     <div className="custom-radio"><input type="radio" id="type-jewel" name="itemType" value="1" checked={filters.itemType === '1'} onChange={(e) => onFilterChange('itemType', e.target.value)} /><label htmlFor="type-jewel">Joias</label></div>
                     <div className="custom-radio"><input type="radio" id="type-gem" name="itemType" value="2" checked={filters.itemType === '2'} onChange={(e) => onFilterChange('itemType', e.target.value)} /><label htmlFor="type-gem">Gemas</label></div>
@@ -48,13 +55,10 @@ const FilterSidebar = ({ categories, filterOptions, filters, onFilterChange, onC
                         <input type="number" placeholder="Máx." value={filters.maxPrice} onChange={(e) => onFilterChange('maxPrice', e.target.value)} />
                     </div>
 
-                    {/* ✨✨✨ LÓGICA CORRIGIDA AQUI, MIGA! ✨✨✨ */}
-                    {/* Agora só some se o filtro for EXCLUSIVAMENTE "Gemas" (itemType === '2') */}
                     {filters.itemType !== '2' && (
                         <>
                             <label>Material (Joia)</label>
                             <select value={filters.material} onChange={(e) => onFilterChange('material', e.target.value)}><option value="">Todos</option>{filterOptions.materials.map(m => <option key={m} value={m}>{m}</option>)}</select>
-
                             <label>Peso (g)</label>
                             <select value={filters.weight} onChange={(e) => onFilterChange('weight', e.target.value)}><option value="">Todos</option>{filterOptions.weights.map(w => <option key={w} value={w}>{w}g</option>)}</select>
                         </>
@@ -82,6 +86,6 @@ const FilterSidebar = ({ categories, filterOptions, filters, onFilterChange, onC
             </FilterSection>
         </aside>
     );
-};
+}); // 3. Feche o parêntese do memo aqui
 
 export default FilterSidebar;

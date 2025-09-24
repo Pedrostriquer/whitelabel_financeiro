@@ -1,10 +1,11 @@
 const style = {
   contratosPageContainer: {
-    padding: "40px",
+    padding: "clamp(1.5rem, 5vw, 2.5rem)", // Padding fluido
     display: "flex",
     justifyContent: "center",
     backgroundColor: "#f8fafc",
     minHeight: "100vh",
+    boxSizing: 'border-box',
   },
   loadingOverlay: {
     position: "fixed",
@@ -27,11 +28,10 @@ const style = {
     height: "50px",
     animation: "spin 1s linear infinite",
   },
-
   selectionStepWrapper: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "50px",
+    display: "flex", // <-- MUDANÇA: de 'grid' para 'flex'
+    flexWrap: "wrap", // <-- MUDANÇA: Permite que as colunas quebrem a linha
+    gap: "clamp(2rem, 5vw, 3rem)", // Gap fluido
     width: "100%",
     maxWidth: "1200px",
     alignItems: "center",
@@ -39,52 +39,55 @@ const style = {
   headerLogoContainer: {
     width: "100%",
     position: "absolute",
-    top: 30,
+    top: '1.5rem',
     left: "50%",
-    right: "50%",
     transform: "translateX(-50%)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
   },
   headerLogo: {
-    width: 250,
+    width: 'clamp(180px, 40vw, 250px)', // Largura fluida
   },
-  selectionColumn: { display: "flex", flexDirection: "column" },
+  selectionColumn: {
+    display: "flex",
+    flexDirection: "column",
+    flex: "2 1 500px", // <-- MUDANÇA: Define a base e a proporção da coluna
+  },
   pageTitle: {
-    fontSize: "2.8rem",
+    fontSize: "clamp(2rem, 6vw, 2.8rem)", // Tipografia fluida
     fontWeight: 700,
     color: "#1e293b",
     margin: 0,
     lineHeight: "1.2",
   },
   pageSubtitle: {
-    fontSize: "1.1rem",
+    fontSize: "clamp(1rem, 3vw, 1.1rem)", // Tipografia fluida
     color: "#64748b",
     maxWidth: "500px",
-    margin: "15px 0 40px 0",
+    margin: "1rem 0 2.5rem 0",
   },
 
-  sliderGroup: { marginBottom: "30px" },
+  sliderGroup: { marginBottom: "2rem" },
   sliderLabel: {
     fontSize: "1rem",
     fontWeight: 600,
     color: "#334155",
-    marginBottom: "15px",
+    marginBottom: "1rem",
     display: "block",
   },
   sliderInputWrapper: {
     display: "flex",
     alignItems: "center",
     background: "#f1f5f9",
-    padding: "5px 15px",
-    borderRadius: "10px",
-    marginBottom: "10px",
+    padding: "0.5rem 1rem",
+    borderRadius: "0.75rem",
+    marginBottom: "0.75rem",
   },
   sliderInput: {
     border: "none",
     background: "transparent",
-    fontSize: "1.5rem",
+    fontSize: "clamp(1.2rem, 4vw, 1.5rem)", // Tipografia fluida
     fontWeight: "bold",
     color: "#0f172a",
     width: "100%",
@@ -93,7 +96,7 @@ const style = {
   selectInput: {
     border: "none",
     background: "transparent",
-    fontSize: "1.5rem",
+    fontSize: "clamp(1.2rem, 4vw, 1.5rem)", // Tipografia fluida
     fontWeight: "bold",
     color: "#0f172a",
     width: "100%",
@@ -102,57 +105,56 @@ const style = {
     cursor: "pointer",
   },
   slider: { width: "100%", cursor: "pointer" },
-
-  checkboxWrapper: { display: "flex", alignItems: "center", marginTop: "20px" },
+  checkboxWrapper: { display: "flex", alignItems: "center", marginTop: "1.25rem" },
   checkboxInput: {
-    marginRight: "10px",
+    marginRight: "0.75rem",
     width: "18px",
     height: "18px",
     cursor: "pointer",
   },
   checkboxLabel: { fontSize: "1rem", color: "#334155", cursor: "pointer" },
-
   simulateButton: {
     width: "100%",
-    padding: "18px",
+    padding: "1rem 1.2rem",
     backgroundColor: "#1e293b",
     color: "white",
     border: "none",
-    borderRadius: "12px",
+    borderRadius: "0.75rem",
     fontSize: "1.1rem",
     fontWeight: "bold",
     cursor: "pointer",
-    marginTop: "30px",
+    marginTop: "2rem",
     transition: "background-color 0.3s",
   },
-
   summaryColumn: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    width: "100%",
+    flex: "1 1 350px", // <-- MUDANÇA: Define a base e a proporção da coluna
   },
   summaryCard: {
     background: "white",
-    padding: "40px",
-    borderRadius: "20px",
+    padding: "clamp(1.5rem, 5vw, 2.5rem)", // Padding fluido
+    borderRadius: "1.25rem",
     boxShadow: "0 10px 40px rgba(0,0,0,0.08)",
     width: "100%",
-    maxWidth: "400px",
+    maxWidth: "420px",
     minHeight: "350px",
     display: "flex",
     flexDirection: "column",
   },
   summaryTitle: {
-    fontSize: "1.5rem",
+    fontSize: "clamp(1.2rem, 4vw, 1.5rem)", // Tipografia fluida
     color: "#1e293b",
-    margin: "0 0 25px 0",
+    margin: "0 0 1.5rem 0",
     textAlign: "center",
   },
   summaryItem: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "15px 0",
+    padding: "1rem 0",
     borderBottom: "1px solid #f1f5f9",
   },
   summaryLabel: { color: "#64748b" },
@@ -160,17 +162,17 @@ const style = {
   summaryDivider: {
     border: "none",
     borderTop: "1px solid #e2e8f0",
-    margin: "10px 0",
+    margin: "0.75rem 0",
   },
-  summaryTotal: { paddingTop: "20px", borderBottom: "none" },
-  summaryTotalValue: { fontSize: "1.5rem", fontWeight: "bold" },
+  summaryTotal: { paddingTop: "1.25rem", borderBottom: "none" },
+  summaryTotalValue: { fontSize: "clamp(1.2rem, 5vw, 1.5rem)", fontWeight: "bold" },
   proceedButton: {
     width: "100%",
-    padding: "18px",
+    padding: "1rem 1.2rem",
     backgroundColor: "#2563eb",
     color: "white",
     border: "none",
-    borderRadius: "12px",
+    borderRadius: "0.75rem",
     fontSize: "1.1rem",
     fontWeight: "bold",
     cursor: "pointer",
@@ -178,11 +180,10 @@ const style = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "10px",
+    gap: "0.75rem",
     transition: "background-color 0.3s, opacity 0.3s",
   },
-
-  skeletonWrapper: { display: "flex", flexDirection: "column", gap: "15px" },
+  skeletonWrapper: { display: "flex", flexDirection: "column", gap: "1rem" },
   skeletonLine: {
     background: "#e2e8f0",
     borderRadius: "4px",
@@ -196,8 +197,8 @@ const style = {
     justifyContent: "center",
     textAlign: "center",
     color: "#94a3b8",
+    padding: '1rem'
   },
-
   configurationPage: {
     width: "100%",
     maxWidth: "1000px",
@@ -212,44 +213,37 @@ const style = {
     fontSize: "1rem",
     cursor: "pointer",
     alignSelf: "flex-start",
-    marginBottom: "30px",
+    marginBottom: "2rem",
   },
-  configHeader: { textAlign: "center", marginBottom: "40px" },
-  configIcon: { fontSize: "3rem", color: "#3b82f6", marginBottom: "15px" },
+  configHeader: { textAlign: "center", marginBottom: "2.5rem" },
+  configIcon: { fontSize: "3rem", color: "#3b82f6", marginBottom: "1rem" },
   configGrid: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1.2fr",
-    gap: "40px",
+    display: "flex", // <-- MUDANÇA: de 'grid' para 'flex'
+    flexWrap: "wrap", // <-- MUDANÇA: Permite que os itens quebrem a linha
+    gap: "clamp(1.5rem, 4vw, 2.5rem)", // Gap fluido
     width: "100%",
   },
   configSummary: {
     background: "white",
-    padding: "30px",
-    borderRadius: "16px",
+    padding: "2rem",
+    borderRadius: "1rem",
     border: "1px solid #e2e8f0",
+    flex: "1 1 300px", // <-- MUDANÇA: Define a base e a proporção
   },
   generatedContractWrapper: {
     background: "white",
-    padding: "30px",
-    borderRadius: "16px",
+    padding: "2rem",
+    borderRadius: "1rem",
     border: "1px solid #e2e8f0",
+    flex: "1.5 1 450px", // <-- MUDANÇA: Define a base e a proporção
   },
-  contractTextBox: {
-    border: "1px solid #f1f5f9",
-    padding: "20px",
-    borderRadius: "12px",
-    marginBottom: "20px",
-    background: "#f8fafc",
-    maxHeight: "200px",
-    overflowY: "auto",
-  },
-  paymentSection: { margin: "20px 0" },
-  paymentSectionH3: { marginBottom: "15px", color: "#334155" },
-  paymentOptions: { display: "flex", flexDirection: "column", gap: "10px" },
+  paymentSection: { margin: "1.25rem 0" },
+  paymentSectionH3: { marginBottom: "1rem", color: "#334155" },
+  paymentOptions: { display: "flex", flexDirection: "column", gap: "0.75rem" },
   paymentOption: {
-    padding: "15px",
+    padding: "1rem",
     border: "1px solid #e2e8f0",
-    borderRadius: "10px",
+    borderRadius: "0.75rem",
     background: "#f8fafc",
     cursor: "pointer",
     textAlign: "left",
@@ -262,28 +256,26 @@ const style = {
     background: "#eff6ff",
     fontWeight: "bold",
   },
-  paymentOptionIcon: { marginRight: "10px" },
+  paymentOptionIcon: { marginRight: "0.75rem" },
   termsCheckbox: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    margin: "20px 0",
+    margin: "1.25rem 0",
   },
-  termsCheckboxInput: { marginRight: "10px" },
+  termsCheckboxInput: { marginRight: "0.75rem" },
   buyButton: {
     width: "100%",
-    padding: "18px",
+    padding: "1rem 1.2rem",
     backgroundColor: "#16a34a",
     color: "white",
     border: "none",
-    borderRadius: "12px",
+    borderRadius: "0.75rem",
     fontSize: "1.1rem",
     fontWeight: "bold",
     cursor: "pointer",
-    marginTop: "10px",
+    marginTop: "0.75rem",
   },
-
-  // --- NOVOS ESTILOS PARA A ANIMAÇÃO ---
   successAnimationOverlay: {
     position: "fixed",
     top: 0,
@@ -292,11 +284,11 @@ const style = {
     height: "100%",
     overflow: "hidden",
     zIndex: 10000,
-    pointerEvents: "none", // Permite clicar através da animação
+    pointerEvents: "none",
   },
   diamond: {
     position: "absolute",
-    top: "-10vh", // Começa acima da tela
+    top: "-10vh",
     fontSize: "20px",
     animationName: "fall",
     animationTimingFunction: "linear",
@@ -319,33 +311,28 @@ const style = {
     }
   `,
   errorMessage: {
-    color: "#e74c3c", // Um tom de vermelho
+    color: "#e74c3c",
     fontSize: "0.875rem",
-    marginTop: "5px",
+    marginTop: "0.5rem",
     textAlign: "right",
     width: "100%",
   },
   viewContractButton: {
     width: "100%",
-    padding: "15px 20px",
+    padding: "1rem 1.25rem",
     backgroundColor: "#f0f2f5",
     color: "#0056b3",
     border: "1px solid #d1d9e6",
-    borderRadius: "8px",
+    borderRadius: "0.5rem",
     cursor: "pointer",
     fontSize: "1rem",
     fontWeight: "600",
     textAlign: "center",
-    marginBottom: "20px", // Espaçamento para a próxima seção
+    marginBottom: "1.25rem",
     transition: "background-color 0.2s, color 0.2s",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    // Adicionando um hover para ficar mais interativo
-    ":hover": {
-      backgroundColor: "#e2e6ea",
-      color: "#003d82",
-    },
   },
 };
 

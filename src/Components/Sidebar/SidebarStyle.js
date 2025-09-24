@@ -48,6 +48,8 @@ const style = {
         fontWeight: 'bold',
         height: '50px',
         borderRadius: '6px',
+        overflow: 'hidden',
+        padding: 0
     },
     sidebarTitle: {
         display: 'flex',
@@ -158,22 +160,6 @@ const style = {
         padding: '5px 0',
         marginBottom: '10px',
         transition: `background-color ${dimensions.transitionSpeed} ease`,
-    },
-    sidebarLogo: {
-        minWidth: '60px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        // Se a foto estiver presente, o fundo não precisa aparecer
-        // Se as iniciais estiverem, isso ainda funciona perfeitamente
-        backgroundColor: colors.activeBg, 
-        color: colors.logoText,
-        fontSize: '1.5rem',
-        fontWeight: 'bold',
-        height: '50px',
-        borderRadius: '6px',
-        overflow: 'hidden', // Importante para a imagem não vazar das bordas arredondadas
-        padding: 0 // Removido para a imagem preencher 100%
     },
 };
 

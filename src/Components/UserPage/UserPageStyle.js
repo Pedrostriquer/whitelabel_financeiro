@@ -15,42 +15,44 @@ const colors = {
 
 const style = {
   pageContainer: {
-    padding: "30px",
+    padding: "clamp(1rem, 5vw, 2rem)",
     backgroundColor: colors.background,
     minHeight: "100vh",
     fontFamily: "'Segoe UI', 'Roboto', sans-serif",
+    boxSizing: 'border-box',
   },
   logoContainer: {
     width: "100%",
     display: "flex",
     justifyContent: "center",
-    marginBottom: 20
+    marginBottom: '1.5rem',
   },
   logo: {
-    width: 250,
+    width: 'clamp(180px, 40vw, 250px)',
   },
   loading: {
     fontSize: "1.2rem",
     textAlign: "center",
-    padding: "50px",
+    padding: "3rem",
     color: colors.textLight,
   },
   profileGrid: {
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "column", // <-- ALTERAÇÃO PRINCIPAL: Força o empilhamento vertical
+    gap: "2rem",
+    alignItems: "center", // Centraliza a coluna de cartões na página
     width: "100%",
-    // gridTemplateColumns: 'minmax(300px, 350px) 1fr',
-    gap: "30px",
-    alignItems: "flex-start",
   },
-
   profileCard: {
     backgroundColor: colors.cardBg,
-    borderRadius: "12px",
-    width: "100%",
+    borderRadius: "0.75rem",
     boxShadow: `0 6px 20px ${colors.shadow}`,
     overflow: "hidden",
     position: "relative",
+    width: "100%", // Ocupa a largura total do contêiner pai
+    maxWidth: "900px", // Limita a largura máxima em telas grandes
+    boxSizing: 'border-box',
+    // A propriedade 'flex' foi removida
   },
   profileCardHeader: {
     height: "100px",
@@ -60,10 +62,12 @@ const style = {
     marginTop: "-60px",
     display: "flex",
     justifyContent: "center",
+    position: "relative",
+    cursor: "pointer",
   },
   avatar: {
-    width: "120px",
-    height: "120px",
+    width: "clamp(100px, 25vw, 120px)",
+    height: "clamp(100px, 25vw, 120px)",
     borderRadius: "50%",
     backgroundColor: colors.cardBg,
     color: colors.primary,
@@ -72,188 +76,15 @@ const style = {
     justifyContent: "center",
     border: `5px solid ${colors.cardBg}`,
     boxShadow: `0 4px 10px rgba(0,0,0,0.1)`,
-    fontSize: "3.5rem",
+    fontSize: "clamp(2.5rem, 10vw, 3.5rem)",
     fontWeight: "bold",
-  },
-  profileInfo: {
-    padding: "20px 30px 30px",
-    textAlign: "center",
-  },
-  userName: {
-    fontSize: "1.6rem",
-    fontWeight: "600",
-    color: colors.textDark,
-    margin: "0",
-  },
-  userJobTitle: {
-    fontSize: "1rem",
-    color: colors.textLight,
-    marginBottom: "25px",
-  },
-  statsContainer: {
-    display: "flex",
-    justifyContent: "space-around",
-    borderTop: `1px solid ${colors.border}`,
-    paddingTop: "20px",
-  },
-  stat: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  statValue: {
-    fontSize: "1.2rem",
-    fontWeight: "600",
-    color: colors.textDark,
-  },
-  statLabel: {
-    fontSize: "0.8rem",
-    color: colors.textLight,
-  },
-
-  detailsCard: {
-    backgroundColor: colors.cardBg,
-    borderRadius: "12px",
-    boxShadow: `0 6px 20px ${colors.shadow}`,
-    display: "flex",
-    flexDirection: "column",
-    width: "100%",
-  },
-  cardHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "15px 30px",
-    borderBottom: `1px solid ${colors.border}`,
-  },
-  tabs: {
-    display: "flex",
-    gap: "10px",
-  },
-  tab: {
-    padding: "10px 20px",
-    border: "none",
-    backgroundColor: "transparent",
-    color: colors.textLight,
-    fontWeight: "600",
-    cursor: "pointer",
-    position: "relative",
-    transition: "color 0.3s",
-  },
-  activeTab: {
-    color: colors.primary,
-    "::after": {
-      content: '""',
-      position: "absolute",
-      bottom: "-16px",
-      left: 0,
-      width: "100%",
-      height: "3px",
-      backgroundColor: colors.primary,
-    },
-  },
-  actions: {
-    display: "flex",
-    gap: "10px",
-  },
-  editButton: {
-    padding: "10px 15px",
-    border: `1px solid ${colors.border}`,
-    backgroundColor: "transparent",
-    color: colors.textDark,
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontWeight: "500",
-    transition: "all 0.2s ease",
-  },
-  saveButton: {
-    backgroundColor: colors.primary,
-    color: colors.cardBg,
-    borderColor: colors.primary,
-  },
-  cancelButton: {
-    backgroundColor: colors.cardBg,
-    color: colors.textLight,
-  },
-  formContent: {
-    padding: "30px",
-    flexGrow: 1,
-  },
-  formSection: {
-    animation: "fadeIn 0.5s ease-in-out",
-  },
-  sectionTitle: {
-    fontSize: "1.2rem",
-    fontWeight: "600",
-    color: colors.textDark,
-    margin: "0 0 25px 0",
-    display: "flex",
-    alignItems: "center",
-  },
-  infoGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-    gap: "25px",
-  },
-  infoGroup: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  infoLabel: {
-    fontSize: "0.85rem",
-    color: colors.textLight,
-    marginBottom: "8px",
-    fontWeight: "500",
-  },
-  infoValue: {
-    fontSize: "1rem",
-    color: colors.textDark,
-    margin: 0,
-    padding: "12px 0",
-    minHeight: "46px",
-  },
-  input: {
-    width: "100%",
-    padding: "12px",
-    fontSize: "1rem",
-    border: `1px solid ${colors.border}`,
-    borderRadius: "8px",
-    boxSizing: "border-box",
-    outline: "none",
-    color: colors.textDark,
-    transition: "border-color 0.2s, box-shadow 0.2s",
-    ":focus": {
-      borderColor: colors.primary,
-      boxShadow: `0 0 0 3px ${colors.primaryLight}`,
-    },
-  },
-  avatarContainer: {
-    marginTop: "-60px",
-    display: "flex",
-    justifyContent: "center",
-    position: "relative", // Essencial para o overlay
-    cursor: "pointer",
-  },
-  avatar: {
-    width: "120px",
-    height: "120px",
-    borderRadius: "50%",
-    backgroundColor: colors.cardBg,
-    color: colors.primary,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    border: `5px solid ${colors.cardBg}`,
-    boxShadow: `0 4px 10px rgba(0,0,0,0.1)`,
-    fontSize: "3.5rem",
-    fontWeight: "bold",
-    overflow: "hidden", // Para a imagem não vazar das bordas
+    overflow: "hidden",
     position: "relative",
   },
-  // 👇 ADICIONE OS ESTILOS ABAIXO 👇
   avatarImage: {
     width: "100%",
     height: "100%",
-    objectFit: "cover", // Garante que a imagem cubra todo o espaço
+    objectFit: "cover",
   },
   avatarOverlay: {
     position: "absolute",
@@ -270,7 +101,7 @@ const style = {
   },
   avatarActions: {
     display: "flex",
-    gap: "20px",
+    gap: "1.25rem",
   },
   avatarButton: {
     color: "white",
@@ -283,9 +114,7 @@ const style = {
       transform: "scale(1.2)",
     },
   },
-
   spinner: {
-    position: "absolute",
     border: "4px solid rgba(255, 255, 255, 0.3)",
     borderTop: "4px solid #fff",
     borderRadius: "50%",
@@ -293,9 +122,171 @@ const style = {
     height: "40px",
     animation: "spin 1s linear infinite",
   },
+  profileInfo: {
+    padding: "1.25rem 2rem 2rem",
+    textAlign: "center",
+  },
+  userName: {
+    fontSize: "clamp(1.2rem, 4vw, 1.6rem)",
+    fontWeight: "600",
+    color: colors.textDark,
+    margin: "0",
+  },
+  userJobTitle: {
+    fontSize: "clamp(0.9rem, 2.5vw, 1rem)",
+    color: colors.textLight,
+    marginBottom: "1.5rem",
+  },
+  statsContainer: {
+    display: "flex",
+    justifyContent: "space-around",
+    borderTop: `1px solid ${colors.border}`,
+    paddingTop: "1.25rem",
+    gap: "1rem",
+  },
+  stat: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  statValue: {
+    fontSize: "clamp(1rem, 3vw, 1.2rem)",
+    fontWeight: "600",
+    color: colors.textDark,
+  },
+  statLabel: {
+    fontSize: "clamp(0.75rem, 2vw, 0.8rem)",
+    color: colors.textLight,
+  },
+  detailsCard: {
+    backgroundColor: colors.cardBg,
+    borderRadius: "0.75rem",
+    boxShadow: `0 6px 20px ${colors.shadow}`,
+    display: "flex",
+    flexDirection: "column",
+    width: "100%", // Ocupa a largura total do contêiner pai
+    maxWidth: "900px", // Limita a largura máxima em telas grandes
+    boxSizing: 'border-box',
+    // A propriedade 'flex' foi removida
+  },
+  cardHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: "1rem",
+    padding: "1rem 1.5rem",
+    borderBottom: `1px solid ${colors.border}`,
+  },
+  tabs: {
+    display: "flex",
+    gap: "0.5rem",
+    flexWrap: "wrap",
+  },
+  tab: {
+    padding: "0.5rem 1rem",
+    border: "none",
+    backgroundColor: "transparent",
+    color: colors.textLight,
+    fontWeight: "600",
+    cursor: "pointer",
+    position: "relative",
+    transition: "color 0.3s",
+    fontSize: "clamp(0.85rem, 2.5vw, 0.95rem)",
+  },
+  activeTab: {
+    color: colors.primary,
+    "::after": {
+      content: '""',
+      position: "absolute",
+      bottom: "-17px",
+      left: 0,
+      width: "100%",
+      height: "3px",
+      backgroundColor: colors.primary,
+    },
+  },
+  actions: {
+    display: "flex",
+    gap: "0.5rem",
+  },
+  editButton: {
+    padding: "0.5rem 1rem",
+    border: `1px solid ${colors.border}`,
+    backgroundColor: "transparent",
+    color: colors.textDark,
+    borderRadius: "0.5rem",
+    cursor: "pointer",
+    fontWeight: "500",
+    transition: "all 0.2s ease",
+  },
+  saveButton: {
+    backgroundColor: colors.primary,
+    color: colors.cardBg,
+    borderColor: colors.primary,
+  },
+  cancelButton: {
+    backgroundColor: colors.cardBg,
+    color: colors.textLight,
+  },
+  formContent: {
+    padding: "2rem",
+    flexGrow: 1,
+  },
+  formSection: {
+    animation: "fadeIn 0.5s ease-in-out",
+  },
+  sectionTitle: {
+    fontSize: "clamp(1.1rem, 3vw, 1.2rem)",
+    fontWeight: "600",
+    color: colors.textDark,
+    margin: "0 0 1.5rem 0",
+    display: "flex",
+    alignItems: "center",
+  },
+  infoGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+    gap: "1.5rem",
+  },
+  infoGroup: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  infoLabel: {
+    fontSize: "0.85rem",
+    color: colors.textLight,
+    marginBottom: "0.5rem",
+    fontWeight: "500",
+  },
+  infoValue: {
+    fontSize: "1rem",
+    color: colors.textDark,
+    margin: 0,
+    padding: "0.75rem 0",
+    minHeight: "46px",
+  },
+  input: {
+    width: "100%",
+    padding: "0.75rem",
+    fontSize: "1rem",
+    border: `1px solid ${colors.border}`,
+    borderRadius: "0.5rem",
+    boxSizing: "border-box",
+    outline: "none",
+    color: colors.textDark,
+    transition: "border-color 0.2s, box-shadow 0.2s",
+    ":focus": {
+      borderColor: colors.primary,
+      boxShadow: `0 0 0 3px ${colors.primaryLight}`,
+    },
+  },
   "@keyframes spin": {
     "0%": { transform: "rotate(0deg)" },
-    "100%": { transform: "rotate(360deg)" },
+    "100%": { transform: "rotate(30deg)" },
+  },
+  "@keyframes fadeIn": {
+    "0%": { opacity: 0, transform: "translateY(10px)" },
+    "100%": { opacity: 1, transform: "translateY(0)" },
   },
 };
 
