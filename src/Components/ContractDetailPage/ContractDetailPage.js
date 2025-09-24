@@ -20,7 +20,7 @@ const STATUS_MAP = {
     text: "Aguardando Pagamento",
     style: { backgroundColor: "#ffc107", color: "#333" },
   },
-  2: { text: "Valorizando", style: { backgroundColor: "#28a745" } },
+  2: { text: "Reminerando", style: { backgroundColor: "#28a745" } },
   3: { text: "Cancelado", style: { backgroundColor: "#dc3545" } },
   4: { text: "Finalizado", style: { backgroundColor: "#6c757d" } },
   5: { text: "Recomprado", style: { backgroundColor: "#17a2b8" } },
