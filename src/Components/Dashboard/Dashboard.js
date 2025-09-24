@@ -234,7 +234,7 @@ export default function Dashboard() {
               style={cardHeaderStyle}
               onClick={() => setAreCardsExpanded(!areCardsExpanded)}
             >
-              <h3 style={style.cardHeaderH3}>Gemas Preciosas</h3>
+              <h3 style={style.cardHeaderH3}>Gemas Brilhantes</h3>
               <i
                 className="fa-solid fa-chevron-right"
                 style={cardArrowStyle}
@@ -244,7 +244,7 @@ export default function Dashboard() {
               <div style={style.cardInfoList}>
                 <AnimatedInfoItem
                   label="Valor em Compras"
-                  value={5320.8}
+                  value={informacoesCarteira?.totalPurchasesValue}
                   isCurrency
                   isLoading={isLoading}
                 />
@@ -252,22 +252,22 @@ export default function Dashboard() {
                   <>
                     <AnimatedInfoItem
                       label="Compras"
-                      value={15}
+                      value={informacoesCarteira?.totalPurchasesCount}
                       isLoading={isLoading}
                     />
                     <AnimatedInfoItem
                       label="Pedidos Entregues"
-                      value={14}
+                      value={informacoesCarteira?.deliveredOrdersCount}
                       isLoading={isLoading}
                     />
                     <AnimatedInfoItem
                       label="Pedidos em Andamento"
-                      value={1}
+                      value={informacoesCarteira?.onGoingOrdersCount}
                       isLoading={isLoading}
                     />
                     <AnimatedInfoItem
                       label="Carrinho"
-                      value={2}
+                      value={informacoesCarteira?.cartItemsCount}
                       isLoading={isLoading}
                     />
                   </>
