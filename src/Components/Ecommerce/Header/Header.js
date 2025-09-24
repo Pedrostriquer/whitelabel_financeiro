@@ -97,13 +97,7 @@ const Header = () => {
               // ✨ BOTÕES AGORA ABREM O MODAL EM VEZ DE NAVEGAR ✨
               <div className="auth-buttons-container">
                 <button onClick={openAuthModal} className="auth-btn login-btn">
-                  Entrar
-                </button>
-                <button
-                  onClick={openAuthModal}
-                  className="auth-btn register-btn"
-                >
-                  Criar Conta
+                  Entre ou crie sua conta
                 </button>
               </div>
             )}

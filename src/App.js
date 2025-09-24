@@ -33,7 +33,7 @@ import CartPage from "./Components/Ecommerce/Body/Ecommerce/CartPage/CartPage";
 import FavoritesPage from "./Components/Ecommerce/Body/Ecommerce/FavoritesPage/FavoritesPage";
 import MyOrdersPage from "./Components/Ecommerce/Body/Ecommerce/MyOrders/MyOrdersPage";
 import Blog from "./Components/Ecommerce/Body/Blog/Blog";
-import OrderDetailPage from "./Components/Ecommerce/Body/Ecommerce/MyOrders/OrderDetailPage"; // <-- NOVO IMPORT
+import OrderDetailPage from "./Components/Ecommerce/Body/Ecommerce/MyOrders/OrderDetailPage";
 import ContractComponent from "./Components/ContractComponent/ContractComponent";
 import AnimatedContract from "./Components/ContractComponent/ContractComponent";
 import DepositAccounts from "./Components/DepositAccounts/DepositAccounts";
@@ -73,6 +73,7 @@ function App() {
             <FavoritesProvider>
               <PromotionsProvider>
                 <Routes>
+                  {/* === ROTAS PÚBLICAS === */}
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -90,6 +91,7 @@ function App() {
                     }
                   />
 
+                  {/* === ROTAS DO ECOMMERCE (PÚBLICAS) === */}
                   <Route element={<Container />}>
                     <Route path="/ecommerce" element={<Home />} />
                     <Route path="/ecommerce/home" element={<Home />} />
@@ -114,11 +116,17 @@ function App() {
                     element={<OrderDetailPage />}
                   />
 
+                  {/* ROTA PRINCIPAL: Redireciona a raiz do domínio para o ecommerce */}
                   <Route path="/" element={<Navigate to="/ecommerce" />} />
 
+                  {/* === ROTAS PROTEGIDAS (PRECISAM DE LOGIN) === */}
                   <Route element={<ProtectedRoute />}>
                     <Route element={<MainLayout />}>
-                      <Route index element={<Navigate to="/dashboard" />} />
+                      {/* 
+                        A LINHA ABAIXO FOI REMOVIDA. 
+                        <Route index element={<Navigate to="/dashboard" />} />
+                        Ela era a causa do redirecionamento indesejado para a tela de login.
+                      */}
                       <Route path="user" element={<UserPage />} />
                       <Route path="dashboard" element={<Dashboard />} />
                       <Route path="ordens-venda" element={<OrdensVenda />} />
@@ -154,6 +162,8 @@ function App() {
                       <Route path="depositar" element={<DepositAccounts />} />
                     </Route>
                   </Route>
+
+                  {/* ROTA CATCH-ALL: Se nenhuma rota for encontrada, redireciona para o ecommerce */}
                   <Route path="*" element={<Navigate to="/ecommerce" />} />
                 </Routes>
               </PromotionsProvider>
