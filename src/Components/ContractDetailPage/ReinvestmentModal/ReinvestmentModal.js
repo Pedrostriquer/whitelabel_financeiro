@@ -48,19 +48,19 @@ const ReinvestmentModal = ({ isOpen, onClose, onSubmit, availableAmount }) => {
             <div style={style.modalContent} onClick={(e) => e.stopPropagation()}>
                 <div style={style.modalHeader}>
                     <i className="fa-solid fa-seedling" style={style.modalIcon}></i>
-                    <h3 style={style.modalTitle}>Reinvestir Lucro</h3>
+                    <h3 style={style.modalTitle}>Reaplicar Remuneração</h3>
                 </div>
                 <div style={style.modalBody}>
                     <p>
-                        Aumente seus ganhos reinvestindo o lucro disponível do seu contrato.
+                        Aumente seus ganhos reaplicando o lucro disponível da sua compra.
                     </p>
                     <div style={style.availableBalance}>
-                        <span style={style.balanceLabel}>Lucro Disponível para Reinvestimento</span>
+                        <span style={style.balanceLabel}>Lucro Disponível para reaplicar</span>
                         <span style={style.balanceValue}>R$ {formatServices.formatCurrencyBR(availableAmount)}</span>
                     </div>
                     <div style={style.inputGroup}>
                         <label htmlFor="reinvest-amount" style={style.inputLabel}>
-                            Quanto você deseja reinvestir?
+                            Quanto você deseja reaplicar?
                         </label>
                         <input
                             id="reinvest-amount"
