@@ -1,4 +1,3 @@
-// MainLayout.js
 import React, { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../Sidebar/Sidebar";
@@ -22,25 +21,22 @@ export default function MainLayout() {
       
       const filteredItems = items.filter((item) => item.avaliable === true);
 
-      // ATUALIZE ESTE MAPEAMENTO 👇
       const formattedItems = filteredItems.map((item) => ({
         name: item.name,
         icon: item.icon,
         path: item.route,
-        // Garante que os subitens também sejam filtrados e formatados
         subItems: item.subItems
           ?.filter(sub => sub.avaliable === true)
           .map(sub => ({
             name: sub.name,
             icon: sub.icon,
             path: sub.route,
-          })) || [], // Retorna um array vazio se não houver subitens
+          })) || [],
       }));
   
       setSidebarItems(formattedItems);
     } catch (error) {
       console.error("Error loading sidebar config:", error);
-      // ... (fallback)
     } finally {
       setLoadingSidebar(false);
     }
@@ -52,7 +48,6 @@ export default function MainLayout() {
 
   return (
     <div className="app-container">
-      {/* {loadState && <Loader />} */}
       <Sidebar navItems={sidebarItems} loading={loadingSidebar} />
       <main className="main-content">
         <Outlet />

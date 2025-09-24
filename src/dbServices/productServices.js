@@ -1,77 +1,89 @@
 import axios from "axios";
 
-// Lê a URL da variável de ambiente, que já tem a barra no final.
+// Lê a URL base da API a partir das variáveis de ambiente do seu projeto React.
 const API_BASE_URL = process.env.REACT_APP_BASE_ROUTE;
 
+// Uma verificação de segurança para garantir que a variável de ambiente foi configurada corretamente.
 if (!API_BASE_URL) {
     console.error("ERRO CRÍTICO: A variável de ambiente REACT_APP_BASE_ROUTE não está definida!");
 }
 
 const productServices = {
-    searchProducts: async (filters, pageNumber = 1, pageSize = 12) => {
+    /**
+     * Função principal para buscar produtos, enviando para o backend apenas os filtros suportados.
+     * @param {object} filters - O objeto completo contendo todos os filtros (de backend e frontend).
+     * @param {number} pageNumber - O número da página a ser buscada.
+     * @param {number} pageSize - A quantidade de produtos por página.
+     * @returns {Promise<object>} - A resposta da API, que inclui { items, totalPages, totalCount, ... }.
+     */
+    searchProducts: async (filters, pageNumber = 1, pageSize = 9) => {
         try {
             const params = new URLSearchParams();
-            // ... (todos os seus params continuam iguais) ...
+
+            // --- FILTROS QUE FUNCIONAM NO BACKEND ---
             if (filters.searchTerm) params.append('Name', filters.searchTerm);
             if (filters.itemType && filters.itemType !== 'Todos') params.append('ItemType', filters.itemType);
+            if (filters.justPromotions) params.append('JustPromotions', filters.justPromotions);
             if (filters.sort) params.append('SortBy', filters.sort);
-            if (filters.minPrice) params.append('MinPrice', filters.minPrice);
-            if (filters.maxPrice) params.append('MaxPrice', filters.maxPrice);
-            if (filters.material) params.append('Material', filters.material);
-            if (filters.weight) params.append('WeightInGrams', filters.weight);
-            if (filters.stoneType) params.append('StoneType', filters.stoneType);
-            if (filters.color) params.append('Color', filters.color);
-            if (filters.cut) params.append('Cut', filters.cut);
-            if (filters.clarity) params.append('Clarity', filters.clarity);
-            if (filters.minCarats) params.append('MinCarats', filters.minCarats);
-            if (filters.maxCarats) params.append('MaxCarats', filters.maxCarats);
+
+            // ATUALIZAÇÃO CRÍTICA: O nome do parâmetro mudou para 'CategoryIds' e é um array.
             if (filters.categories && filters.categories.length > 0) {
-                filters.categories.forEach(catId => params.append('CategoryId', catId));
+                filters.categories.forEach(catId => params.append('CategoryIds', catId));
             }
+
+            // Paginação é sempre enviada.
             params.append('PageNumber', pageNumber);
             params.append('PageSize', pageSize);
-
-            // CORREÇÃO: Removida a barra inicial para evitar duplicidade ("//")
+            
+            // Executa a chamada GET para a API, passando os parâmetros.
             const response = await axios.get(`${API_BASE_URL}Product/search`, { params });
             return response.data;
+
         } catch (error) {
+            // Em caso de erro, exibe uma mensagem clara no console e propaga o erro.
             console.error("Erro ao buscar produtos:", error.response?.data || error.message);
             throw error;
         }
     },
 
-    getProductById: async (id) => {
-        try {
-            // CORREÇÃO: Removida a barra inicial
-            const response = await axios.get(`${API_BASE_URL}Product/${id}`);
-            return response.data;
-        } catch (error) {
-            console.error(`Erro ao buscar produto ${id}:`, error.response?.data || error.message);
-            throw error;
-        }
-    },
-
+    /**
+     * Busca as opções de filtro para preencher a Sidebar (Tipo de Gema, Cor, etc.).
+     * Esta função continua sendo um paliativo útil: busca uma grande amostra de produtos
+     * para extrair os valores únicos para os menus de filtro.
+     * @returns {Promise<object>} - Um objeto com arrays para cada tipo de filtro.
+     */
     getAllFilterOptions: async () => {
         try {
+            // Busca até 1000 produtos para ter uma amostragem grande e extrair as opções.
             const response = await productServices.searchProducts({}, 1, 1000);
             const products = response.items || [];
-            const materials = [...new Set(products.map(p => p.info?.material).filter(Boolean))].sort();
-            const weights = [...new Set(products.map(p => p.info?.weightInGrams).filter(Boolean))].sort((a, b) => a - b);
+
+            // Extrai as informações de todas as pedras de todos os produtos.
             const allStones = products.flatMap(p => p.info?.stones || []);
+
+            // Usa 'new Set()' para obter apenas os valores únicos de cada campo.
             const stoneTypes = [...new Set(allStones.map(s => s.stoneType).filter(Boolean))].sort();
             const colors = [...new Set(allStones.map(s => s.color).filter(Boolean))].sort();
             const cuts = [...new Set(allStones.map(s => s.cut).filter(Boolean))].sort();
             const clarities = [...new Set(allStones.map(s => s.clarity).filter(Boolean))].sort();
+            const materials = [...new Set(products.map(p => p.info?.material).filter(Boolean))].sort();
+            const weights = [...new Set(products.map(p => p.info?.weightInGrams).filter(Boolean))].sort((a, b) => a - b);
+            
             return { materials, weights, stoneTypes, colors, cuts, clarities };
+
         } catch (error) {
             console.error("Erro ao buscar opções de filtro:", error);
+            // Retorna um objeto vazio em caso de falha para não quebrar a UI.
             return { materials: [], weights: [], stoneTypes: [], colors: [], cuts: [], clarities: [] };
         }
     },
 
+    /**
+     * Busca todas as categorias de produtos.
+     * @returns {Promise<Array>} - Uma lista de categorias.
+     */
     getAllCategories: async () => {
         try {
-            // CORREÇÃO: Removida a barra inicial
             const response = await axios.get(`${API_BASE_URL}Category`);
             return response.data;
         } catch (error) {
@@ -80,9 +92,25 @@ const productServices = {
         }
     },
 
+    /**
+     * Busca um único produto pelo seu ID.
+     * @param {string|number} id - O ID do produto.
+     * @returns {Promise<object>} - Os dados do produto.
+     */
+    getProductById: async (id) => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}Product/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Erro ao buscar produto ${id}:`, error.response?.data || error.message);
+            throw error;
+        }
+    },
+
+    // --- Métodos de Manipulação de Dados (CRUD) ---
+
     createProduct: async (productData) => {
         try {
-            // CORREÇÃO: Removida a barra inicial
             const response = await axios.post(`${API_BASE_URL}Product`, productData);
             return response.data;
         } catch (error) {
@@ -93,7 +121,6 @@ const productServices = {
 
     updateProduct: async (id, productData) => {
         try {
-            // CORREÇÃO: Removida a barra inicial
             const response = await axios.put(`${API_BASE_URL}Product/${id}`, productData);
             return response.data;
         } catch (error) {
@@ -104,7 +131,6 @@ const productServices = {
 
     deleteProducts: async (ids) => {
         try {
-            // CORREÇÃO: Removida a barra inicial
             const deletePromises = ids.map(id => axios.delete(`${API_BASE_URL}Product/${id}`));
             await Promise.all(deletePromises);
         } catch (error) {
@@ -115,7 +141,6 @@ const productServices = {
 
     updateProductsStatus: async (ids, status) => {
         try {
-            // CORREÇÃO: Removida a barra inicial
             const updatePromises = ids.map(id => axios.patch(`${API_BASE_URL}Product/${id}/status`, { status }));
             await Promise.all(updatePromises);
         } catch (error) {

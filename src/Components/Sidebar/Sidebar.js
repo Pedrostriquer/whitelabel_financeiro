@@ -35,24 +35,6 @@ export default function Sidebar({ navItems = [], loading = false }) {
     }
   };
 
-  function abreviarNome(nomeCompleto) {
-    if (!nomeCompleto) return "";
-    const partes = nomeCompleto.trim().split(/\s+/);
-    const primeiroNome = partes[0];
-    return primeiroNome.length <= 10
-      ? primeiroNome
-      : primeiroNome.substring(0, 10) + ".";
-  }
-
-  function siglaNome(nome) {
-    if (!nome) return "";
-    const partes = nome.trim().split(/\s+/);
-    const primeiro = partes[0][0].toUpperCase();
-    const ultimo =
-      partes.length > 1 ? partes[partes.length - 1][0].toUpperCase() : "";
-    return primeiro + (ultimo && ultimo !== primeiro ? ultimo : "M");
-  }
-
   const sidebarStyle = {
     ...style.sidebar,
     ...(isExpanded ? style.sidebarExpanded : style.sidebarCollapsed),
@@ -71,7 +53,7 @@ export default function Sidebar({ navItems = [], loading = false }) {
   if (loading) {
     return (
       <nav style={sidebarStyle}>
-        <div style={{ padding: "1rem", textAlign: "center" }}>
+        <div style={{ padding: "1rem", textAlign: "center", color: "white" }}>
           <i className="fa-solid fa-spinner fa-spin"></i>
         </div>
       </nav>
@@ -94,7 +76,6 @@ export default function Sidebar({ navItems = [], loading = false }) {
         </div>
         <div style={titleStyle}>
           <span style={style.titleText}>Gemas Brilhantes</span>
-          {/* <span style={style.subtitleText}>Sistema GemCash</span> */}
         </div>
       </div>
 
@@ -193,50 +174,13 @@ export default function Sidebar({ navItems = [], loading = false }) {
 
         <li key="user-page">
           <Link to="/user" style={{...style.navLink, ...(location.pathname === "/user" ? style.navLinkActive : {})}}>
-            {/* ✨ AQUI ESTÁ A MUDANÇA ✨ */}
             <i className="fa-solid fa-user" style={style.navLinkIcon}></i>
             <span style={linkTextStyle}>Meu Perfil</span>
           </Link>
         </li>
-
-        {/* <div onClick={() => navigate("/user")} style={style.footerProfile}>
-          <div style={style.sidebarLogo}>
-            {user.profilePictureUrl ? (
-              <ImageWithLoader
-                src={user.profilePictureUrl}
-                alt={`Foto de perfil de ${user.name}`}
-                fallbackSrc="/img/default-avatar.png" // Crie uma imagem padrão nesta pasta!
-              />
-            ) : (
-              <span>{siglaNome(user.name)}</span>
-            )}
-          </div>
-          <div style={titleStyle}>
-            <span style={style.titleText}>{abreviarNome(user.name)}</span>
-            <span style={style.subtitleText}>{user.jobTitle || ""}</span>
-          </div>
-        </div> */}
       </ul>
 
       <div style={style.sidebarFooter}>
-        {/* <div onClick={() => navigate("/user")} style={style.footerProfile}>
-          <div style={style.sidebarLogo}>
-            {user.profilePictureUrl ? (
-              <ImageWithLoader
-                src={user.profilePictureUrl}
-                alt={`Foto de perfil de ${user.name}`}
-                fallbackSrc="/img/default-avatar.png" // Crie uma imagem padrão nesta pasta!
-              />
-            ) : (
-              <span>{siglaNome(user.name)}</span>
-            )}
-          </div>
-          <div style={titleStyle}>
-            <span style={style.titleText}>{abreviarNome(user.name)}</span>
-            <span style={style.subtitleText}>{user.jobTitle || ""}</span>
-          </div>
-        </div> */}
-
         <a
           href="#"
           style={
@@ -246,7 +190,7 @@ export default function Sidebar({ navItems = [], loading = false }) {
           }
           onMouseEnter={() => setHoveredLink("Logout")}
           onMouseLeave={() => setHoveredLink("")}
-          onClick={logout}
+          onClick={(e) => { e.preventDefault(); logout(); }}
         >
           <i
             className="fa-solid fa-right-from-bracket"
