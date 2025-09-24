@@ -34,6 +34,10 @@ export function NotificationDetailPage() {
     );
   }
 
+  function abrirUrlNovaAba(url) {
+    window.open(url, '_blank');
+  }
+  
   return (
     <div style={styles.notificationDetailContainer}>
       <div style={styles.pageHeader}>
@@ -51,7 +55,7 @@ export function NotificationDetailPage() {
             style={styles.redirectButton}
             onClick={(e) => {
               e.preventDefault();
-              navigate(notification.redirectUrl);
+              abrirUrlNovaAba(notification.redirectUrl);
             }}
           >
             <FontAwesomeIcon icon={faLink} /> Acessar Link
