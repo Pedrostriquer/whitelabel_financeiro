@@ -75,7 +75,7 @@ export default function Sidebar({ navItems = [], loading = false }) {
           />
         </div>
         <div style={titleStyle}>
-          <span style={style.titleText}>Gemas Brilhantes</span>
+          <span style={style.titleText}>Gemas Preciosas</span>
         </div>
       </div>
 
