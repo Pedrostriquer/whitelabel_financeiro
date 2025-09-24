@@ -55,7 +55,7 @@ const Header = () => {
               onClick={() => navigate("/dashboard")}
               className="platform-button"
             >
-              {isAuthenticated ? "Sua Plataforma GemCash" : "Conheça nossa plataforma"}
+              {isAuthenticated ? "Sua Plataforma" : "Conheça nossa plataforma"}
             </button>
           </div>
           <div className="header-center">
