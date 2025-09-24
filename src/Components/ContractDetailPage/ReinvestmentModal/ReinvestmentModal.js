@@ -79,7 +79,7 @@ const ReinvestmentModal = ({ isOpen, onClose, onSubmit, availableAmount }) => {
                         Cancelar
                     </button>
                     <button type="button" style={confirmBtnStyle} onClick={handleSubmit} disabled={isButtonDisabled}>
-                        Reinvestir
+                        Reaplicar
                     </button>
                 </div>
             </div>

@@ -615,13 +615,13 @@ export default function ContractDetailPage() {
                     </>
                   ) : (
                     <>
-                      <i className="fa-solid fa-seedling"></i> Reinvestir Lucro
+                      <i className="fa-solid fa-seedling"></i> Reaplicar Lucro
                     </>
                   )}
                 </button>
                 <div style={style.toggleContainer}>
                   <span style={style.toggleLabel}>
-                    Ativar Reinvestimento Automático
+                    Ativar Reaplicação Automática
                   </span>
                   <label style={style.switch}>
                     <input
