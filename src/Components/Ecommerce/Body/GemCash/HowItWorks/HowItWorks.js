@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import './HowItWorks.css';
 
-const HowItWorks = ({ data }) => {
+// Modifique a assinatura para receber 'onCtaClick'
+const HowItWorks = ({ data, onCtaClick }) => {
     const [activeIndex, setActiveIndex] = useState(0);
 
-    // Se não houver dados ou detalhes, não renderiza a seção.
     if (!data || !data.details || data.details.length === 0) {
         return null;
     }
     
-    // Ícones padrão que serão usados no componente, na ordem correta.
     const detailIcons = [
         'fas fa-certificate', 
         'fas fa-user-shield', 
@@ -19,7 +18,6 @@ const HowItWorks = ({ data }) => {
         'fas fa-flag-checkered'
     ];
     
-    // Pega o item ativo com base no estado 'activeIndex'
     const activeItem = data.details[activeIndex];
 
     return (
@@ -37,7 +35,6 @@ const HowItWorks = ({ data }) => {
                                 className={`nav-item ${activeIndex === index ? 'active' : ''}`}
                                 onClick={() => setActiveIndex(index)}
                             >
-                                {/* Usa o ícone correspondente do array de ícones padrão */}
                                 <i className={detailIcons[index] || 'fas fa-gem'}></i>
                                 <span>{item.title}</span>
                             </li>
@@ -58,8 +55,8 @@ const HowItWorks = ({ data }) => {
                     </div>
                 </div>
 
-                {/* BOTÃO CTA ADICIONADO AQUI */}
-                <button className="cta-button-animated">
+                {/* BOTÃO CTA COM A FUNÇÃO DE ROLAGEM */}
+                <button className="cta-button-animated" onClick={onCtaClick}>
                     Quero Comprar
                 </button>
             </div>
