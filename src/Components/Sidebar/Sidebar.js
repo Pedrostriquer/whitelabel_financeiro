@@ -32,6 +32,11 @@ export default function Sidebar({ navItems = [], loading = false }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const handleLogout = () => {
+    logout()
+    navigate("/plataforma/login")
+  }
+
   // Efeito para abrir o submenu do item ativo
   useEffect(() => {
     const activeParent = navItems.find((item) =>
@@ -273,8 +278,7 @@ export default function Sidebar({ navItems = [], loading = false }) {
         </ul>
 
         <div style={style.sidebarFooter}>
-          <a
-            href="#"
+          <div
             style={
               hoveredLink === "Logout"
                 ? { ...style.navLink, ...style.navLinkActive }
@@ -282,18 +286,14 @@ export default function Sidebar({ navItems = [], loading = false }) {
             }
             onMouseEnter={() => setHoveredLink("Logout")}
             onMouseLeave={() => setHoveredLink("")}
-            onClick={(e) => {
-              e.preventDefault();
-              handleLinkClick();
-              logout();
-            }}
+            onClick={handleLogout}
           >
             <i
               className="fa-solid fa-right-from-bracket"
               style={style.navLinkIcon}
             ></i>
             <span style={linkTextStyle}>Sair</span>
-          </a>
+          </div>
         </div>
       </nav>
     </>

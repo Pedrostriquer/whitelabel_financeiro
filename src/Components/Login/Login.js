@@ -123,7 +123,7 @@ export default function Login() {
 
             <p style={style.signupLink}>
               Não tem uma conta?{" "}
-              <a href="/register" style={style.signupLinkA}>
+              <a href="/plataforma/register" style={style.signupLinkA}>
                 Cadastre-se
               </a>
             </p>

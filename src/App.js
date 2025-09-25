@@ -82,8 +82,8 @@ function App() {
                 {/* O MercadoPagoProvider foi removido daqui */}
                 <Routes>
                   {/* === ROTAS PÚBLICAS === */}
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
+                  <Route path="/plataforma/login" element={<Login />} />
+                  <Route path="/plataforma/register" element={<Register />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route
                     path="/redefine-password"
@@ -109,10 +109,7 @@ function App() {
                       element={<GemasBrilhantes />}
                     />
                     <Route path="/product/:id" element={<ProductPage />} />
-                    <Route
-                      path="/joias"
-                      element={<Personalizadas />}
-                    />
+                    <Route path="/joias" element={<Personalizadas />} />
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/favorites" element={<FavoritesPage />} />
 
@@ -130,14 +127,23 @@ function App() {
                   {/* === ROTAS PROTEGIDAS (PRECISAM DE LOGIN) === */}
                   <Route element={<ProtectedRoute />}>
                     <Route element={<MainLayout />}>
-                      <Route path="/plataforma/usuario" element={<UserPage />} />
+                      <Route
+                        path="/plataforma/usuario"
+                        element={<UserPage />}
+                      />
                       <Route path="/plataforma/" element={<Dashboard />} />
-                      <Route path="/plataforma/comprar-gemcash" element={<ContratosPage />} />
+                      <Route
+                        path="/plataforma/comprar-gemcash"
+                        element={<ContratosPage />}
+                      />
                       <Route
                         path="plataforma/minhas-compras"
                         element={<MyGeanCashesPage />}
                       />
-                      <Route path="plataforma/solicitacao" element={<Wallet />} />
+                      <Route
+                        path="plataforma/solicitacao"
+                        element={<Wallet />}
+                      />
                       <Route
                         path="/plataforma/extrato"
                         element={<ExtratosPage />}

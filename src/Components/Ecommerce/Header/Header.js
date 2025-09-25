@@ -52,7 +52,7 @@ const Header = () => {
         <div className="header-top-row">
           <div className="header-left">
             <button
-              onClick={() => navigate("/plataforma")}
+              onClick={() => navigate("/plataforma/login")}
               className="platform-button"
             >
               {isAuthenticated ? "Sua Plataforma" : "Conheça nossa plataforma"}

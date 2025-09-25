@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("refreshToken");
     delete axios.defaults.headers.common["Authorization"];
-    navigate("/login");
+    navigate("/plataforma/login");
   };
 
   // Hook para gerenciar a conexão SignalR
