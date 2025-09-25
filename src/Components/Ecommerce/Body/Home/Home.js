@@ -12,9 +12,9 @@ import ReviewsSection from "./ReviewsSection/ReviewsSection";
 // Objeto para gerenciar os links estáticos das seções de destaque.
 // Altere os links aqui sempre que precisar.
 const featureSectionLinks = {
-    gemas: 'https://gemas.demelloagent.app/ecommerce/gemaspreciosas',
-    gemcash: 'https://gemas.demelloagent.app/ecommerce/gemcash',
-    joias: 'https://gemas.demelloagent.app/ecommerce/joias'
+    gemas: '/gemas-preciosas',
+    gemcash: '/gemcash',
+    joias: '/joias'
 };
 
 const Home = () => {

@@ -1,7 +1,8 @@
 import React from 'react';
 import './ProblemSolution.css';
 
-const ProblemSolution = ({ data }) => {
+// Modifique a assinatura para receber 'onCtaClick'
+const ProblemSolution = ({ data, onCtaClick }) => {
 
     if (!data) {
         return null;
@@ -52,8 +53,8 @@ const ProblemSolution = ({ data }) => {
                     </div>
                 </div>
 
-                {/* BOTÃO CTA ADICIONADO AQUI */}
-                <button className="cta-button-animated">
+                {/* BOTÃO CTA COM A FUNÇÃO DE ROLAGEM */}
+                <button className="cta-button-animated" onClick={onCtaClick}>
                     Adquira Agora
                 </button>
             </div>
