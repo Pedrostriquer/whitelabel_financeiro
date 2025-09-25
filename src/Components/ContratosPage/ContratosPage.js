@@ -1,14 +1,18 @@
+// src/Components/ContratosPage/ContratosPage.js (100% Completo)
+
 import React, { useState, useRef, useEffect } from "react";
 import style from "./ContratosPageStyle.js";
 import { useAuth } from "../../Context/AuthContext.js";
 import contractServices from "../../dbServices/contractServices.js";
 import verificationCodeService from "../../dbServices/verificationCodeService.js";
+import paymentMethodService from "../../dbServices/paymentMethodService.js"; // Importa o novo serviço
 import SelectionStep from "./SelectionStep.js";
 import ConfigurationStep from "./ConfigurationStep.js";
 import VerificationModal from "./VerificationModal.js";
 import PayModal from "../PayModal/PayModal.js";
-// --- 1. IMPORTAR O useNavigate ---
+import CreditCardModal from "../CreditCardModal/CreditCardModal.js";
 import { useLocation, useNavigate } from "react-router-dom";
+import { translateMercadoPagoError } from "../../formatServices/mercadoPagoErrorTranslator.js";
 
 const SuccessAnimation = () => {
   const diamonds = Array.from({ length: 50 }).map((_, index) => {
@@ -39,7 +43,8 @@ export default function ContratosPage() {
   const [step, setStep] = useState("selection");
   const [simulationResult, setSimulationResult] = useState(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("PIX");
+  const [paymentMethod, setPaymentMethod] = useState(""); // Inicia vazio
+  const [availablePaymentMethods, setAvailablePaymentMethods] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [withGem, setWithGem] = useState(false);
   const { token, user } = useAuth();
@@ -48,9 +53,21 @@ export default function ContratosPage() {
   const location = useLocation();
   const [isPayModalOpen, setIsPayModalOpen] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState(null);
-
-  // --- 2. INICIALIZAR O HOOK DE NAVEGAÇÃO ---
   const navigate = useNavigate();
+  const [creditCardFormData, setCreditCardFormData] = useState(null);
+  const [isCreditCardModalOpen, setIsCreditCardModalOpen] = useState(false);
+  const [creditCardModalKey, setCreditCardModalKey] = useState(0);
+
+  useEffect(() => {
+    const fetchPaymentMethods = async () => {
+      const methods = await paymentMethodService.getAvailableMethods();
+      setAvailablePaymentMethods(methods);
+      if (methods.length > 0) {
+        setPaymentMethod(methods[0].name); // Define o primeiro como padrão
+      }
+    };
+    fetchPaymentMethods();
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -88,6 +105,8 @@ export default function ContratosPage() {
     setSimulationResult(null);
     setTermsAccepted(false);
     setWithGem(false);
+    setPaymentMethod(availablePaymentMethods[0]?.name || "");
+    setCreditCardFormData(null);
   };
 
   const handleSimulationChange = (simulation) => {
@@ -102,14 +121,33 @@ export default function ContratosPage() {
   const handleBackToSelection = () => {
     setStep("selection");
     setSimulationResult(null);
+    setCreditCardFormData(null);
   };
 
-  const handleOpenVerificationModal = async () => {
+  const handleFinalizePurchaseClick = async () => {
     if (!termsAccepted) {
       alert("Você precisa aceitar os termos do contrato para continuar.");
       return;
     }
+    if (!paymentMethod) {
+      alert("Por favor, selecione um método de pagamento.");
+      return;
+    }
 
+    if (paymentMethod === "CARTAO") {
+      setIsCreditCardModalOpen(true);
+    } else {
+      handleOpenVerificationModal();
+    }
+  };
+
+  const handleCreditCardDataSubmitted = (formData) => {
+    setCreditCardFormData(formData);
+    setIsCreditCardModalOpen(false);
+    handleOpenVerificationModal();
+  };
+
+  const handleOpenVerificationModal = async () => {
     setIsLoading(true);
     try {
       await verificationCodeService.enviarCodigoDeVerificacao(token);
@@ -123,7 +161,6 @@ export default function ContratosPage() {
     }
   };
 
-  // --- 3. FUNÇÃO handleBuyContract ATUALIZADA ---
   const handleBuyContract = async (verificationCode) => {
     if (!simulationResult) return;
     setIsLoading(true);
@@ -138,57 +175,85 @@ export default function ContratosPage() {
         description: "Contrato criado via plataforma",
         paymentMethod: paymentMethod,
         verificationCode: verificationCode,
+        allowWithdraw: false,
       };
+
+      if (paymentMethod === "CARTAO") {
+        if (!creditCardFormData) {
+          throw new Error(
+            "Dados do cartão de crédito não foram encontrados. Ocorreu um erro inesperado."
+          );
+        }
+        contractData.creditCardPayment = { ...creditCardFormData };
+      }
 
       const response = await contractServices.criarContrato(
         token,
         contractData
       );
+      const responsePaymentMethod = response.paymentMethod?.toUpperCase();
 
-      const method = response.paymentMethod?.toUpperCase();
-
-      if (method === "PIX" || method === "BOLETO") {
-        // Lógica para PIX e Boleto: abre o modal de pagamento
+      if (responsePaymentMethod === "CARTAO" && response.status === 2) {
+        setShowSuccessAnimation(true);
+        setTimeout(() => {
+          navigate("/plataforma/minhas-compras");
+        }, 3000);
+      } else if (
+        responsePaymentMethod === "PIX" ||
+        responsePaymentMethod === "BOLETO"
+      ) {
         const details =
-          method === "PIX" ? response.pixDetails : response.boletoDetails;
+          responsePaymentMethod === "PIX"
+            ? response.pixDetails
+            : response.boletoDetails;
         if (details) {
           setPaymentDetails(details);
           setIsPayModalOpen(true);
-          setIsLoading(false); // Pausa o loading para o usuário interagir com o modal
+          setIsLoading(false);
         } else {
           throw new Error(
-            `Detalhes de pagamento para ${method} não foram recebidos.`
+            `Detalhes de pagamento para ${responsePaymentMethod} não foram recebidos.`
           );
         }
-      } else if (method === "DEPOSITO" || method === "DEPÓSITO") {
-        // Lógica para Depósito: mostra sucesso e redireciona
+      } else if (
+        responsePaymentMethod === "DEPOSITO" ||
+        responsePaymentMethod === "DEPÓSITO"
+      ) {
         setShowSuccessAnimation(true);
         setTimeout(() => {
-          navigate("/depositar"); // Redireciona para a página de contas de depósito
-        }, 3000); // Espera 3s para a animação
+          navigate("/depositar");
+        }, 3000);
       } else {
-        // Fallback: caso genérico de sucesso (se houver outro método)
         setShowSuccessAnimation(true);
         setTimeout(() => {
-          navigate("/gemcash/my-gem-cashes"); // Redireciona para a lista de contratos
+          navigate("/plataforma/minhas-compras");
         }, 3000);
       }
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.error ||
-        error.response?.data?.message ||
-        "Erro ao comprar o contrato.";
-      alert(errorMessage);
       setIsLoading(false);
-      resetPage();
+
+      const rawBackendError =
+        error.response?.data?.message ||
+        error.message ||
+        "Erro ao processar o pagamento.";
+      const friendlyMessage = translateMercadoPagoError(rawBackendError);
+
+      alert(friendlyMessage);
+
+      if (paymentMethod === "CARTAO") {
+        setCreditCardFormData(null);
+        setCreditCardModalKey((prevKey) => prevKey + 1);
+        setIsCreditCardModalOpen(true);
+      } else {
+        resetPage();
+      }
     }
   };
 
   const handleClosePayModal = () => {
     setIsPayModalOpen(false);
     setPaymentDetails(null);
-    // Usando navigate para ser consistente
-    navigate("/gemcash/my-gem-cashes");
+    navigate("/plataforma/minhas-compras");
   };
 
   return (
@@ -217,13 +282,22 @@ export default function ContratosPage() {
           simulation={simulationResult}
           onBack={handleBackToSelection}
           user={user}
-          handleBuy={handleOpenVerificationModal}
+          handleBuy={handleFinalizePurchaseClick}
           termsAccepted={termsAccepted}
           setTermsAccepted={setTermsAccepted}
           paymentMethod={paymentMethod}
           setPaymentMethod={setPaymentMethod}
+          availablePaymentMethods={availablePaymentMethods}
         />
       )}
+
+      <CreditCardModal
+        key={creditCardModalKey}
+        isOpen={isCreditCardModalOpen}
+        onClose={() => setIsCreditCardModalOpen(false)}
+        totalAmount={simulationResult?.initialAmount || 0}
+        onPaymentDataSubmit={handleCreditCardDataSubmitted}
+      />
 
       <VerificationModal
         isOpen={isVerificationModalOpen}

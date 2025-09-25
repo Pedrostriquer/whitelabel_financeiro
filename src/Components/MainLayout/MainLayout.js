@@ -16,10 +16,12 @@ export default function MainLayout() {
     try {
       setLoadingSidebar(true);
       const response = await platformServices.getSidebarConfig(token);
+
       
       const items = Array.isArray(response) ? response : [];
       
       const filteredItems = items.filter((item) => item.avaliable === true);
+      console.log(filteredItems)
 
       const formattedItems = filteredItems.map((item) => ({
         name: item.name,

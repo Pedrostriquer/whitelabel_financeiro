@@ -1,3 +1,5 @@
+// src/App.js (Versão Corrigida)
+
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import Dashboard from "./Components/Dashboard/Dashboard";
@@ -35,30 +37,35 @@ import MyOrdersPage from "./Components/Ecommerce/Body/Ecommerce/MyOrders/MyOrder
 import Blog from "./Components/Ecommerce/Body/Blog/Blog";
 import OrderDetailPage from "./Components/Ecommerce/Body/Ecommerce/MyOrders/OrderDetailPage";
 import ContractComponent from "./Components/ContractComponent/ContractComponent";
-import AnimatedContract from "./Components/ContractComponent/ContractComponent";
 import DepositAccounts from "./Components/DepositAccounts/DepositAccounts";
+
+// --- CORREÇÃO MERCADO PAGO ---
+// 1. Importe APENAS a função 'initMercadoPago'
+import { initMercadoPago } from "@mercadopago/sdk-react";
+
+// 2. Chame a função de inicialização AQUI, fora do componente.
+// Lembre-se de ter a variável REACT_APP_MERCADO_PAGO_PUBLIC_KEY no seu arquivo .env
+initMercadoPago(process.env.REACT_APP_MERCADO_PAGO_PUBLIC_KEY);
+// --- FIM DA CORREÇÃO ---
 
 const mockClientData = {
   name: "João da Silva",
   cpfCnpj: "123.456.789-00",
-  rg: "98.765.432-1", // Você pode deixar como "" se não houver RG
+  rg: "98.765.432-1",
   address: {
     fullAddress: "Rua das Flores, 100 - Centro, São Paulo-SP, CEP 01000-000",
   },
-  // Outros campos da sua classe Client, se precisar
   email: "joao.silva@exemplo.com",
   phoneNumber: "(11) 98765-4321",
   birthDate: "1990-05-15T00:00:00Z",
 };
 
-// Objeto contractData falso com os campos do seu modelo Contract
 const mockContractData = {
   amount: 5000.0,
   finalAmount: 5000.0 * (1 + 0.0175 * 12),
   gainPercentage: 1.75,
   duration: 12,
   activationDate: "2025-09-18T00:00:00Z",
-  // Outros campos da sua classe Contract, se precisar
   allowWithdraw: true,
   autoReinvest: false,
   status: 1,
@@ -72,6 +79,7 @@ function App() {
           <CartProvider>
             <FavoritesProvider>
               <PromotionsProvider>
+                {/* O MercadoPagoProvider foi removido daqui */}
                 <Routes>
                   {/* === ROTAS PÚBLICAS === */}
                   <Route path="/login" element={<Login />} />
@@ -93,16 +101,16 @@ function App() {
 
                   {/* === ROTAS DO ECOMMERCE (PÚBLICAS) === */}
                   <Route element={<Container />}>
-                    <Route path="/ecommerce" element={<Home />} />
-                    <Route path="/ecommerce/home" element={<Home />} />
-                    <Route path="/ecommerce/gemcash" element={<GemCash />} />
+                    <Route path="/" element={<Home />} />
+                    <Route path="/home" element={<Home />} />
+                    <Route path="/gemcash" element={<GemCash />} />
                     <Route
-                      path="/ecommerce/gemaspreciosas"
+                      path="/gemas-preciosas"
                       element={<GemasBrilhantes />}
                     />
                     <Route path="/product/:id" element={<ProductPage />} />
                     <Route
-                      path="/ecommerce/joias"
+                      path="/joias"
                       element={<Personalizadas />}
                     />
                     <Route path="/cart" element={<CartPage />} />
@@ -117,46 +125,37 @@ function App() {
                   />
 
                   {/* ROTA PRINCIPAL: Redireciona a raiz do domínio para o ecommerce */}
-                  <Route path="/" element={<Navigate to="/ecommerce" />} />
+                  <Route path="/" element={<Navigate to="/" />} />
 
                   {/* === ROTAS PROTEGIDAS (PRECISAM DE LOGIN) === */}
                   <Route element={<ProtectedRoute />}>
                     <Route element={<MainLayout />}>
-                      {/* 
-                        A LINHA ABAIXO FOI REMOVIDA. 
-                        <Route index element={<Navigate to="/dashboard" />} />
-                        Ela era a causa do redirecionamento indesejado para a tela de login.
-                      */}
-                      <Route path="user" element={<UserPage />} />
-                      <Route path="dashboard" element={<Dashboard />} />
-                      <Route path="ordens-venda" element={<OrdensVenda />} />
-                      <Route path="ordens-compra" element={<OrdensCompra />} />
-                      <Route path="contratos" element={<ContratosPage />} />
-                      <Route path="gemcash" element={<ContratosPage />} />
-                      <Route path="gemcash/new" element={<ContratosPage />} />
+                      <Route path="/plataforma/usuario" element={<UserPage />} />
+                      <Route path="/plataforma/" element={<Dashboard />} />
+                      <Route path="/plataforma/comprar-gemcash" element={<ContratosPage />} />
                       <Route
-                        path="gemcash/my-gem-cashes"
+                        path="plataforma/minhas-compras"
                         element={<MyGeanCashesPage />}
                       />
-                      <Route path="gemcash/solicitation" element={<Wallet />} />
+                      <Route path="plataforma/solicitacao" element={<Wallet />} />
                       <Route
-                        path="gemcash/extract"
+                        path="/plataforma/extrato"
                         element={<ExtratosPage />}
                       />
                       <Route
-                        path="notifications"
+                        path="notificacoes"
                         element={<NotificationsPage />}
                       />
                       <Route
-                        path="notifications/:id"
+                        path="/notificacoes/:id"
                         element={<NotificationDetailPage />}
                       />
                       <Route
-                        path="contratos/:id"
+                        path="/plataforma/minhas-compras/:id"
                         element={<ContractDetailPage />}
                       />
                       <Route
-                        path="saques/:id"
+                        path="solicitacoes/:id"
                         element={<WithdrawalDetailPage />}
                       />
                       <Route path="depositar" element={<DepositAccounts />} />
@@ -164,7 +163,7 @@ function App() {
                   </Route>
 
                   {/* ROTA CATCH-ALL: Se nenhuma rota for encontrada, redireciona para o ecommerce */}
-                  <Route path="*" element={<Navigate to="/ecommerce" />} />
+                  <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
               </PromotionsProvider>
             </FavoritesProvider>

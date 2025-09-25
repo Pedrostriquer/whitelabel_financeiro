@@ -1,37 +1,33 @@
-// src/pages/ContratosPage/ConfigurationStep.js (Versão 100% atualizada e simplificada)
+// src/Components/ContratosPage/ConfigurationStep.js (100% Completo)
 
 import React, { useState } from "react";
 import style from "./ContratosPageStyle";
-// A importação do GeneratedContract pode variar, ajuste se necessário
 import GeneratedContract from "./GenerateContract";
 import formatServices from "../../formatServices/formatServices";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileSignature } from "@fortawesome/free-solid-svg-icons";
-
-// Importa apenas o modal para visualização
 import MinutaModal from "./MinutaModal/MinutaModal";
 
 const ConfigurationStep = ({
   simulation,
-  handleBuy, // Recebe a função diretamente da página pai
+  handleBuy,
   onBack,
   termsAccepted,
   setTermsAccepted,
   paymentMethod,
   setPaymentMethod,
   user,
+  availablePaymentMethods, // Recebe a prop da página pai
 }) => {
   const [isMinutaModalOpen, setIsMinutaModalOpen] = useState(false);
 
   if (!simulation) return null;
 
-  // A função para o botão "Finalizar Compra" agora é simplificada
   const handleProceedToBuy = () => {
     if (!termsAccepted) {
       alert("Você precisa aceitar os termos do contrato para continuar.");
       return;
     }
-    // Apenas chama a função que veio do ContratosPage.js
     handleBuy();
   };
 
@@ -67,7 +63,7 @@ const ConfigurationStep = ({
               {simulation.monthlyPercentage.toFixed(2)}%
             </span>
           </div>
-          <div style={style.summaryItem}>
+          <div style={{ ...style.summaryItem, ...style.summaryTotalValue }}>
             <span style={{ ...style.summaryValue, ...style.summaryTotalValue }}>
               {formatServices.formatCurrencyBR(simulation.finalAmount)}
             </span>
@@ -75,24 +71,22 @@ const ConfigurationStep = ({
         </div>
 
         <GeneratedContract
-          handleBuy={handleProceedToBuy} // Passa a função simplificada
+          handleBuy={handleProceedToBuy}
           termsAccepted={termsAccepted}
           setTermsAccepted={setTermsAccepted}
           paymentMethod={paymentMethod}
           setPaymentMethod={setPaymentMethod}
           onViewContract={() => setIsMinutaModalOpen(true)}
+          availablePaymentMethods={availablePaymentMethods} // Passa a prop para o componente filho
         />
       </div>
 
-      {/* O modal de visualização continua funcionando normalmente */}
       <MinutaModal
         isOpen={isMinutaModalOpen}
         onClose={() => setIsMinutaModalOpen(false)}
         user={user}
         contract={simulation}
       />
-
-      {/* O DIV OCULTO FOI REMOVIDO DAQUI */}
     </div>
   );
 };

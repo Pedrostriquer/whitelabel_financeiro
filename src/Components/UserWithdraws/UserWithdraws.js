@@ -135,7 +135,7 @@ const UserWithdraws = ({ withdrawals, isLoading }) => {
       {isMobile ? (
         <div style={style.cardsContainer}>
           {isLoading ? <p>Carregando saques...</p> : currentWithdrawals.length > 0 ? (
-            currentWithdrawals.map(w => <WithdrawalCard key={w.id} withdrawal={w} onClick={() => navigate(`/saques/${w.id}`)} />)
+            currentWithdrawals.map(w => <WithdrawalCard key={w.id} withdrawal={w} onClick={() => navigate(`/solicitacoes/${w.id}`)} />)
           ) : (
             <p style={{ textAlign: 'center', padding: '2rem' }}>Nenhum saque encontrado.</p>
           )}
@@ -158,7 +158,7 @@ const UserWithdraws = ({ withdrawals, isLoading }) => {
                 <tr><td colSpan="6" style={style.dataTableTd}>Carregando saques...</td></tr>
               ) : currentWithdrawals.length > 0 ? (
                 currentWithdrawals.map((w) => (
-                  <tr key={w.id} style={style.tableRow} onClick={() => navigate(`/saques/${w.id}`)}>
+                  <tr key={w.id} style={style.tableRow} onClick={() => navigate(`/solicitacoes/${w.id}`)}>
                     <td style={style.dataTableTd}>#{w.id}</td>
                     <td style={style.dataTableTd}>R${formatServices.formatCurrencyBR(w.amountWithdrawn)}</td>
                     <td style={style.dataTableTd}>{formatServices.formatCurrencyBR(w.tax)}</td>

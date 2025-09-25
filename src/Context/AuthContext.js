@@ -169,7 +169,7 @@ export const AuthProvider = ({ children }) => {
 
       const userResponse = await axios.get(`${API_URL}client/me`);
       setUser(userResponse.data);
-      navigate("/dashboard");
+      navigate("/plataforma");
     } catch (error) {
       console.error("Falha no login:", error);
       alert("Email ou senha inválidos!");
@@ -218,7 +218,7 @@ export const AuthProvider = ({ children }) => {
       const userResponse = await axios.get(`${API_URL}client/me`);
       setUser(userResponse.data);
 
-      navigate("/dashboard");
+      navigate("/plataforma");
     } catch (error) {
       console.error("Falha no login com token:", error);
       logout();

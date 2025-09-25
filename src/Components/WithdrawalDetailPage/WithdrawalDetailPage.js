@@ -104,7 +104,7 @@ export default function WithdrawalDetailPage() {
                         </button>
                     )}
                 </div>
-                 <Link to="/wallet" style={style.backLink}>&larr; Voltar para Carteira</Link>
+                 <Link to="/plataforma/solicitacao" style={style.backLink}>&larr; Voltar para Carteira</Link>
             </div>
         </div>
     );

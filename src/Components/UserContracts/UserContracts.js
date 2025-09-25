@@ -165,7 +165,7 @@ const UserContracts = ({
               <ContractCard
                 key={contract.id}
                 contract={contract}
-                onClick={() => navigate(`/contratos/${contract.id}`)}
+                onClick={() => navigate(`/plataforma/minhas-compras/${contract.id}`)}
               />
             ))
           ) : (
@@ -194,7 +194,7 @@ const UserContracts = ({
             <tbody>
                 {contracts.length > 0 ? (
                     currentContracts.map((contract) => (
-                        <tr key={contract.id} style={style.tableRow} onClick={() => navigate(`/contratos/${contract.id}`)}>
+                        <tr key={contract.id} style={style.tableRow} onClick={() => navigate(`/plataforma/minhas-compras/${contract.id}`)}>
                             <td style={style.contractsTableTd}>#{contract.id}</td>
                             <td style={style.contractsTableTd}>R${formatServices.formatCurrencyBR(contract.amount)}</td>
                             <td style={style.contractsTableTd}>R${formatServices.formatCurrencyBR(contract.currentIncome)}</td>

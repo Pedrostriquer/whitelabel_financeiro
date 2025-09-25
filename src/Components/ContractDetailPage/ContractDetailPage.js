@@ -1,3 +1,5 @@
+// src/Components/ContractDetailPage/ContractDetailPage.js (100% Completo)
+
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import style from "./ContractDetailPageStyle.js";
@@ -20,7 +22,7 @@ const STATUS_MAP = {
     text: "Aguardando Pagamento",
     style: { backgroundColor: "#ffc107", color: "#333" },
   },
-  2: { text: "Reminerando", style: { backgroundColor: "#28a745" } },
+  2: { text: "Remunerando", style: { backgroundColor: "#28a745" } },
   3: { text: "Cancelado", style: { backgroundColor: "#dc3545" } },
   4: { text: "Finalizado", style: { backgroundColor: "#6c757d" } },
   5: { text: "Recomprado", style: { backgroundColor: "#17a2b8" } },
@@ -35,6 +37,7 @@ const PAYMENT_STATUS_MAP = {
   CONFIRMED: { text: "Confirmado", style: { backgroundColor: "#28a745" } },
   OVERDUE: { text: "Vencido", style: { backgroundColor: "#dc3545" } },
   REFUNDED: { text: "Estornado", style: { backgroundColor: "#6c757d" } },
+  CANCELLED: { text: "Cancelado", style: { backgroundColor: "#dc3545" } },
 };
 
 const MediaViewerModal = ({ media, startIndex, onClose }) => {
@@ -142,18 +145,10 @@ export default function ContractDetailPage() {
 
       if (contractData.paymentId) {
         try {
-          let detailsData;
-          if (contractData.paymentMethod?.toUpperCase() === "PIX") {
-            detailsData = await paymentServices.getPaymentDetails(
-              token,
-              contractData.paymentId
-            );
-          } else if (contractData.paymentMethod?.toUpperCase() === "BOLETO") {
-            detailsData = await paymentServices.getPaymentDetails(
-              token,
-              contractData.paymentId
-            );
-          }
+          const detailsData = await paymentServices.getPaymentDetails(
+            token,
+            contractData.paymentId
+          );
           setPaymentDetails(detailsData);
         } catch (paymentError) {
           console.error("Falha ao buscar detalhes do pagamento:", paymentError);
@@ -401,21 +396,42 @@ export default function ContractDetailPage() {
                 {formatServices.formatCurrencyBR(contract.amount)}
               </span>
             </div>
-            {paymentStatusInfo && (
-              <div style={style.metricCard}>
-                <span style={style.metricLabel}>Status do Pagamento</span>
-                <span style={style.metricValue}>
-                  <span
-                    style={{
-                      ...style.paymentStatusBadge,
-                      ...paymentStatusInfo.style,
-                    }}
-                  >
-                    {paymentStatusInfo.text}
+
+            {paymentDetails && (
+              <>
+                <div style={style.metricCard}>
+                  <span style={style.metricLabel}>Status do Pagamento</span>
+                  <span style={style.metricValue}>
+                    {paymentStatusInfo && (
+                      <span
+                        style={{
+                          ...style.paymentStatusBadge,
+                          ...paymentStatusInfo.style,
+                        }}
+                      >
+                        {paymentStatusInfo.text}
+                      </span>
+                    )}
                   </span>
-                </span>
-              </div>
+                </div>
+
+                {paymentDetails.paymentMethod === "CARTAO" && (
+                  <div style={style.metricCard}>
+                    <span style={style.metricLabel}>Pago com</span>
+                    <span
+                      style={{ ...style.metricValue, ...style.cardDetails }}
+                    >
+                      <i
+                        className={`fa-brands fa-cc-${paymentDetails.card_brand?.toLowerCase()}`}
+                        style={style.cardIcon}
+                      ></i>
+                      <span>Final {paymentDetails.card_last_four_digits}</span>
+                    </span>
+                  </div>
+                )}
+              </>
             )}
+
             <div style={style.metricCard}>
               <span style={style.metricLabel}>Lucro Disponível</span>
               <span style={style.metricValue}>
@@ -549,12 +565,8 @@ export default function ContractDetailPage() {
           <div style={style.actionsPanel}>
             <h2 style={style.actionsTitle}>Ações do Contrato</h2>
 
-            {/* --- INÍCIO DA LÓGICA DE PAGAMENTO --- */}
-
-            {/* Se o contrato está aguardando pagamento (status 1) */}
             {contract.status === 1 && (
               <>
-                {/* E o método é PIX */}
                 {contract.paymentMethod?.toUpperCase() === "PIX" && (
                   <button
                     style={{ ...style.actionButton, ...style.payPixButton }}
@@ -564,7 +576,6 @@ export default function ContractDetailPage() {
                   </button>
                 )}
 
-                {/* E o método é BOLETO */}
                 {contract.paymentMethod?.toUpperCase() === "BOLETO" && (
                   <button
                     style={{
@@ -577,14 +588,13 @@ export default function ContractDetailPage() {
                   </button>
                 )}
 
-                {/* E o método é DEPÓSITO */}
                 {(contract.paymentMethod?.toUpperCase() === "DEPOSITO" ||
                   contract.paymentMethod?.toUpperCase() === "DEPÓSITO") && (
                   <button
                     style={{
                       ...style.actionButton,
                       backgroundColor: "#17a2b8",
-                    }} // Usando uma cor 'info'
+                    }}
                     onClick={() => navigate("/depositar")}
                   >
                     <i className="fa-solid fa-landmark"></i> Ver Contas para
@@ -593,8 +603,6 @@ export default function ContractDetailPage() {
                 )}
               </>
             )}
-
-            {/* --- FIM DA LÓGICA DE PAGAMENTO --- */}
 
             {contract && contract.reivestmentAvaliable && (
               <>

@@ -29,10 +29,10 @@ const Header = () => {
   }, []);
 
   const menuItems = [
-    { name: "HOME", path: "/ecommerce/home" },
-    { name: "GEMAS PRECIOSAS", path: "/ecommerce/gemaspreciosas" },
-    { name: "GEMCASH", path: "/ecommerce/gemcash" },
-    { name: "JOIAS", path: "/ecommerce/joias" },
+    { name: "HOME", path: "/" },
+    { name: "GEMAS PRECIOSAS", path: "/gemas-preciosas" },
+    { name: "GEMCASH", path: "/gemcash" },
+    { name: "JOIAS", path: "/joias" },
     { name: "BLOG", path: "/blog" },
   ];
 
@@ -52,7 +52,7 @@ const Header = () => {
         <div className="header-top-row">
           <div className="header-left">
             <button
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/plataforma")}
               className="platform-button"
             >
               {isAuthenticated ? "Sua Plataforma" : "Conheça nossa plataforma"}

@@ -25,7 +25,7 @@ export function NotificationDetailPage() {
     return (
       <div style={styles.notificationDetailContainer}>
         <div style={styles.pageHeader}>
-          <button onClick={() => navigate("/notifications")} style={styles.backButton}>
+          <button onClick={() => navigate("/notificacoes")} style={styles.backButton}>
             <FontAwesomeIcon icon={faChevronLeft} />
           </button>
           <h1 style={styles.pageTitle}>Notificação não encontrada</h1>
@@ -41,7 +41,7 @@ export function NotificationDetailPage() {
   return (
     <div style={styles.notificationDetailContainer}>
       <div style={styles.pageHeader}>
-        <button onClick={() => navigate("/notifications")} style={styles.backButton}>
+        <button onClick={() => navigate("/notificacoes")} style={styles.backButton}>
           <FontAwesomeIcon icon={faChevronLeft} />
         </button>
         <h1 style={styles.pageTitle}>{notification.title}</h1>

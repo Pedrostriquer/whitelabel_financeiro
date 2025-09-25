@@ -17,6 +17,7 @@ export default function Sidebar({ navItems = [], loading = false }) {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
+
   // Efeito para detectar o tamanho da tela e ajustar o layout
   useEffect(() => {
     const handleResize = () => {
@@ -258,10 +259,10 @@ export default function Sidebar({ navItems = [], loading = false }) {
 
           <li key="user-page">
             <Link
-              to="/user"
+              to="/plataforma/usuario"
               style={{
                 ...style.navLink,
-                ...(location.pathname === "/user" ? style.navLinkActive : {}),
+                ...(location.pathname === "/plataforma/usuario" ? style.navLinkActive : {}),
               }}
               onClick={handleLinkClick}
             >

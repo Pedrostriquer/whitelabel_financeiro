@@ -93,7 +93,7 @@ export function NotificationsPage() {
     } catch (error) {
       console.error("Falha ao marcar como lida:", error);
     } finally {
-      navigate(`/notifications/${notification.id}`, { state: { notification } });
+      navigate(`/notificacoes/${notification.id}`, { state: { notification } });
     }
   };
 

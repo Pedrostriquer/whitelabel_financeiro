@@ -1,3 +1,5 @@
+// src/Components/ContractDetailPage/ContractDetailPageStyle.js (100% Completo)
+
 const colors = {
   primary: "#007bff",
   success: "#28a745",
@@ -16,7 +18,7 @@ const style = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: "clamp(1.5rem, 5vw, 2.5rem)", // <-- Padding fluido
+    padding: "clamp(1.5rem, 5vw, 2.5rem)",
     backgroundColor: colors.background,
   },
   container: { width: "100%", maxWidth: "900px" },
@@ -24,15 +26,15 @@ const style = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    flexWrap: 'wrap', // <-- Garante quebra de linha em telas pequenas
-    gap: '1rem', // <-- Espaçamento para quando quebrar
+    flexWrap: "wrap",
+    gap: "1rem",
     marginBottom: "2rem",
   },
   headerLeft: { display: "flex", alignItems: "center", gap: "1rem" },
   backButton: {
     background: colors.white,
     border: `1px solid ${colors.border}`,
-    width: "2.75rem", // 44px
+    width: "2.75rem",
     height: "2.75rem",
     borderRadius: "50%",
     display: "flex",
@@ -45,7 +47,7 @@ const style = {
     boxShadow: `0 2px 4px ${colors.shadow}`,
   },
   title: {
-    fontSize: "clamp(1.8rem, 5vw, 2.5rem)", // <-- Tipografia fluida
+    fontSize: "clamp(1.8rem, 5vw, 2.5rem)",
     fontWeight: 700,
     color: colors.textDark,
     margin: 0,
@@ -53,35 +55,48 @@ const style = {
   statusBadge: {
     padding: "0.5rem 1.2rem",
     borderRadius: "20px",
-    fontSize: "clamp(0.9rem, 2.5vw, 1rem)", // <-- Tipografia fluida
+    fontSize: "clamp(0.9rem, 2.5vw, 1rem)",
     fontWeight: "bold",
     color: colors.white,
   },
   detailsGrid: {
     display: "grid",
-    // Esta linha já é perfeitamente responsiva, mantemos ela!
     gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-    gap: "clamp(1rem, 4vw, 1.5rem)", // <-- Gap fluido
+    gap: "clamp(1rem, 4vw, 1.5rem)",
     marginBottom: "2rem",
   },
   metricCard: {
     backgroundColor: colors.white,
-    padding: "clamp(1rem, 4vw, 1.5rem)", // <-- Padding fluido
+    padding: "clamp(1rem, 4vw, 1.5rem)",
     borderRadius: "12px",
     border: `1px solid ${colors.border}`,
     boxShadow: `0 4px 12px ${colors.shadow}`,
+    display: "flex",
+    flexDirection: "column",
   },
   metricLabel: {
-    fontSize: "clamp(0.85rem, 2vw, 0.9rem)", // <-- Tipografia fluida
+    fontSize: "clamp(0.85rem, 2vw, 0.9rem)",
     color: colors.textLight,
     marginBottom: "0.5rem",
     display: "block",
     fontWeight: 500,
   },
-  metricValue: { 
-    fontSize: "clamp(1.5rem, 4vw, 1.8rem)", // <-- Tipografia fluida
-    fontWeight: 700, 
-    color: colors.textDark 
+  metricValue: {
+    fontSize: "clamp(1.5rem, 4vw, 1.8rem)",
+    fontWeight: 700,
+    color: colors.textDark,
+    marginTop: "auto", // Alinha o valor na parte inferior do card
+  },
+  // --- NOVO ESTILO ADICIONADO ---
+  cardDetails: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+  },
+  // --- NOVO ESTILO ADICIONADO ---
+  cardIcon: {
+    fontSize: "2.2rem",
+    color: "#333",
   },
   trackingCard: {
     backgroundColor: colors.white,
@@ -92,7 +107,7 @@ const style = {
     marginBottom: "2rem",
   },
   trackingTitle: {
-    fontSize: "clamp(1.2rem, 4vw, 1.5rem)", // <-- Tipografia fluida
+    fontSize: "clamp(1.2rem, 4vw, 1.5rem)",
     fontWeight: 600,
     color: colors.textDark,
     margin: "0 0 1rem 0",
@@ -129,14 +144,13 @@ const style = {
     boxShadow: `0 4px 12px ${colors.shadow}`,
   },
   mediaTitle: {
-    fontSize: "clamp(1.2rem, 4vw, 1.5rem)", // <-- Tipografia fluida
+    fontSize: "clamp(1.2rem, 4vw, 1.5rem)",
     fontWeight: 600,
     color: colors.textDark,
     margin: "0 0 1.25rem 0",
   },
   mediaGrid: {
     display: "grid",
-    // Esta linha também já é perfeitamente responsiva
     gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))",
     gap: "1rem",
   },
@@ -205,7 +219,7 @@ const style = {
   },
   actionsPanel: {
     backgroundColor: colors.white,
-    padding: "clamp(1.5rem, 5vw, 2rem)", // <-- Padding fluido
+    padding: "clamp(1.5rem, 5vw, 2rem)",
     borderRadius: "12px",
     border: `1px solid ${colors.border}`,
     boxShadow: `0 4px 12px ${colors.shadow}`,
@@ -214,7 +228,7 @@ const style = {
     gap: "1.25rem",
   },
   actionsTitle: {
-    fontSize: "clamp(1.2rem, 4vw, 1.5rem)", // <-- Tipografia fluida
+    fontSize: "clamp(1.2rem, 4vw, 1.5rem)",
     fontWeight: 600,
     color: colors.textDark,
     margin: "0 0 0.5rem 0",
@@ -239,8 +253,8 @@ const style = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    flexWrap: 'wrap', // <-- Garante quebra de linha
-    gap: '1rem',
+    flexWrap: "wrap",
+    gap: "1rem",
     padding: "1rem",
     backgroundColor: "#f8f9fa",
     borderRadius: "8px",
@@ -292,7 +306,7 @@ const style = {
     position: "absolute",
     left: "-9999px",
     top: 0,
-    width: "210mm", // NÃO ALTERAR: Essencial para a geração correta do PDF.
+    width: "210mm",
     backgroundColor: "white",
   },
 };

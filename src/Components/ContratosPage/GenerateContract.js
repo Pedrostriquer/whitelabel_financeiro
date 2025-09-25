@@ -1,24 +1,20 @@
-// GeneratedContract.js (MODIFICADO)
+// src/Components/ContratosPage/GeneratedContract.js (100% Completo)
+
 import React from "react";
 import style from "./ContratosPageStyle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileAlt } from "@fortawesome/free-solid-svg-icons";
 
 const GeneratedContract = ({
-  // contract, // Não precisamos mais dele aqui
   handleBuy,
   termsAccepted,
   setTermsAccepted,
   paymentMethod,
   setPaymentMethod,
-  // contractRef, // Não é mais passado por aqui
-  // user, // Não precisamos mais dele aqui
-  onViewContract, // <<=== NOVA PROP PARA ABRIR O MODAL
+  onViewContract,
+  availablePaymentMethods, // Recebe a lista de métodos
 }) => (
   <div style={style.generatedContractWrapper}>
-    {/* O TEXTO DO CONTRATO FOI REMOVIDO DAQUI */}
-
-    {/* BOTÃO PARA VISUALIZAR O CONTRATO */}
     <button onClick={onViewContract} style={style.viewContractButton}>
       <FontAwesomeIcon icon={faFileAlt} style={{ marginRight: "10px" }} />
       Visualizar Minuta do Contrato
@@ -27,27 +23,37 @@ const GeneratedContract = ({
     <div style={style.paymentSection}>
       <h4 style={style.paymentSectionH3}>Método de Pagamento</h4>
       <div style={style.paymentOptions}>
-        {["PIX", "BOLETO", "DEPOSITO"].map((method) => {
-          const isActive = paymentMethod === method;
-          return (
-            <button
-              key={method}
-              style={{
-                ...style.paymentOption,
-                ...(isActive ? style.paymentOptionActive : {}),
-              }}
-              onClick={() => setPaymentMethod(method)}
-            >
-              <i
-                className={`fa-solid ${
-                  isActive ? "fa-circle-check" : "fa-circle"
-                }`}
-                style={style.paymentOptionIcon}
-              ></i>
-              {method}
-            </button>
-          );
-        })}
+        {/* Renderiza os botões dinamicamente a partir da lista */}
+        {availablePaymentMethods && availablePaymentMethods.length > 0 ? (
+          availablePaymentMethods.map((method) => {
+            const isActive = paymentMethod === method.name;
+
+            let label = method.name;
+            if (method.name === "DEPOSITO") label = "DEPÓSITO";
+            if (method.name === "CARTAO") label = "CARTÃO DE CRÉDITO";
+
+            return (
+              <button
+                key={method.id}
+                style={{
+                  ...style.paymentOption,
+                  ...(isActive ? style.paymentOptionActive : {}),
+                }}
+                onClick={() => setPaymentMethod(method.name)}
+              >
+                <i
+                  className={`fa-solid ${
+                    isActive ? "fa-circle-check" : "fa-circle"
+                  }`}
+                  style={style.paymentOptionIcon}
+                ></i>
+                {label}
+              </button>
+            );
+          })
+        ) : (
+          <p>Nenhum método de pagamento disponível no momento.</p>
+        )}
       </div>
     </div>
 
@@ -65,7 +71,7 @@ const GeneratedContract = ({
     <button
       onClick={handleBuy}
       style={style.buyButton}
-      disabled={!termsAccepted}
+      disabled={!termsAccepted || !paymentMethod}
     >
       Finalizar Compra
     </button>
