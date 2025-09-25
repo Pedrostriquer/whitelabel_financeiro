@@ -171,7 +171,7 @@ export default function Dashboard() {
           </div>
           <NotificationBell
             count={notificationCount}
-            onClick={() => navigate("/notifications")}
+            onClick={() => navigate("/notificacoes")}
           />
         </div>
         <div style={style.dashboardRow}>
