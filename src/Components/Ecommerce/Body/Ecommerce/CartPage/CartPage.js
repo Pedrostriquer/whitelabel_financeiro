@@ -285,7 +285,7 @@ const CartPage = () => {
       <div className="cart-empty">
         <h2>O seu carrinho está vazio.</h2>
         <p>Adicione joias e gemas incríveis para as ver aqui.</p>
-        <Link to="/ecommerce/gemaspreciosas" className="start-shopping-btn">
+        <Link to="/gemas-preciosas" className="start-shopping-btn">
           Começar a comprar
         </Link>
       </div>
