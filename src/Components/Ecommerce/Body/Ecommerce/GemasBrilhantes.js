@@ -114,6 +114,9 @@ const GemasBrilhantes = () => {
     const displayedProducts = useMemo(() => {
         let items = [...apiProducts];
 
+        // Adicionado filtro para exibir apenas produtos com status 1 (Ativo)
+        items = items.filter(product => product.status === 1);
+
         // Aplica os filtros que a API não suporta
         if (filters.stoneType) {
             items = items.filter(p => p.info?.stones?.some(s => s.stoneType === filters.stoneType));
