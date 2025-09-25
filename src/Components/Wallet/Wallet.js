@@ -81,7 +81,7 @@ const WithdrawalInfoPanel = ({ rules, isOpen }) => {
           </span>
         </div>
         <div style={style.infoPanelRow}>
-          <span style={style.infoPanelLabel}>Reinvestimento Automático</span>
+          <span style={style.infoPanelLabel}>Reaplicação Automática</span>
           <span style={style.infoPanelValue}>
             Realizado às 08:00h no dia do saque
           </span>
