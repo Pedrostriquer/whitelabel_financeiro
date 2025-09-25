@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useCart } from "../../../../../Context/CartContext";
 import { useAuth } from "../../../../../Context/AuthContext";
 import { usePromotions } from "../../../../../Context/PromotionsContext";
@@ -10,6 +10,8 @@ import Modal from "../../AuthModal/Modal";
 import PaymentModal from "./PaymentModal";
 import PayModal from "../../../../PayModal/PayModal";
 import VerificationModal from "./VerificationModal";
+import CreditCardModal from "../../../../CreditCardModal/CreditCardModal"; // IMPORTADO
+import { translateMercadoPagoError } from "../../../../../formatServices/mercadoPagoErrorTranslator"; // IMPORTADO
 import "./CartPage.css";
 import { FaPlus, FaMinus, FaTrashAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -25,7 +27,7 @@ const CartPage = () => {
   } = useCart();
   const { token, user } = useAuth();
   const { getPromotionForProduct } = usePromotions();
-  const navigate = useNavigate(); // Mantemos o navigate para outros usos se necessário
+  const navigate = useNavigate();
   const { startLoading, stopLoading } = useLoad();
 
   const hasProcessedOrder = useRef(false);
@@ -51,11 +53,14 @@ const CartPage = () => {
   const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
   const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
   const [isPayModalVisible, setIsPayModalVisible] = useState(false);
+  const [isCreditCardModalOpen, setIsCreditCardModalOpen] = useState(false); // NOVO
+  const [creditCardModalKey, setCreditCardModalKey] = useState(0); // NOVO
 
   // Estados para os detalhes do pagamento gerado
   const [paymentGeneratedDetails, setPaymentGeneratedDetails] = useState(null);
   const [paymentGeneratedValue, setPaymentGeneratedValue] = useState(0);
   const [paymentGeneratedMethod, setPaymentGeneratedMethod] = useState("");
+  const [creditCardFormData, setCreditCardFormData] = useState(null); // NOVO
 
   const calculateSalePrice = (product) => {
     const promotion = getPromotionForProduct(product.id);
@@ -77,60 +82,15 @@ const CartPage = () => {
   );
   const totalDiscount = originalSubtotal - subtotalWithDiscount;
 
-  const processSale = useCallback(
-    async (verificationCode) => {
-      setIsSubmitting(true);
-      setIsVerificationModalOpen(false);
+  // Calcula o valor restante a ser pago com o método secundário (PIX, Cartão, etc)
+  const remainingAmountToPay = useMemo(() => {
+    // Acessa o valor do saldo usado através da ref
+    const balanceUsed = paymentDetailsRef.current?.platformBalanceWithdrawn || 0;
+    return Math.max(0, subtotalWithDiscount - balanceUsed);
+  }, [subtotalWithDiscount, isCreditCardModalOpen]); // Recalcula se o total ou a visibilidade modal do cartão mudar
 
-      const saleData = {
-        clientId: user.id,
-        consultantId: null,
-        shippingAddress: shippingAddress,
-        items: cartItems.map((item) => ({
-          productId: item.product.id,
-          quantity: item.quantity,
-        })),
-        ...paymentDetailsRef.current,
-        verificationCode: verificationCode,
-      };
-
-      try {
-        startLoading();
-        const response = await saleServices.createSale(saleData, token);
-
-        if (response.pixDetails || response.boletoDetails) {
-          toast.success("Pedido criado! Finalize o pagamento.");
-          const details = response.pixDetails || response.boletoDetails;
-          setPaymentGeneratedDetails(details);
-          setPaymentGeneratedValue(
-            response.sale.totalValue - response.sale.platformBalanceWithdrawn
-          );
-          setPaymentGeneratedMethod(response.pixDetails ? "PIX" : "BOLETO");
-          setIsPayModalVisible(true);
-        } else {
-          toast.success("Compra finalizada com sucesso utilizando o saldo!");
-          // SOLUÇÃO A: Limpa o carrinho e força o recarregamento
-          await clearCart();
-          window.location.href = '/meus-pedidos';
-        }
-      } catch (error) {
-        toast.error(
-          error.response?.data?.message ||
-            error.response?.data ||
-            "Houve um erro ao finalizar seu pedido."
-        );
-      } finally {
-        setIsSubmitting(false);
-        stopLoading();
-      }
-    },
-    // Removido `navigate` das dependências, já que não é mais usado para a navegação final
-    [cartItems, shippingAddress, token, user, clearCart, startLoading, stopLoading]
-  );
-
-  const handleOpenVerificationModal = async (paymentDetails) => {
-    paymentDetailsRef.current = paymentDetails;
-    setIsPaymentModalVisible(false);
+  // Função centralizada para enviar o código de verificação
+  const sendVerificationCode = async () => {
     setIsSubmitting(true);
     try {
       startLoading();
@@ -138,13 +98,127 @@ const CartPage = () => {
       toast.success("Código de verificação enviado para o seu e-mail!");
       setIsVerificationModalOpen(true);
     } catch (error) {
-      toast.error(error.message || "Não foi possível enviar o código.");
+      toast.error(
+        error.response?.data?.message || "Não foi possível enviar o código."
+      );
     } finally {
       setIsSubmitting(false);
       stopLoading();
     }
   };
 
+  // Função que decide o fluxo após a seleção de pagamento
+  const handlePaymentMethodSelection = async (paymentDetails) => {
+    paymentDetailsRef.current = paymentDetails;
+    setIsPaymentModalVisible(false); // Fecha o modal de seleção de pagamento
+
+    // Se o método for CARTAO, abre o modal de cartão de crédito.
+    // O envio do código de verificação ocorrerá *depois* que os dados do cartão forem coletados.
+    if (paymentDetails.paymentMethod === "CARTAO") {
+      setIsCreditCardModalOpen(true);
+    } else {
+      // Para todos os outros métodos (PIX, Boleto, Saldo), envia o código de verificação diretamente.
+      await sendVerificationCode();
+    }
+  };
+  
+  // Função chamada quando os dados do cartão são validados pelo Mercado Pago
+  const handleCreditCardDataSubmitted = (formData) => {
+    setCreditCardFormData(formData); // Armazena os dados do cartão
+    setIsCreditCardModalOpen(false); // Fecha o modal do cartão
+    sendVerificationCode(); // Continua o fluxo enviando o código de verificação
+  };
+
+  // Função principal que cria a venda após o código de verificação
+  const processSale = useCallback(
+    async (verificationCode) => {
+      if (!user) {
+        toast.error("Usuário não autenticado. Faça login novamente.");
+        return;
+      }
+      setIsSubmitting(true);
+      setIsVerificationModalOpen(false);
+
+      const saleData = {
+        clientId: user.id,
+        shippingAddress: shippingAddress,
+        items: cartItems.map((item) => ({
+          productId: item.product.id,
+          quantity: item.quantity,
+        })),
+        ...paymentDetailsRef.current, // Adiciona detalhes do pagamento (saldo usado, método)
+        verificationCode: verificationCode,
+      };
+
+      // Se o método for CARTAO, adiciona os dados do cartão ao objeto da venda
+      if (paymentDetailsRef.current?.paymentMethod === "CARTAO") {
+        if (!creditCardFormData) {
+          toast.error("Dados do cartão não encontrados. Tente novamente.");
+          setIsSubmitting(false);
+          return;
+        }
+        saleData.creditCardPayment = { ...creditCardFormData };
+      }
+
+      try {
+        startLoading();
+        const response = await saleServices.createSale(saleData, token);
+
+        // Processa a resposta do backend
+        const paymentMethod = response.paymentMethod?.toUpperCase();
+        
+        if (paymentMethod === "CARTAO" && response.status === "approved") {
+          toast.success("Compra com cartão realizada com sucesso!");
+          await clearCart();
+          navigate("/meus-pedidos");
+        } else if (response.pixDetails || response.boletoDetails) {
+          toast.success("Pedido criado! Finalize o pagamento.");
+          const details = response.pixDetails || response.boletoDetails;
+          setPaymentGeneratedDetails(details);
+          setPaymentGeneratedValue(
+            response.sale.totalValue - response.sale.platformBalanceWithdrawn
+          );
+          setPaymentGeneratedMethod(paymentMethod);
+          setIsPayModalVisible(true);
+        } else {
+          // Caso de sucesso para pagamento integral com saldo ou outros métodos
+          toast.success("Compra finalizada com sucesso!");
+          await clearCart();
+          navigate("/meus-pedidos");
+        }
+      } catch (error) {
+        const rawBackendError =
+          error.response?.data?.message ||
+          error.message ||
+          "Erro ao processar o pagamento.";
+        const friendlyMessage = translateMercadoPagoError(rawBackendError);
+        toast.error(friendlyMessage);
+
+        // Se o erro foi no cartão, reabre o modal para o usuário tentar novamente
+        if (paymentDetailsRef.current?.paymentMethod === "CARTAO") {
+          setCreditCardFormData(null);
+          setCreditCardModalKey((prevKey) => prevKey + 1); // Força remontagem do modal
+          setIsCreditCardModalOpen(true);
+        }
+      } finally {
+        setIsSubmitting(false);
+        stopLoading();
+      }
+    },
+    [
+      user,
+      token,
+      shippingAddress,
+      cartItems,
+      creditCardFormData,
+      startLoading,
+      stopLoading,
+      clearCart,
+      navigate,
+    ]
+  );
+  
+  // Lógica para iniciar o checkout
   const handleCheckout = () => {
     if (
       !shippingAddress.street ||
@@ -152,7 +226,9 @@ const CartPage = () => {
       !shippingAddress.zipcode ||
       !shippingAddress.city
     ) {
-      toast.warn("Por favor, preencha todos os campos obrigatórios do endereço.");
+      toast.warn(
+        "Por favor, preencha todos os campos obrigatórios do endereço."
+      );
       setIsAddressVisible(true);
       return;
     }
@@ -164,7 +240,8 @@ const CartPage = () => {
     }
     setIsPaymentModalVisible(true);
   };
-
+    
+  // Continua o checkout após o login
   useEffect(() => {
     if (isCheckoutPending && user && token && !hasProcessedOrder.current) {
       hasProcessedOrder.current = true;
@@ -173,6 +250,7 @@ const CartPage = () => {
     }
   }, [isCheckoutPending, user, token]);
 
+  // Funções de controle dos modais
   const handleAuthModalClose = () => {
     setIsAuthModalVisible(false);
     if (!user) {
@@ -188,13 +266,11 @@ const CartPage = () => {
     sessionStorage.removeItem("checkoutPending");
   };
 
-  // Função chamada ao fechar o modal de PIX/Boleto
   const handlePayModalClose = async () => {
     setIsPayModalVisible(false);
     setPaymentGeneratedDetails(null);
-    // SOLUÇÃO A: Limpa o carrinho e força o recarregamento
     await clearCart();
-    window.location.href = '/meus-pedidos';
+    navigate("/meus-pedidos");
   };
 
   if (loadingCart) {
@@ -270,14 +346,18 @@ const CartPage = () => {
                 </div>
                 <div className="quantity-selector">
                   <button
-                    onClick={() => updateItemQuantity(product.id, quantity - 1)}
+                    onClick={() =>
+                      updateItemQuantity(product.id, quantity - 1)
+                    }
                     className="quantity-btn"
                   >
                     <FaMinus />
                   </button>
                   <span className="quantity-display">{quantity}</span>
                   <button
-                    onClick={() => updateItemQuantity(product.id, quantity + 1)}
+                    onClick={() =>
+                      updateItemQuantity(product.id, quantity + 1)
+                    }
                     className="quantity-btn"
                   >
                     <FaPlus />
@@ -371,7 +451,7 @@ const CartPage = () => {
         <PaymentModal
           isVisible={isPaymentModalVisible}
           onClose={handlePaymentModalClose}
-          onSubmit={handleOpenVerificationModal}
+          onSubmit={handlePaymentMethodSelection}
           orderSummary={{
             items: cartItems.map((item) => ({
               ...item,
@@ -383,6 +463,15 @@ const CartPage = () => {
           }}
         />
       )}
+
+      {/* MODAL DE CARTÃO DE CRÉDITO */}
+      <CreditCardModal
+        key={creditCardModalKey}
+        isOpen={isCreditCardModalOpen}
+        onClose={() => setIsCreditCardModalOpen(false)}
+        totalAmount={remainingAmountToPay}
+        onPaymentDataSubmit={handleCreditCardDataSubmitted}
+      />
 
       <VerificationModal
         isOpen={isVerificationModalOpen}
