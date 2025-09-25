@@ -1,8 +1,8 @@
-import React, { useState, memo } from "react"; // 1. Importe o 'memo'
+import React, { useState, memo } from "react";
 import "./FilterSidebar.css";
 import { FaChevronDown, FaUndo } from "react-icons/fa";
 
-// O componente FilterSection não precisa de alterações.
+// --- Sub-componente: Seção de Filtro Acordeão ---
 const FilterSection = ({ title, children, defaultOpen = false }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   return (
@@ -16,12 +16,10 @@ const FilterSection = ({ title, children, defaultOpen = false }) => {
   );
 };
 
-// 2. Envolva a declaração do seu componente principal com memo(...)
-const FilterSidebar = memo(({ categories, filterOptions, filters, onFilterChange, onCategoryToggle, onClearFilters }) => {
-    // Adicionamos um console.log para você ver quando ele renderiza.
-    // Você vai notar que ele renderiza muito menos vezes agora.
-    console.log("Renderizando FilterSidebar...");
 
+// --- Componente Principal: FilterSidebar ---
+const FilterSidebar = memo(({ categories, filterOptions, filters, onFilterChange, onCategoryToggle, onStoneTypeToggle, onClearFilters }) => {
+    
     return (
         <aside className="filter-sidebar">
             <div className="sidebar-header">
@@ -31,17 +29,46 @@ const FilterSidebar = memo(({ categories, filterOptions, filters, onFilterChange
             
             <FilterSection title="Tipo de Produto" defaultOpen={true}>
                 <div className="filter-options">
-                    {/* O segredo está aqui: o `checked` agora vai funcionar de primeira! */}
-                    <div className="custom-radio"><input type="radio" id="type-all" name="itemType" value="Todos" checked={filters.itemType === 'Todos'} onChange={(e) => onFilterChange('itemType', e.target.value)} /><label htmlFor="type-all">Todos</label></div>
-                    <div className="custom-radio"><input type="radio" id="type-jewel" name="itemType" value="1" checked={filters.itemType === '1'} onChange={(e) => onFilterChange('itemType', e.target.value)} /><label htmlFor="type-jewel">Joias</label></div>
-                    <div className="custom-radio"><input type="radio" id="type-gem" name="itemType" value="2" checked={filters.itemType === '2'} onChange={(e) => onFilterChange('itemType', e.target.value)} /><label htmlFor="type-gem">Gemas</label></div>
+                    {/* Estrutura atualizada para usar o estilo 'custom-checkbox' mas mantendo a funcionalidade de radio button */}
+                    <div className="custom-checkbox">
+                        <input type="radio" id="type-all" name="itemType" value="Todos" checked={filters.itemType === 'Todos'} onChange={(e) => onFilterChange('itemType', e.target.value)} />
+                        <label htmlFor="type-all">Todos</label>
+                    </div>
+                    <div className="custom-checkbox">
+                        <input type="radio" id="type-jewel" name="itemType" value="1" checked={filters.itemType === '1'} onChange={(e) => onFilterChange('itemType', e.target.value)} />
+                        <label htmlFor="type-jewel">Joias</label>
+                    </div>
+                    <div className="custom-checkbox">
+                        <input type="radio" id="type-gem" name="itemType" value="2" checked={filters.itemType === '2'} onChange={(e) => onFilterChange('itemType', e.target.value)} />
+                        <label htmlFor="type-gem">Gemas</label>
+                    </div>
                 </div>
             </FilterSection>
 
             <FilterSection title="Categorias" defaultOpen={true}>
                 <div className="filter-options scrollable">
                     {categories.map(cat => (
-                        <div key={cat.id} className="custom-checkbox"><input type="checkbox" id={`cat-${cat.id}`} checked={filters.categories.includes(cat.id)} onChange={() => onCategoryToggle(cat.id)} /><label htmlFor={`cat-${cat.id}`}>{cat.name}</label></div>
+                        <div key={cat.id} className="custom-checkbox">
+                            <input type="checkbox" id={`cat-${cat.id}`} checked={filters.categories.includes(cat.id)} onChange={() => onCategoryToggle(cat.id)} />
+                            <label htmlFor={`cat-${cat.id}`}>{cat.name}</label>
+                        </div>
+                    ))}
+                </div>
+            </FilterSection>
+
+            {/* Seção 'Tipo de Gema' atualizada para ser multi-selecionável como 'Categorias' */}
+            <FilterSection title="Tipo de Gema" defaultOpen={true}>
+                 <div className="filter-options scrollable">
+                    {filterOptions.stoneTypes.map(st => (
+                        <div key={st} className="custom-checkbox">
+                            <input 
+                                type="checkbox" 
+                                id={`st-${st}`} 
+                                checked={filters.stoneTypes.includes(st)} 
+                                onChange={() => onStoneTypeToggle(st)} 
+                            />
+                            <label htmlFor={`st-${st}`}>{st}</label>
+                        </div>
                     ))}
                 </div>
             </FilterSection>
@@ -54,38 +81,28 @@ const FilterSidebar = memo(({ categories, filterOptions, filters, onFilterChange
                         <span>-</span>
                         <input type="number" placeholder="Máx." value={filters.maxPrice} onChange={(e) => onFilterChange('maxPrice', e.target.value)} />
                     </div>
-
-                    {filters.itemType !== '2' && (
-                        <>
-                            <label>Material (Joia)</label>
-                            <select value={filters.material} onChange={(e) => onFilterChange('material', e.target.value)}><option value="">Todos</option>{filterOptions.materials.map(m => <option key={m} value={m}>{m}</option>)}</select>
-                            <label>Peso (g)</label>
-                            <select value={filters.weight} onChange={(e) => onFilterChange('weight', e.target.value)}><option value="">Todos</option>{filterOptions.weights.map(w => <option key={w} value={w}>{w}g</option>)}</select>
-                        </>
-                    )}
                     
-                    <label>Tipo de Gema</label>
-                    <select value={filters.stoneType} onChange={(e) => onFilterChange('stoneType', e.target.value)}><option value="">Todos</option>{filterOptions.stoneTypes.map(st => <option key={st} value={st}>{st}</option>)}</select>
-                    
-                    <label>Quilates (ct)</label>
-                    <div className="price-range">
-                        <input type="number" placeholder="Mín." value={filters.minCarats} onChange={(e) => onFilterChange('minCarats', e.target.value)} />
-                        <span>-</span>
-                        <input type="number" placeholder="Máx." value={filters.maxCarats} onChange={(e) => onFilterChange('maxCarats', e.target.value)} />
-                    </div>
-
                     <label>Cor</label>
-                    <select value={filters.color} onChange={(e) => onFilterChange('color', e.target.value)}><option value="">Todas</option>{filterOptions.colors.map(c => <option key={c} value={c}>{c}</option>)}</select>
+                    <select value={filters.color} onChange={(e) => onFilterChange('color', e.target.value)}>
+                        <option value="">Todas</option>
+                        {filterOptions.colors.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
 
                     <label>Lapidação</label>
-                    <select value={filters.cut} onChange={(e) => onFilterChange('cut', e.target.value)}><option value="">Todas</option>{filterOptions.cuts.map(c => <option key={c} value={c}>{c}</option>)}</select>
+                    <select value={filters.cut} onChange={(e) => onFilterChange('cut', e.target.value)}>
+                        <option value="">Todas</option>
+                        {filterOptions.cuts.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
                     
                     <label>Claridade</label>
-                    <select value={filters.clarity} onChange={(e) => onFilterChange('clarity', e.target.value)}><option value="">Todas</option>{filterOptions.clarities.map(c => <option key={c} value={c}>{c}</option>)}</select>
+                    <select value={filters.clarity} onChange={(e) => onFilterChange('clarity', e.target.value)}>
+                        <option value="">Todas</option>
+                        {filterOptions.clarities.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
                 </div>
             </FilterSection>
         </aside>
     );
-}); // 3. Feche o parêntese do memo aqui
+});
 
 export default FilterSidebar;

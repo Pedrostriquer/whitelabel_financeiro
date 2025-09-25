@@ -51,7 +51,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 // --- Componente Principal: GemasBrilhantes ---
 const GemasBrilhantes = () => {
     // --- ESTADOS ---
-    const [apiProducts, setApiProducts] = useState([]); // Guarda o resultado PURO da API para a página atual
+    const [apiProducts, setApiProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [filterOptions, setFilterOptions] = useState({ materials: [], weights: [], stoneTypes: [], colors: [], cuts: [], clarities: [] });
     const [loading, setLoading] = useState(true);
@@ -63,17 +63,17 @@ const GemasBrilhantes = () => {
     const [totalResults, setTotalResults] = useState(0);
     const PAGE_SIZE = 12;
 
-    // Estado unificado para TODOS os filtros (backend e frontend)
+    // Estado unificado para TODOS os filtros
     const [filters, setFilters] = useState({
-        // Filtros que serão enviados para o BACKEND
+        // Filtros de BACKEND
         searchTerm: '',
         itemType: 'Todos',
         categories: [],
         sort: 'date_desc',
         justPromotions: false,
+        stoneTypes: [], // Agora é um array para seleção múltipla
         
-        // Filtros que serão aplicados no FRONTEND
-        stoneType: '',
+        // Filtros de FRONTEND (para os campos que a API ainda não suporta)
         color: '',
         cut: '',
         clarity: '',
@@ -83,44 +83,32 @@ const GemasBrilhantes = () => {
 
     // --- LÓGICA DE DADOS ---
 
-    // 1. BUSCA DE DADOS (API)
-    // Esta função é chamada quando um filtro de BACKEND ou a página muda.
-    // Usamos useCallback para que a função só seja recriada quando um filtro de backend mudar.
+    // Busca os produtos da API sempre que o objeto de filtros muda
     const fetchProducts = useCallback(async (pageToFetch) => {
         setLoading(true);
         try {
-            // O serviço já sabe quais filtros enviar para a API
             const data = await productServices.searchProducts(filters, pageToFetch, PAGE_SIZE);
-            setApiProducts(data.items || []); // Armazena os resultados puros da API
+            setApiProducts(data.items || []);
             setTotalPages(data.totalPages || 0);
             setTotalResults(data.totalCount || 0);
             setCurrentPage(data.pageNumber || 1);
         } catch (error) {
             console.error("Erro ao buscar produtos da API:", error);
-            setApiProducts([]); // Limpa os produtos em caso de erro
+            setApiProducts([]);
         } finally {
             setLoading(false);
         }
-    }, [filters.searchTerm, filters.itemType, filters.categories, filters.sort, filters.justPromotions]); // Dependências: Apenas filtros de backend!
+    }, [filters]);
 
-    // Dispara a busca à API quando um filtro de backend é alterado
+    // Dispara a busca à API
     useEffect(() => {
-        fetchProducts(1); // Sempre volta para a página 1 ao aplicar novo filtro de backend
+        fetchProducts(1); // Sempre volta para a página 1 ao aplicar novo filtro
     }, [fetchProducts]);
 
-    // 2. FILTRAGEM SECUNDÁRIA (FRONTEND)
-    // Pega os produtos da API e aplica os filtros restantes usando useMemo para eficiência.
-    // Este código só é re-executado se os produtos da API ou um filtro de frontend mudar.
+    // Aplica filtros que a API ainda não suporta
     const displayedProducts = useMemo(() => {
         let items = [...apiProducts];
 
-        // Adicionado filtro para exibir apenas produtos com status 1 (Ativo)
-        items = items.filter(product => product.status === 1);
-
-        // Aplica os filtros que a API não suporta
-        if (filters.stoneType) {
-            items = items.filter(p => p.info?.stones?.some(s => s.stoneType === filters.stoneType));
-        }
         if (filters.color) {
             items = items.filter(p => p.info?.stones?.some(s => s.color === filters.color));
         }
@@ -138,9 +126,9 @@ const GemasBrilhantes = () => {
         }
         
         return items;
-    }, [apiProducts, filters.stoneType, filters.color, filters.cut, filters.clarity, filters.minPrice, filters.maxPrice]); // Dependências: Produtos da API e filtros de frontend
+    }, [apiProducts, filters.color, filters.cut, filters.clarity, filters.minPrice, filters.maxPrice]);
 
-    // Efeito para buscar dados iniciais (opções de filtro, categorias) - Roda apenas 1 vez
+    // Busca dados iniciais para os filtros (roda apenas uma vez)
     useEffect(() => {
         const fetchInitialData = async () => {
             try {
@@ -155,7 +143,7 @@ const GemasBrilhantes = () => {
             }
         };
         fetchInitialData();
-    }, []); // Array vazio garante que rode apenas uma vez
+    }, []);
 
     // --- HANDLERS ---
 
@@ -172,20 +160,32 @@ const GemasBrilhantes = () => {
         });
     };
     
+    // Handler para seleção múltipla de tipos de gema
+    const handleStoneTypeToggle = (stoneTypeName) => {
+        setFilters(prev => {
+            const newStoneTypes = prev.stoneTypes.includes(stoneTypeName)
+                ? prev.stoneTypes.filter(name => name !== stoneTypeName)
+                : [...prev.stoneTypes, stoneTypeName];
+            return { ...prev, stoneTypes: newStoneTypes };
+        });
+    };
+    
     const handlePageChange = (pageNumber) => {
-        fetchProducts(pageNumber);
-        window.scrollTo({ top: 300, behavior: 'smooth' });
+        if (pageNumber !== currentPage) {
+            fetchProducts(pageNumber);
+            window.scrollTo({ top: 300, behavior: 'smooth' });
+        }
     };
     
     const clearFilters = () => {
         setFilters({
             searchTerm: '', itemType: 'Todos', categories: [], sort: 'date_desc', justPromotions: false,
-            stoneType: '', color: '', cut: '', clarity: '', minPrice: '', maxPrice: '',
+            stoneTypes: [], // Reseta o array de tipos de gema
+            color: '', cut: '', clarity: '', minPrice: '', maxPrice: '',
         });
     };
 
     // --- RENDERIZAÇÃO ---
-    // O componente agora renderiza 'displayedProducts'
     return (
         <div className="shop-page-wrapper">
             <ShopHeader />
@@ -197,13 +197,17 @@ const GemasBrilhantes = () => {
                         filters={filters}
                         onFilterChange={handleFilterChange}
                         onCategoryToggle={handleCategoryToggle}
+                        onStoneTypeToggle={handleStoneTypeToggle}
                         onClearFilters={clearFilters}
                     />
                 </aside>
 
                 <div className={`sidebar-mobile-modal ${isMobileFiltersOpen ? 'open' : ''}`}>
                     <div className="sidebar-modal-content">
-                        <div className="modal-header"><h3 className="sidebar-title">Filtros</h3><button onClick={() => setIsMobileFiltersOpen(false)} className="close-modal-btn"><FaTimes /></button></div>
+                        <div className="modal-header">
+                            <h3 className="sidebar-title">Filtros</h3>
+                            <button onClick={() => setIsMobileFiltersOpen(false)} className="close-modal-btn"><FaTimes /></button>
+                        </div>
                         <div className="modal-body">
                             <FilterSidebar 
                                 categories={categories}
@@ -211,10 +215,13 @@ const GemasBrilhantes = () => {
                                 filters={filters}
                                 onFilterChange={handleFilterChange}
                                 onCategoryToggle={handleCategoryToggle}
+                                onStoneTypeToggle={handleStoneTypeToggle}
                                 onClearFilters={clearFilters}
                             />
                         </div>
-                        <div className="modal-footer"><button className="apply-filters-btn" onClick={() => setIsMobileFiltersOpen(false)}>Ver Resultados</button></div>
+                        <div className="modal-footer">
+                            <button className="apply-filters-btn" onClick={() => setIsMobileFiltersOpen(false)}>Ver Resultados</button>
+                        </div>
                     </div>
                 </div>
                 
@@ -222,7 +229,6 @@ const GemasBrilhantes = () => {
                     <header className="content-header">
                         <input type="text" placeholder="Buscar por sua joia..." className="shop-search-input" value={filters.searchTerm} onChange={(e) => handleFilterChange('searchTerm', e.target.value)} />
                         <div className="header-controls">
-                            {/* O total de resultados vem do backend, mostrando o total real */}
                             <span className="results-count">{totalResults} resultados</span>
                             <select className="sort-select" value={filters.sort} onChange={(e) => handleFilterChange('sort', e.target.value)}>
                                 <option value="date_desc">Mais Recentes</option>

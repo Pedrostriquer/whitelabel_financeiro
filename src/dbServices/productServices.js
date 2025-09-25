@@ -10,58 +10,63 @@ if (!API_BASE_URL) {
 
 const productServices = {
     /**
-     * Função principal para buscar produtos, enviando para o backend apenas os filtros suportados.
-     * @param {object} filters - O objeto completo contendo todos os filtros (de backend e frontend).
+     * Função principal para buscar produtos, enviando para o backend os filtros suportados.
+     * @param {object} filters - O objeto completo contendo todos os filtros.
      * @param {number} pageNumber - O número da página a ser buscada.
      * @param {number} pageSize - A quantidade de produtos por página.
-     * @returns {Promise<object>} - A resposta da API, que inclui { items, totalPages, totalCount, ... }.
+     * @returns {Promise<object>} - A resposta da API.
      */
     searchProducts: async (filters, pageNumber = 1, pageSize = 9) => {
         try {
             const params = new URLSearchParams();
 
-            // --- FILTROS QUE FUNCIONAM NO BACKEND ---
+            // --- FILTROS DE BACKEND ---
             if (filters.searchTerm) params.append('Name', filters.searchTerm);
-            if (filters.itemType && filters.itemType !== 'Todos') params.append('ItemType', filters.itemType);
+            
+            if (filters.itemType && filters.itemType !== 'Todos') {
+                params.append('ItemType', filters.itemType);
+            }
+            
             if (filters.justPromotions) params.append('JustPromotions', filters.justPromotions);
             if (filters.sort) params.append('SortBy', filters.sort);
-
-            // ATUALIZAÇÃO CRÍTICA: O nome do parâmetro mudou para 'CategoryIds' e é um array.
+            
+            // Envia um array de IDs de categoria
             if (filters.categories && filters.categories.length > 0) {
                 filters.categories.forEach(catId => params.append('CategoryIds', catId));
             }
+            
+            // Envia um array de nomes de tipos de gema
+            if (filters.stoneTypes && filters.stoneTypes.length > 0) {
+                filters.stoneTypes.forEach(stoneType => params.append('StoneTypes', stoneType));
+            }
 
-            // Paginação é sempre enviada.
+            // Filtro de status fixo para a loja, sempre buscando produtos ativos
+            params.append('Status', 'Active'); 
+            
+            // Paginação
             params.append('PageNumber', pageNumber);
             params.append('PageSize', pageSize);
             
-            // Executa a chamada GET para a API, passando os parâmetros.
             const response = await axios.get(`${API_BASE_URL}Product/search`, { params });
             return response.data;
 
         } catch (error) {
-            // Em caso de erro, exibe uma mensagem clara no console e propaga o erro.
             console.error("Erro ao buscar produtos:", error.response?.data || error.message);
             throw error;
         }
     },
 
     /**
-     * Busca as opções de filtro para preencher a Sidebar (Tipo de Gema, Cor, etc.).
-     * Esta função continua sendo um paliativo útil: busca uma grande amostra de produtos
-     * para extrair os valores únicos para os menus de filtro.
+     * Busca as opções de filtro para preencher a Sidebar.
+     * Busca uma grande amostra de produtos ativos para extrair os valores únicos para os menus.
      * @returns {Promise<object>} - Um objeto com arrays para cada tipo de filtro.
      */
     getAllFilterOptions: async () => {
         try {
-            // Busca até 1000 produtos para ter uma amostragem grande e extrair as opções.
-            const response = await productServices.searchProducts({}, 1, 1000);
+            const response = await productServices.searchProducts({}, 1, 1000); // Já busca apenas produtos ativos
             const products = response.items || [];
-
-            // Extrai as informações de todas as pedras de todos os produtos.
             const allStones = products.flatMap(p => p.info?.stones || []);
 
-            // Usa 'new Set()' para obter apenas os valores únicos de cada campo.
             const stoneTypes = [...new Set(allStones.map(s => s.stoneType).filter(Boolean))].sort();
             const colors = [...new Set(allStones.map(s => s.color).filter(Boolean))].sort();
             const cuts = [...new Set(allStones.map(s => s.cut).filter(Boolean))].sort();
@@ -73,7 +78,7 @@ const productServices = {
 
         } catch (error) {
             console.error("Erro ao buscar opções de filtro:", error);
-            // Retorna um objeto vazio em caso de falha para não quebrar a UI.
+            // Retorna um objeto vazio para não quebrar a UI em caso de falha
             return { materials: [], weights: [], stoneTypes: [], colors: [], cuts: [], clarities: [] };
         }
     },
