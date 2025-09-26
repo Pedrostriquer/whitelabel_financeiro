@@ -1,11 +1,16 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import productServices from "../../../../../dbServices/productServices";
 import { useCart } from "../../../../../Context/CartContext";
 import "./ProductPage.css";
-import { FaCheck, FaGem, FaShieldAlt, FaCreditCard } from "react-icons/fa";
+import { FaGem, FaShieldAlt, FaCreditCard, FaSearchPlus } from "react-icons/fa";
 import { gsap } from "gsap";
 import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
+
+const isTouchDevice = () => {
+  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+};
 
 const isVideoUrl = (url) => {
   if (!url) return false;
@@ -16,114 +21,129 @@ const isVideoUrl = (url) => {
 
 const MediaGallery = ({ media, productName }) => {
   const [selectedMedia, setSelectedMedia] = useState(media?.[0]);
-  const [isZooming, setIsZooming] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isZoomModalOpen, setIsZoomModalOpen] = useState(false);
+  const [showLens, setShowLens] = useState(false);
+  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const containerRef = useRef(null);
-  const zoomLevel = 2.6;
+  const LENS_SIZE = 300;
+  const ZOOM_LEVEL = 2.5;
 
   useEffect(() => {
     setSelectedMedia(media?.[0]);
   }, [media]);
 
-  const handleMouseEnter = () => {
-    if (selectedMedia?.type === "image") {
-      setIsZooming(true);
+  const handleMouseMove = (e) => {
+    if (isTouchDevice() || !containerRef.current) return;
+    const { left, top, width, height } = containerRef.current.getBoundingClientRect();
+    setContainerSize({ width, height });
+    const x = e.clientX - left;
+    const y = e.clientY - top;
+    if (x > 0 && x < width && y > 0 && y < height) {
+      setShowLens(true);
+      setCursorPosition({ x, y });
+    } else {
+      setShowLens(false);
     }
   };
 
   const handleMouseLeave = () => {
-    setIsZooming(false);
+    if (isTouchDevice()) return;
+    setShowLens(false);
+  };
+  
+  const handleImageClick = () => {
+    if (isTouchDevice() && selectedMedia.type === 'image') {
+      setIsZoomModalOpen(true);
+    }
   };
 
-  const handleMouseMove = (e) => {
-    if (!containerRef.current) return;
-    const { left, top } = containerRef.current.getBoundingClientRect();
-    const x = e.clientX - left;
-    const y = e.clientY - top;
-    setMousePosition({ x, y });
+  // NOVO: Handler para fechar o modal ao clicar no overlay
+  const handleOverlayClick = (e) => {
+    // Verifica se o elemento clicado é o próprio overlay (e não um filho, como a imagem)
+    if (e.target === e.currentTarget) {
+      setIsZoomModalOpen(false);
+    }
   };
 
   if (!selectedMedia) {
-    return (
-      <div className="product-media-gallery">
-        <div className="main-media-container">
-          <img
-            src="https://via.placeholder.com/600x600.png?text=Imagem+Indisponível"
-            alt="Imagem do produto indisponível"
-            className="main-media-item"
-          />
-        </div>
-      </div>
-    );
+    return <div>Carregando mídia...</div>;
   }
 
-  const zoomImageStyle = {
-    opacity: isZooming ? 1 : 0,
-    visibility: isZooming ? "visible" : "hidden",
-    top: `-${mousePosition.y * (zoomLevel - 1)}px`,
-    left: `-${mousePosition.x * (zoomLevel - 1)}px`,
-    backgroundImage: `url(${selectedMedia.url})`,
-  };
-
   return (
-    <div className="product-media-gallery">
-      <div
-        className="main-media-container"
-        ref={containerRef}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        onMouseMove={handleMouseMove}
-      >
-        {selectedMedia.type === "video" ? (
-          <video
-            key={selectedMedia.url}
-            src={selectedMedia.url}
-            autoPlay
-            muted
-            loop
-            controls
-            className="main-media-item"
-          />
-        ) : (
-          <>
-            <img
-              src={selectedMedia.url}
-              alt={productName}
-              className="main-media-item"
-            />
-            <div className="zoom-image" style={zoomImageStyle} />
-          </>
-        )}
+    <>
+      <div className="product-media-gallery">
+        <div
+          className="main-media-container"
+          ref={containerRef}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+          onClick={handleImageClick}
+        >
+          {selectedMedia.type === "video" ? (
+            <video key={selectedMedia.url} src={selectedMedia.url} autoPlay muted loop controls className="main-media-item" />
+          ) : (
+            <>
+              <img src={selectedMedia.url} alt={productName} className="main-media-item" />
+              {!isTouchDevice() && showLens && (
+                <div
+                  className="magnifying-lens"
+                  style={{
+                    left: `${cursorPosition.x - LENS_SIZE / 2}px`,
+                    top: `${cursorPosition.y - LENS_SIZE / 2}px`,
+                    width: `${LENS_SIZE}px`,
+                    height: `${LENS_SIZE}px`,
+                    backgroundImage: `url(${selectedMedia.url})`,
+                    backgroundSize: `${containerSize.width * ZOOM_LEVEL}px auto`,
+                    backgroundPosition: `-${cursorPosition.x * ZOOM_LEVEL - LENS_SIZE / 2}px -${cursorPosition.y * ZOOM_LEVEL - LENS_SIZE / 2}px`,
+                  }}
+                />
+              )}
+              {isTouchDevice() && (
+                <div className="mobile-zoom-indicator">
+                  <FaSearchPlus /> Toque para ampliar
+                </div>
+              )}
+            </>
+          )}
+        </div>
+        <div className="thumbnail-container">
+          {media.map((item, index) => (
+            <div key={index} className={`thumbnail-item ${selectedMedia.url === item.url ? "active" : ""}`} onClick={() => setSelectedMedia(item)}>
+              {item.type === "video" ? (
+                <video src={item.url} muted playsInline className="thumbnail-media" />
+              ) : (
+                <img src={item.url} alt={`Thumbnail ${index + 1}`} className="thumbnail-media" />
+              )}
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="thumbnail-container">
-        {media.map((item, index) => (
-          <div
-            key={index}
-            className={`thumbnail-item ${
-              selectedMedia.url === item.url ? "active" : ""
-            }`}
-            onClick={() => setSelectedMedia(item)}
+
+      {isTouchDevice() && isZoomModalOpen && (
+        // O handler de clique foi adicionado aqui
+        <div className="zoom-modal-overlay" onClick={handleOverlayClick}>
+          <button className="zoom-modal-close-btn" onClick={() => setIsZoomModalOpen(false)}>×</button>
+          <TransformWrapper 
+            initialScale={1} 
+            minScale={1} 
+            maxScale={3}
+            pinch={{ step: 1 }}
+            doubleClick={{ step: 3 }} // <-- NOVO: Habilita zoom com clique duplo
           >
-            {item.type === "video" ? (
-              <video
-                src={item.url}
-                muted
-                playsInline
-                className="thumbnail-media"
-              />
-            ) : (
-              <img
-                src={item.url}
-                alt={`Thumbnail ${index + 1}`}
-                className="thumbnail-media"
-              />
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
+            <TransformComponent wrapperClass="zoom-wrapper" contentClass="zoom-content">
+              <img src={selectedMedia.url} alt={`${productName} - Zoom`} />
+            </TransformComponent>
+          </TransformWrapper>
+        </div>
+      )}
+    </>
   );
 };
+
+// ===================================================================
+// O RESTO DO SEU CÓDIGO PERMANECE IGUAL
+// ===================================================================
 
 const ProductInfo = ({ product }) => {
   const { addToCartMultiple, cartItems } = useCart();
@@ -158,13 +178,9 @@ const ProductInfo = ({ product }) => {
     addToCartMultiple(product, qtt);
 
     const button = buttonRef.current;
-    // Seleciona o path dentro do SVG com a classe .morph
     const morph = button.querySelector(".morph path"); 
     if (!button || !morph) return;
     
-    // ===============================================================
-    // INÍCIO DA ANIMAÇÃO CORRIGIDA (CÓPIA EXATA DO PRODUCTCARD)
-    // ===============================================================
     gsap.to(button, {
       keyframes: [
         { "--background-scale": 0.97, duration: 0.15, },
@@ -175,8 +191,6 @@ const ProductInfo = ({ product }) => {
     gsap.to(button, {
       keyframes: [
         {
-          // ESTA É A PARTE CRÍTICA QUE FALTAVA:
-          // Mover o carrinho para o centro (0px) e escalar para 1
           "--shirt-scale": 1,
           "--shirt-y": "-42px",
           "--cart-x": "0px",
@@ -217,9 +231,6 @@ const ProductInfo = ({ product }) => {
         { morphSVG: "M0 12C6 12 17 12 32 12C47.9024 12 58 12 64 12V13H0V12Z", duration: 0.15, ease: "none", },
       ],
     });
-    // ===============================================================
-    // FIM DA ANIMAÇÃO CORRIGIDA
-    // ===============================================================
   };
   
   const handleBuyNow = () => {
@@ -307,7 +318,6 @@ const ProductInfo = ({ product }) => {
     </div>
   );
 };
-
 
 const ProductSpecs = ({ product }) => {
   const { info } = product;

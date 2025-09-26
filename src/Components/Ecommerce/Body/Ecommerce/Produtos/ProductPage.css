@@ -36,14 +36,20 @@
 }
 
 .main-media-container {
-  position: relative;
+  position: relative; 
   width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
   background-color: #e9ecef;
-  cursor: zoom-in;
+  cursor: crosshair; 
+}
+
+@media (hover: none) {
+  .main-media-container {
+    cursor: pointer;
+  }
 }
 
 .main-media-item {
@@ -85,20 +91,91 @@
   object-fit: cover;
 }
 
-/* --- Efeito de Zoom --- */
-.zoom-image {
+/* --- EFEITO DE LUPA (Desktop) --- */
+.magnifying-lens {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 250%;
-  height: 250%;
-  pointer-events: none;
+  border: 3px solid var(--primary-color);
+  border-radius: 50%; 
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
   background-repeat: no-repeat;
-  background-size: cover;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
+  pointer-events: none; 
 }
 
-/* --- Detalhes do Produto --- */
+/* --- INDICADOR DE ZOOM (Mobile) --- */
+.mobile-zoom-indicator {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+/* --- MODAL DE ZOOM (Mobile) --- */
+.zoom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem; /* Adiciona um respiro nas bordas */
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.zoom-modal-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 1;
+  z-index: 1001;
+}
+
+/* ======================================================= */
+/* CORREÇÃO DE ALINHAMENTO DO MODAL                      */
+/* ======================================================= */
+/* Não aplicamos estilos de layout ao wrapper, 
+   deixando o overlay fazer a centralização. */
+.zoom-wrapper {
+  /* O wrapper agora se ajusta ao conteúdo, permitindo
+     que o clique no overlay (fundo) funcione. */
+}
+
+.zoom-content {
+  cursor: grab; 
+}
+
+.zoom-content img {
+  /* A imagem define o tamanho máximo do conteúdo,
+     garantindo que não ultrapasse a tela inicialmente. */
+  max-width: 95vw;
+  max-height: 95vh;
+  object-fit: contain;
+  /* Impede que a imagem receba cliques para fechar, 
+     essa função é do overlay. */
+  cursor: default; 
+}
+
+/* --- O RESTO DO CSS --- */
+
 .product-details-container {
   display: flex;
   flex-direction: column;
@@ -135,10 +212,9 @@
   white-space: pre-wrap;
 }
 
-/* --- Estilos para Mensagem de Estoque na Página --- */
 .stock-info-page {
   font-family: 'Poppins', sans-serif;
-  color: var(--sale-color); /* Ou uma cor de aviso, como #e53935 */
+  color: var(--sale-color);
   font-weight: 500;
   margin-bottom: 35px;
   padding: 10px;
@@ -147,22 +223,20 @@
   border-radius: 4px;
 }
 
-/* --- Layout dos Controles e Botões --- */
 .actions-container {
   display: flex;
   gap: 15px;
-  align-items: stretch; /* Garante que ambos os filhos tenham a mesma altura */
-  flex-wrap: wrap; /* Permite que os botões quebrem a linha em telas menores */
+  align-items: stretch;
+  flex-wrap: wrap;
 }
 
 .buttons-wrapper {
   display: flex;
-  flex-direction: column; /* Empilha os botões verticalmente */
+  flex-direction: column;
   gap: 10px;
-  flex-grow: 1; /* Faz com que o wrapper ocupe o espaço disponível */
+  flex-grow: 1;
 }
 
-/* --- Controle de Quantidade --- */
 .qtt-controller {
   display: flex;
   gap: 10px;
@@ -170,7 +244,7 @@
 
 .qtt-controller-view {
   width: 60px;
-  height: 108px; /* Altura ajustada para alinhar com os 2 botões empilhados */
+  height: 108px;
   background: rgb(255, 255, 255);
   border-radius: 12px;
   border: 1px solid rgba(0, 0, 0, 0.09);
@@ -184,7 +258,7 @@
 
 .controllers {
   display: grid;
-  height: 108px; /* Altura ajustada */
+  height: 108px;
   grid-template-rows: 1fr 1fr;
   gap: 8px;
 }
@@ -216,15 +290,9 @@
   box-shadow: none;
 }
 
-/* 
-=====================================================
-  ESTILOS DO BOTÃO ANIMADO "ADICIONAR"
-=====================================================
-*/
 .add-to-cart-btn {
-  /* Variáveis de animação */
   --background-default: var(--primary-color);
-  --background-hover: #4c82c3; /* Um tom mais claro para o hover */
+  --background-hover: #4c82c3;
   --background-scale: 1;
   --text-color: #ffffff;
   --text-o: 1;
@@ -242,8 +310,6 @@
   --shirt-scale: 0;
   --shirt-color: var(--primary-color);
   --shirt-logo: #ffffff;
-
-  /* Estilos base do botão */
   -webkit-tap-highlight-color: transparent;
   -webkit-appearance: none;
   outline: none;
@@ -256,7 +322,7 @@
   font-family: 'Poppins', sans-serif;
   font-size: 1rem;
   font-weight: 600;
-  line-height: 50px; /* Alinha o texto verticalmente */
+  line-height: 50px;
   height: 50px;
   width: 100%;
 }
@@ -367,7 +433,6 @@
   stroke-dashoffset: var(--cart-tick-offset);
 }
 
-/* --- BOTÃO "COMPRAR AGORA" --- */
 .buy-now-button {
   background-color: #2e7d32;
   color: #FFFFFF;
@@ -393,7 +458,6 @@
   box-shadow: 0 6px 15px rgba(46, 125, 50, 0.25);
 }
 
-/* --- Estilos para Botões Desabilitados --- */
 .buy-now-button.disabled,
 .add-to-cart-btn.disabled {
     cursor: not-allowed;
@@ -410,8 +474,6 @@
     background: #cccccc;
 }
 
-
-/* --- Especificações Técnicas --- */
 .product-specs-section {
   max-width: 1200px;
   margin: 60px auto 0;
@@ -464,12 +526,11 @@
   color: #555;
 }
 
-/* --- Mensagens de Estado e Responsividade --- */
 .page-loading-message,
 .product-not-found {
   text-align: center;
   padding: 100px 40px;
-  font-family: Poppins, sans-serif; /* Correto: sem a aspa extra */
+  font-family: Poppins, sans-serif;
 }
 
 .product-not-found h2 {
