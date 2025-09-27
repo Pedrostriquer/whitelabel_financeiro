@@ -1,8 +1,8 @@
-// src/Components/ContratosPage/ConfigurationStep.js (100% Completo)
+// src/Components/ContratosPage/ConfigurationStep.js
 
 import React, { useState } from "react";
 import style from "./ContratosPageStyle";
-import GeneratedContract from "./GenerateContract";
+import GeneratedContract from "./GenerateContract"; // Importa o componente filho
 import formatServices from "../../formatServices/formatServices";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileSignature } from "@fortawesome/free-solid-svg-icons";
@@ -20,15 +20,22 @@ const ConfigurationStep = ({
   availablePaymentMethods, // Recebe a prop da página pai
 }) => {
   const [isMinutaModalOpen, setIsMinutaModalOpen] = useState(false);
+  
+  // NOVO ESTADO: Gerencia a escolha do método de verificação, com 'EMAIL' como padrão.
+  const [verificationMethod, setVerificationMethod] = useState("EMAIL");
 
-  if (!simulation) return null;
+  if (!simulation) {
+    return null;
+  }
 
   const handleProceedToBuy = () => {
     if (!termsAccepted) {
       alert("Você precisa aceitar os termos do contrato para continuar.");
       return;
     }
-    handleBuy();
+    // ATUALIZADO: Chama a função 'handleBuy' do componente pai, 
+    // passando o método de verificação que o usuário selecionou.
+    handleBuy(verificationMethod);
   };
 
   return (
@@ -78,6 +85,10 @@ const ConfigurationStep = ({
           setPaymentMethod={setPaymentMethod}
           onViewContract={() => setIsMinutaModalOpen(true)}
           availablePaymentMethods={availablePaymentMethods} // Passa a prop para o componente filho
+          // NOVAS PROPS: Passa o estado do método de verificação e sua função de alteração
+          // para o componente filho, onde a seleção será feita.
+          verificationMethod={verificationMethod}
+          setVerificationMethod={setVerificationMethod}
         />
       </div>
 
