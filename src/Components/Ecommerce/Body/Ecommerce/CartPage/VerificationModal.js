@@ -1,9 +1,9 @@
-// src/Components/Ecommerce/Body/Ecommerce/CartPage/VerificationModal/VerificationModal.js
-
+// src/Components/Ecommerce/Body/Ecommerce/CartPage/VerificationModal.js
 import React, { useState } from "react";
 import style from "./VerificationModalStyle.js";
 
-const VerificationModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
+// Recebe a nova prop 'verificationMethod' para saber de onde veio o código
+const VerificationModal = ({ isOpen, onClose, onSubmit, isLoading, verificationMethod }) => {
   const [code, setCode] = useState("");
   const [isConfirmHovered, setIsConfirmHovered] = useState(false);
   const [isCancelHovered, setIsCancelHovered] = useState(false);
@@ -17,9 +17,15 @@ const VerificationModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
     if (code.length === 6 && !isLoading) {
       onSubmit(code);
     } else {
+      // Idealmente, isso deveria ser um toast ou uma mensagem de erro mais amigável
       alert("Por favor, insira o código de 6 dígitos.");
     }
   };
+
+  // ATUALIZADO: Define o texto de destino com base no método de verificação
+  const destinationText = verificationMethod === 'WHATSAPP' 
+    ? 'seu WhatsApp' 
+    : 'seu e-mail';
 
   const confirmBtnStyle = {
     ...style.modalButton,
@@ -27,6 +33,7 @@ const VerificationModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
     ...(isConfirmHovered && !isLoading && style.buttonHover),
     ...((isLoading || code.length < 6) && style.buttonDisabled),
   };
+  
   const cancelBtnStyle = {
     ...style.modalButton,
     ...style.modalButtonCancel,
@@ -48,8 +55,9 @@ const VerificationModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
           </div>
           <form onSubmit={handleSubmit}>
             <div style={style.modalBody}>
+              {/* ATUALIZADO: O texto agora é dinâmico */}
               <p>
-                Para sua segurança, enviamos um código para o seu e-mail.
+                Para sua segurança, enviamos um código para o <strong>{destinationText}</strong>.
                 Insira-o abaixo para validar a operação.
               </p>
               <input
