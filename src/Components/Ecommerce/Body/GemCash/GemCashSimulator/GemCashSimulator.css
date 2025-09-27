@@ -16,7 +16,7 @@
 
 /* --- Container Principal --- */
 .sim-section {
-    padding: 100px 40px;
+    padding: 20px 20px;
     background-color: #f0f2f5;
 }
 
@@ -248,5 +248,14 @@ button:disabled { background-color: #a0aec0 !important; cursor: not-allowed; tra
 @media (max-width: 900px) {
     .sim-layout {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .sim-main-title{
+        font-size: 1.8em;
+    }
+    .sim-subtitle {
+        font-size: 1rem;
     }
 }

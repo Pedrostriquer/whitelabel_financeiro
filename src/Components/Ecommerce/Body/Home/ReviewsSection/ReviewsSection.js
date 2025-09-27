@@ -1,4 +1,3 @@
-// Dentro de src/Components/ClientView/Body/Home/ReviewsSection/ReviewsSection.js
 
 import React, { useState, useEffect } from 'react';
 import './ReviewsSection.css';

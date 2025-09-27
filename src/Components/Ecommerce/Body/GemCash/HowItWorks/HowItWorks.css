@@ -1,7 +1,5 @@
-/* Dentro de src/Components/ClientView/Body/GemCash/HowItWorks/HowItWorks.css */
-
 .how-it-works-section {
-    padding: 100px 40px;
+    padding: 10px 0px;
     background-color: #f0f2f5;
 }
 
@@ -16,7 +14,7 @@
     color: #122C4F;
     margin-bottom: 20px;
     font-family: 'Helnore', serif;
-    font-weight: normal; /* Garante que a fonte não fique grossa */
+    font-weight: normal;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 40px;
@@ -24,9 +22,9 @@
 
 .interactive-layout {
     display: flex;
-    gap: 60px;
+    /* gap: 20px; */
     background-color: #FFFFFF;
-    padding: 40px;
+    padding: 30px; /* MODIFICADO: de 40px para 30px */
     border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.08);
 }
@@ -37,29 +35,29 @@
     flex-shrink: 0;
     width: 300px;
     border-right: 1px solid #eee;
-    padding-right: 40px;
+    padding-right: 30px; /* MODIFICADO: de 40px para 30px */
     font-family: 'Poppins', sans-serif;
 }
 
 .nav-item {
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding: 15px;
+    gap: 12px;         /* MODIFICADO: de 15px para 12px */
+    padding: 12px;     /* MODIFICADO: de 15px para 12px */
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .nav-item i {
-    font-size: 1.5em;
+    font-size: 1.4em; /* MODIFICADO: de 1.5em para 1.4em */
     color: #aaa;
     transition: color 0.3s ease;
 }
 
 .nav-item span {
     font-family: 'Poppins', sans-serif;
-    font-size: 1.1em;
+    font-size: 1em; /* MODIFICADO: de 1.1em para 1em */
     font-weight: 500;
     color: #555;
     transition: color 0.3s ease;
@@ -70,7 +68,7 @@
 }
 
 .nav-item.active {
-    background-color: #122c4f1a; /* Azul com 10% de opacidade */
+    background-color: #122c4f1a;
 }
 .nav-item.active i, .nav-item.active span {
     color: #122C4F;
@@ -79,7 +77,8 @@
 /* Coluna Direita: Conteúdo */
 .feature-content-display {
     flex-grow: 1;
-    animation: fadeIn 0.6s ease-out; /* Animação ao trocar */
+    animation: fadeIn 0.6s ease-out;
+    padding-left: 30px; 
 }
 
 @keyframes fadeIn {
@@ -89,14 +88,14 @@
 
 .content-title {
     font-family: 'Poppins', sans-serif;
-    font-size: 1.8em;
+    font-size: 1.6em;   /* MODIFICADO: de 1.8em para 1.6em */
     font-weight: 600;
     color: #122C4F;
-    margin-bottom: 25px;
+    margin-bottom: 20px; /* MODIFICADO: de 25px para 20px */
 }
 
 .content-text-block {
-    margin-bottom: 20px;
+    margin-bottom: 15px; /* MODIFICADO: de 20px para 15px */
 }
 
 .content-text-block strong {
@@ -104,21 +103,21 @@
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
     color: #333;
-    font-size: 1.1em;
+    font-size: 1em;    /* MODIFICADO: de 1.1em para 1em */
     margin-bottom: 8px;
 }
 
 .content-text-block p {
     font-family: 'Poppins', sans-serif;
     color: #555;
-    line-height: 1.7;
+    line-height: 1.6; /* MODIFICADO: de 1.7 para 1.6 */
 }
 
 /* Responsividade */
 @media (max-width: 900px) {
     .interactive-layout {
         flex-direction: column;
-        gap: 30px;
+        /* gap: 30px; */
     }
     .features-nav-list {
         width: 100%;
@@ -154,15 +153,25 @@
     border-radius: 8px;
     cursor: pointer;
     transition: transform 0.5s ease, box-shadow 0.5s ease;
-    
-    /* Gradiente com maior contraste para um efeito mais visível */
     background-image: linear-gradient(45deg, #122C4F, #143e82, #122C4F, #143e82);
     background-size: 300% 100%;
-    /* Animação mais rápida e com movimento linear */
     animation: cta-shimmer 3s linear infinite;
 }
 
 .cta-button-animated:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 20px rgba(18, 44, 79, 0.3);
+}
+
+@media (max-width: 768px) {
+    .how-it-works-container {
+        transform: scale(0.9);
+        transform-origin: top center;
+    }
+    .hiw-title {
+        font-size: 1.8em;
+    }
+    .how-it-works-section {
+        max-height: 1000px;
+    }
 }

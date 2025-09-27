@@ -4,12 +4,10 @@ import './FeatureSection.css';
 
 const FeatureSection = ({ title, text, buttonText, buttonLink, mediaSrc, mediaType, layout = 'default' }) => {
     
-    // Se não houver uma fonte de mídia ou um título, não renderiza a seção para evitar blocos vazios.
     if (!mediaSrc || !title) {
         return null;
     }
 
-    // Função para renderizar a mídia (imagem ou vídeo) de forma limpa.
     const renderMedia = () => {
         if (mediaType === 'video') {
             return (
@@ -18,8 +16,8 @@ const FeatureSection = ({ title, text, buttonText, buttonLink, mediaSrc, mediaTy
                     src={mediaSrc}
                     autoPlay 
                     muted
-                    loop // Adicionado loop para vídeos decorativos
-                    playsInline // Essencial para autoplay em dispositivos móveis
+                    loop
+                    playsInline
                 />
             );
         }
@@ -27,18 +25,19 @@ const FeatureSection = ({ title, text, buttonText, buttonLink, mediaSrc, mediaTy
     };
 
     return (
+        // A classe 'layout' (default/reverse) continua no wrapper principal
         <section className={`feature-section ${layout}`}>
+            {/* A ESTRUTURA INTERNA FOI REORGANIZADA PARA MAIOR CONTROLE NO CSS */}
             <div className="feature-container">
-                {/* Coluna da Mídia */}
+                <h2 className="feature-title fonte-principal">{title}</h2>
+                
                 <div className="feature-media-col">
                     {renderMedia()}
                 </div>
 
-                {/* Coluna do Texto */}
-                <div className="feature-text-col">
-                    <h2 className="feature-title fonte-principal">{title}</h2>
+                {/* Um novo wrapper apenas para o parágrafo e o botão */}
+                <div className="feature-text-content">
                     <p className="feature-text">{text}</p>
-                    {/* O botão só é renderizado se houver texto e um link */}
                     {buttonText && buttonLink && (
                         <Link to={buttonLink} className="feature-button">
                             {buttonText}

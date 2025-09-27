@@ -28,6 +28,22 @@ const Header = () => {
     }
   }, []);
 
+  // --- MUDANÇA AQUI ---
+  // Este useEffect adiciona/remove uma classe no <body> para impedir a rolagem
+  // quando o menu mobile está aberto.
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.classList.add('body-no-scroll');
+    } else {
+      document.body.classList.remove('body-no-scroll');
+    }
+    // Função de limpeza para garantir que a classe seja removida se o componente for desmontado
+    return () => {
+      document.body.classList.remove('body-no-scroll');
+    };
+  }, [isMenuOpen]);
+
+
   const menuItems = [
     { name: "HOME", path: "/" },
     { name: "GEMAS PRECIOSAS", path: "/gemas-preciosas" },
@@ -43,13 +59,10 @@ const Header = () => {
   const openAuthModal = () => setIsAuthModalOpen(true);
   const closeAuthModal = () => setIsAuthModalOpen(false);
 
-  // Função que decide para onde o botão "Plataforma" deve levar
   const handlePlatformRedirect = () => {
     if (isAuthenticated) {
-      // Se estiver logado, vai para a dashboard principal da plataforma
       navigate("/plataforma/");
     } else {
-      // Se não estiver logado, vai para a página de login
       navigate("/plataforma/login");
     }
   };
@@ -88,7 +101,6 @@ const Header = () => {
                 <span className="icon-badge">{totalItemsInCart}</span>
               )}
             </Link>
-
             {isAuthenticated ? (
               <Link to="/meus-pedidos" className="header-icon-link" title="Meus Pedidos">
                 <FaReceipt />
@@ -100,7 +112,6 @@ const Header = () => {
                 </button>
               </div>
             )}
-
             <button className="hamburger-button" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Abrir menu">
               <i className={isMenuOpen ? "fas fa-times" : "fas fa-bars"}></i>
             </button>
@@ -128,21 +139,18 @@ const Header = () => {
                 </Link>
               </li>
             ))}
-            {!isAuthenticated && (
-              <>
-                <li>
-                  <button className="mobile-auth-btn mobile-auth-login" onClick={() => { openAuthModal(); handleLinkClick(); }}>
-                    Entrar
-                  </button>
-                </li>
-                <li>
-                  <button className="mobile-auth-btn mobile-auth-register" onClick={() => { openAuthModal(); handleLinkClick(); }}>
-                    Criar Conta
-                  </button>
-                </li>
-              </>
-            )}
           </ul>
+          {/* Adicionamos um container para os botões de autenticação para melhor estilização */}
+          {!isAuthenticated && (
+            <div className="mobile-auth-container">
+              <button className="mobile-auth-btn mobile-auth-login" onClick={() => { openAuthModal(); handleLinkClick(); }}>
+                Entrar
+              </button>
+              <button className="mobile-auth-btn mobile-auth-register" onClick={() => { openAuthModal(); handleLinkClick(); }}>
+                Criar Conta
+              </button>
+            </div>
+          )}
           <button className="platform-button-mobile" onClick={() => { handlePlatformRedirect(); handleLinkClick(); }}>
             {isAuthenticated ? "Sua Plataforma" : "Conheça nossa plataforma"}
           </button>

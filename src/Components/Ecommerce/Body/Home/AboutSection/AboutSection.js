@@ -1,4 +1,3 @@
-// Dentro de src/Components/ClientView/Body/Home/AboutSection/AboutSection.js
 
 import React from 'react';
 import './AboutSection.css';
