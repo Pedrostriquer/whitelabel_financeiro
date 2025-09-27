@@ -1,9 +1,10 @@
-// src/Components/ContratosPage/GeneratedContract.js (100% Completo)
+// src/Components/ContratosPage/GenerateContract.js (Versão Corrigida e Completa)
 
 import React from "react";
 import style from "./ContratosPageStyle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileAlt } from "@fortawesome/free-solid-svg-icons";
+// Ícones para o botão de minuta e para as novas opções de verificação
+import { faFileAlt, faEnvelope, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 
 const GeneratedContract = ({
   handleBuy,
@@ -12,7 +13,10 @@ const GeneratedContract = ({
   paymentMethod,
   setPaymentMethod,
   onViewContract,
-  availablePaymentMethods, // Recebe a lista de métodos
+  availablePaymentMethods,
+  // NOVAS PROPS recebidas, sem alterar a estrutura
+  verificationMethod,
+  setVerificationMethod,
 }) => (
   <div style={style.generatedContractWrapper}>
     <button onClick={onViewContract} style={style.viewContractButton}>
@@ -20,10 +24,10 @@ const GeneratedContract = ({
       Visualizar Minuta do Contrato
     </button>
 
+    {/* SEÇÃO DE PAGAMENTO - Exatamente como era antes */}
     <div style={style.paymentSection}>
       <h4 style={style.paymentSectionH3}>Método de Pagamento</h4>
       <div style={style.paymentOptions}>
-        {/* Renderiza os botões dinamicamente a partir da lista */}
         {availablePaymentMethods && availablePaymentMethods.length > 0 ? (
           availablePaymentMethods.map((method) => {
             const isActive = paymentMethod === method.name;
@@ -57,6 +61,41 @@ const GeneratedContract = ({
       </div>
     </div>
 
+    {/* --- NOVA SEÇÃO DE VERIFICAÇÃO --- */}
+    {/* Inserida aqui, mantendo a estrutura e o estilo das outras seções */}
+    <div style={style.paymentSection}>
+      <h4 style={style.paymentSectionH3}>Enviar código por</h4>
+      <div style={style.paymentOptions}>
+        {/* Opção E-mail */}
+        <button
+          style={{
+            ...style.paymentOption,
+            ...(verificationMethod === 'EMAIL' ? style.paymentOptionActive : {}),
+          }}
+          onClick={() => setVerificationMethod('EMAIL')}
+        >
+          <FontAwesomeIcon icon={faEnvelope} style={style.paymentOptionIcon} />
+          E-mail
+        </button>
+
+        {/* Opção WhatsApp */}
+        <button
+          style={{
+            ...style.paymentOption,
+            ...(verificationMethod === 'WHATSAPP' ? style.paymentOptionActive : {}),
+          }}
+          onClick={() => setVerificationMethod('WHATSAPP')}
+        >
+           {/* Usando um ícone do FontAwesome para WhatsApp */}
+          <i className="fa-brands fa-whatsapp" style={style.paymentOptionIcon}></i>
+          WhatsApp
+        </button>
+      </div>
+    </div>
+    {/* --- FIM DA NOVA SEÇÃO --- */}
+
+
+    {/* SEÇÃO DE TERMOS - Exatamente como era antes */}
     <div style={style.termsCheckbox}>
       <input
         type="checkbox"
@@ -68,6 +107,7 @@ const GeneratedContract = ({
       <label htmlFor="terms">Li e concordo com os termos do contrato.</label>
     </div>
 
+    {/* BOTÃO DE FINALIZAR - Exatamente como era antes */}
     <button
       onClick={handleBuy}
       style={style.buyButton}
