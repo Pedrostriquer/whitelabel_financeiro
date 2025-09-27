@@ -1,4 +1,3 @@
-// Dentro de src/Components/ClientView/Body/Home/FaqSection/FaqSection.js
 
 import React, { useState } from 'react';
 import './FaqSection.css';

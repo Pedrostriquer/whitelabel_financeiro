@@ -1,4 +1,3 @@
-/* Dentro de src/Components/ClientView/Body/Home/ReviewsSection/ReviewsSection.css */
 
 .reviews-wrapper {
     background-color: #f0f2f5;
@@ -116,4 +115,27 @@
 .nav-dot.active {
     background-color: #122C4F;
     transform: scale(1.2);
+}
+
+/* ... (seu CSS existente) ... */
+
+/* Adicionando a Media Query para mobile */
+@media (max-width: 768px) {
+    .reviews-wrapper {
+        /* ESPAÇAMENTO REDUZIDO */
+        padding: 50px 20px;
+    }
+
+    .reviews-title {
+        /* TÍTULO MENOR */
+        font-size: 1.8em;
+    }
+
+    .review-card {
+        padding: 30px;
+    }
+
+    .review-comment {
+        font-size: 1.05em;
+    }
 }

@@ -1,5 +1,4 @@
-/* src/Components/ClientView/Header/Header.css */
-
+/* --- ESTILOS GLOBAIS DO HEADER (sem grandes mudanças) --- */
 .header-container {
     width: 100%;
     background-color: #FFFFFF;
@@ -15,168 +14,36 @@
     padding: 15px 40px;
 }
 
-.header-left,
-.header-right {
-    flex: 1;
+/* ... (outros estilos de desktop que já estavam bons permanecem aqui) ... */
+.header-left, .header-right { flex: 1; }
+.header-left { display: flex; justify-content: flex-start; }
+.header-center { flex-shrink: 0; }
+.header-logo { height: 63px; object-fit: contain; display: block; }
+.header-right { display: flex; justify-content: flex-end; align-items: center; gap: 25px; }
+.platform-button { background-color: #122C4F; color: #FFFFFF; border: none; padding: 8px 16px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 14px; cursor: pointer; transition: background-color 0.3s ease; }
+.platform-button:hover { background-color: #1a3c6d; }
+.header-icon-link { position: relative; color: #122C4F; font-size: 1.5em; text-decoration: none; transition: transform 0.2s ease; }
+.header-icon-link:hover { transform: scale(1.1); }
+.icon-badge { position: absolute; top: -5px; right: -10px; background-color: #c0392b; color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.6em; font-family: 'Poppins', sans-serif; font-weight: bold; border: 2px solid #FFFFFF; }
+.auth-buttons-container { display: flex; align-items: center; gap: 12px; }
+.auth-btn { font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 14px; padding: 8px 18px; border-radius: 20px; text-decoration: none; cursor: pointer; transition: all 0.3s ease; border: 2px solid #122C4F; white-space: nowrap; }
+.login-btn { background-color: transparent; color: #122C4F; }
+.login-btn:hover { background-color: #f8f9fa; }
+.register-btn { background-color: #122C4F; color: #FFFFFF; }
+.register-btn:hover { background-color: #1a3c6d; border-color: #1a3c6d; }
+.header-nav-desktop { background-color: #f8f9fa; padding: 15px 0; display: flex; justify-content: center; }
+.header-nav-desktop ul { display: flex; list-style: none; gap: 70px; margin: 0; padding: 0; }
+.header-nav-desktop a { font-family: 'Helnore', serif; font-weight: normal; font-size: 1.3em; color: #122C4F; text-decoration: none; padding-bottom: 5px; position: relative; }
+.header-nav-desktop a::after { content: ''; position: absolute; width: 100%; height: 2px; background-color: #122C4F; bottom: 0; left: 0; transform: scaleX(0); transform-origin: center; transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1); }
+.header-nav-desktop a:hover::after, .header-nav-desktop a.active-link::after { transform: scaleX(1); }
+
+/* --- ✨ MELHORIAS PARA O MENU MOBILE ✨ --- */
+
+/* 1. CLASSE PARA BLOQUEAR A ROLAGEM */
+.body-no-scroll {
+    overflow: hidden;
 }
 
-.header-left {
-    display: flex;
-    justify-content: flex-start;
-}
-
-.header-center {
-    flex-shrink: 0;
-}
-
-.header-logo {
-    height: 63px;
-    object-fit: contain;
-    display: block;
-}
-
-.header-right {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 25px;
-    /* Espaçamento entre os ícones e o menu */
-}
-
-.platform-button {
-    background-color: #122C4F;
-    color: #FFFFFF;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.platform-button:hover {
-    background-color: #1a3c6d;
-}
-
-/* --- ESTILOS UNIFICADOS PARA ÍCONES E BADGES --- */
-.header-icon-link {
-    position: relative;
-    color: #122C4F;
-    font-size: 1.5em;
-    text-decoration: none;
-    transition: transform 0.2s ease;
-}
-
-.header-icon-link:hover {
-    transform: scale(1.1);
-}
-
-.icon-badge {
-    position: absolute;
-    top: -5px;
-    right: -10px;
-    background-color: #c0392b;
-    color: white;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 0.6em;
-    font-family: 'Poppins', sans-serif;
-    font-weight: bold;
-    border: 2px solid #FFFFFF;
-}
-
-/* --- ✨ NOVOS ESTILOS PARA BOTÕES DE AUTENTICAÇÃO ✨ --- */
-.auth-buttons-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.auth-btn {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-    padding: 8px 18px;
-    border-radius: 20px;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: 2px solid #122C4F;
-    white-space: nowrap;
-    /* Impede que o texto quebre */
-}
-
-.login-btn {
-    background-color: transparent;
-    color: #122C4F;
-}
-
-.login-btn:hover {
-    background-color: #f8f9fa;
-}
-
-.register-btn {
-    background-color: #122C4F;
-    color: #FFFFFF;
-}
-
-.register-btn:hover {
-    background-color: #1a3c6d;
-    border-color: #1a3c6d;
-}
-
-
-/* --- Navegação de Desktop --- */
-.header-nav-desktop {
-    background-color: #f8f9fa;
-    padding: 15px 0;
-    display: flex;
-    justify-content: center;
-}
-
-.header-nav-desktop ul {
-    display: flex;
-    list-style: none;
-    gap: 70px;
-    margin: 0;
-    padding: 0;
-}
-
-.header-nav-desktop a {
-    font-family: 'Helnore', serif;
-    font-weight: normal;
-    font-size: 1.3em;
-    color: #122C4F;
-    text-decoration: none;
-    padding-bottom: 5px;
-    position: relative;
-}
-
-.header-nav-desktop a::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 2px;
-    background-color: #122C4F;
-    bottom: 0;
-    left: 0;
-    transform: scaleX(0);
-    transform-origin: center;
-    transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-}
-
-.header-nav-desktop a:hover::after,
-.header-nav-desktop a.active-link::after {
-    transform: scaleX(1);
-}
-
-/* --- ESTILOS PARA MOBILE --- */
 .hamburger-button {
     display: none;
     background: none;
@@ -184,74 +51,118 @@
     font-size: 1.8em;
     color: #122C4F;
     cursor: pointer;
+    z-index: 2001; /* Garante que o botão fique acima de outros elementos */
 }
 
+/* 2. NOVA ANIMAÇÃO DE SLIDE-IN */
 .mobile-nav-overlay {
     position: fixed;
+    top: 0; /* Começa do topo da página */
     left: 0;
     width: 100%;
+    height: 100vh; /* Ocupa a altura total */
     background-color: #FFFFFF;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    
+    /* 3. LAYOUT MAIS INTUITIVO */
+    align-items: flex-start; /* Alinha itens à esquerda */
+    justify-content: flex-start; /* Começa do topo */
+    padding: 100px 40px 40px 40px; /* Espaçamento interno (mais no topo) */
+
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateX(100%); /* Começa fora da tela, à direita */
     pointer-events: none;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.2, 1, 0.3, 1), opacity 0.4s ease;
+    overflow-y: auto; /* Permite rolar o menu se o conteúdo for grande */
 }
 
 .mobile-nav-overlay.open {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0); /* Desliza para a posição 0 */
     pointer-events: auto;
 }
 
 .mobile-nav-overlay ul {
     list-style: none;
-    text-align: center;
+    text-align: left;
     padding: 0;
+    width: 100%; /* Ocupa a largura toda */
 }
 
 .mobile-nav-overlay li {
-    margin-bottom: 40px;
+    /* 4. TAMANHOS E ESPAÇAMENTOS MAIS AGRADÁVEIS */
+    margin-bottom: 25px;
 }
 
 .mobile-nav-overlay a {
     font-family: 'Helnore', serif;
-    font-size: 2.5em;
+    font-size: 1.8em; /* Fonte menor e mais elegante */
     color: #122C4F;
     text-decoration: none;
+    transition: opacity 0.2s ease;
 }
 
-.platform-button-mobile {
+.mobile-nav-overlay a:hover {
+    opacity: 0.7;
+}
+
+/* 5. NOVOS ESTILOS PARA OS BOTÕES DE AUTENTICAÇÃO */
+.mobile-auth-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    margin-top: 10px; /* Espaço após os links de navegação */
+    padding-top: 25px;
+    border-top: 1px solid #e9ecef; /* Linha sutil de separação */
+}
+
+.mobile-auth-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1em;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid #122C4F;
+    transition: all 0.2s ease;
+}
+
+.mobile-auth-login {
+    background-color: transparent;
+    color: #122C4F;
+}
+
+.mobile-auth-register {
     background-color: #122C4F;
     color: #FFFFFF;
+}
+
+/* Botão da plataforma no final do menu */
+.platform-button-mobile {
+    background-color: transparent;
+    color: #122C4F;
     border: none;
-    padding: 15px 35px;
-    border-radius: 30px;
+    padding: 15px 0; /* Aumenta a área de clique */
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
     font-size: 1.1em;
     cursor: pointer;
-    margin-top: 20px;
+    margin-top: auto; /* Empurra para o final do menu */
+    align-self: flex-start; /* Alinha à esquerda */
 }
 
-
 /* --- Media Queries para Responsividade --- */
-
 @media (max-width: 1100px) {
-    .header-nav-desktop ul {
-        gap: 40px;
-    }
+    .header-nav-desktop ul { gap: 40px; }
 }
 
 @media (max-width: 900px) {
-
     .header-nav-desktop,
     .platform-button,
     .auth-buttons-container {
-        /* Esconde os botões de login no mobile */
         display: none;
     }
 
@@ -259,51 +170,16 @@
         display: block;
     }
 
-    .header-top-row {
-        padding: 15px 20px;
-    }
-
-    .header-logo {
-        height: 53px;
-    }
-
-    .header-left,
-    .header-right {
-        flex: none;
-    }
-
-    .header-left {
-        justify-content: flex-start;
-        width: 60px;
-    }
-
-    .header-right {
-        justify-content: flex-end;
-        width: auto;
-    }
-
-    .header-center {
-        flex: 1;
-        display: flex;
-        justify-content: center;
-    }
+    .header-top-row { padding: 15px 20px; }
+    .header-logo { height: 53px; }
+    .header-left { display: none; } /* Simplifica o layout escondendo a div da esquerda */
+    .header-center { flex: 1; display: flex; justify-content: flex-start; } /* Logo vai para a esquerda */
+    .header-right { flex: none; } /* Apenas o espaço necessário para os ícones */
 }
 
 @media (max-width: 480px) {
-    .header-right {
-        gap: 20px;
-    }
-
-    .header-logo {
-        height: 48px;
-        margin-right: 3px;
-    }
-
-    .mobile-nav-overlay a {
-        font-size: 2em;
-    }
-
-    .mobile-nav-overlay li {
-        margin-bottom: 30px;
-    }
+    .header-right { gap: 15px; } /* Menos espaço entre ícones */
+    .header-logo { height: 48px; }
+    .mobile-nav-overlay a { font-size: 1.6em; }
+    .mobile-nav-overlay li { margin-bottom: 20px; }
 }
