@@ -1,3 +1,4 @@
+// src/Components/Ecommerce/Body/Ecommerce/CartPage/CartPage.js
 import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useCart } from "../../../../../Context/CartContext";
 import { useAuth } from "../../../../../Context/AuthContext";
@@ -10,8 +11,8 @@ import Modal from "../../AuthModal/Modal";
 import PaymentModal from "./PaymentModal";
 import PayModal from "../../../../PayModal/PayModal";
 import VerificationModal from "./VerificationModal";
-import CreditCardModal from "../../../../CreditCardModal/CreditCardModal"; // IMPORTADO
-import { translateMercadoPagoError } from "../../../../../formatServices/mercadoPagoErrorTranslator"; // IMPORTADO
+import CreditCardModal from "../../../../CreditCardModal/CreditCardModal";
+import { translateMercadoPagoError } from "../../../../../formatServices/mercadoPagoErrorTranslator";
 import "./CartPage.css";
 import { FaPlus, FaMinus, FaTrashAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -53,14 +54,17 @@ const CartPage = () => {
   const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
   const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
   const [isPayModalVisible, setIsPayModalVisible] = useState(false);
-  const [isCreditCardModalOpen, setIsCreditCardModalOpen] = useState(false); // NOVO
-  const [creditCardModalKey, setCreditCardModalKey] = useState(0); // NOVO
+  const [isCreditCardModalOpen, setIsCreditCardModalOpen] = useState(false);
+  const [creditCardModalKey, setCreditCardModalKey] = useState(0);
 
   // Estados para os detalhes do pagamento gerado
   const [paymentGeneratedDetails, setPaymentGeneratedDetails] = useState(null);
   const [paymentGeneratedValue, setPaymentGeneratedValue] = useState(0);
   const [paymentGeneratedMethod, setPaymentGeneratedMethod] = useState("");
-  const [creditCardFormData, setCreditCardFormData] = useState(null); // NOVO
+  const [creditCardFormData, setCreditCardFormData] = useState(null);
+  
+  // NOVO ESTADO: Armazena o método de verificação escolhido pelo usuário ('EMAIL' ou 'WHATSAPP')
+  const [chosenVerificationMethod, setChosenVerificationMethod] = useState("EMAIL");
 
   const calculateSalePrice = (product) => {
     const promotion = getPromotionForProduct(product.id);
@@ -82,21 +86,25 @@ const CartPage = () => {
   );
   const totalDiscount = originalSubtotal - subtotalWithDiscount;
 
-  // Calcula o valor restante a ser pago com o método secundário (PIX, Cartão, etc)
   const remainingAmountToPay = useMemo(() => {
-    // Acessa o valor do saldo usado através da ref
     const balanceUsed = paymentDetailsRef.current?.platformBalanceWithdrawn || 0;
     return Math.max(0, subtotalWithDiscount - balanceUsed);
-  }, [subtotalWithDiscount, isCreditCardModalOpen]); // Recalcula se o total ou a visibilidade modal do cartão mudar
+  }, [subtotalWithDiscount, isCreditCardModalOpen]);
 
-  // Função centralizada para enviar o código de verificação
-  const sendVerificationCode = async () => {
+  // ATUALIZADO: Função centralizada que agora decide qual API chamar
+  const sendVerificationCode = async (method) => {
     setIsSubmitting(true);
     try {
       startLoading();
-      await verificationCodeService.enviarCodigoDeVerificacao(token);
-      toast.success("Código de verificação enviado para o seu e-mail!");
-      setIsVerificationModalOpen(true);
+      if (method === "WHATSAPP") {
+        await verificationCodeService.enviarCodigoPorWhatsapp(token);
+        toast.success("Código de verificação enviado para o seu WhatsApp!");
+      } else {
+        // O padrão é e-mail
+        await verificationCodeService.enviarCodigoDeVerificacao(token);
+        toast.success("Código de verificação enviado para o seu e-mail!");
+      }
+      setIsVerificationModalOpen(true); // Abre o modal de verificação após o envio
     } catch (error) {
       toast.error(
         error.response?.data?.message || "Não foi possível enviar o código."
@@ -107,29 +115,30 @@ const CartPage = () => {
     }
   };
 
-  // Função que decide o fluxo após a seleção de pagamento
+  // ATUALIZADO: Recebe todos os detalhes do PaymentModal, incluindo o método de verificação
   const handlePaymentMethodSelection = async (paymentDetails) => {
     paymentDetailsRef.current = paymentDetails;
-    setIsPaymentModalVisible(false); // Fecha o modal de seleção de pagamento
+    setChosenVerificationMethod(paymentDetails.verificationMethod); // Armazena o método escolhido no estado
+    setIsPaymentModalVisible(false);
 
     // Se o método for CARTAO, abre o modal de cartão de crédito.
-    // O envio do código de verificação ocorrerá *depois* que os dados do cartão forem coletados.
+    // O envio do código ocorrerá *depois* que os dados do cartão forem coletados.
     if (paymentDetails.paymentMethod === "CARTAO") {
       setIsCreditCardModalOpen(true);
     } else {
-      // Para todos os outros métodos (PIX, Boleto, Saldo), envia o código de verificação diretamente.
-      await sendVerificationCode();
+      // Para outros métodos, envia o código de verificação diretamente usando o método escolhido.
+      await sendVerificationCode(paymentDetails.verificationMethod);
     }
   };
   
-  // Função chamada quando os dados do cartão são validados pelo Mercado Pago
+  // ATUALIZADO: Continua o fluxo usando o método de verificação já salvo
   const handleCreditCardDataSubmitted = (formData) => {
-    setCreditCardFormData(formData); // Armazena os dados do cartão
-    setIsCreditCardModalOpen(false); // Fecha o modal do cartão
-    sendVerificationCode(); // Continua o fluxo enviando o código de verificação
+    setCreditCardFormData(formData);
+    setIsCreditCardModalOpen(false);
+    // Chama a função de envio com o método que já foi definido e salvo no paymentDetailsRef
+    sendVerificationCode(paymentDetailsRef.current.verificationMethod);
   };
 
-  // Função principal que cria a venda após o código de verificação
   const processSale = useCallback(
     async (verificationCode) => {
       if (!user) {
@@ -146,11 +155,10 @@ const CartPage = () => {
           productId: item.product.id,
           quantity: item.quantity,
         })),
-        ...paymentDetailsRef.current, // Adiciona detalhes do pagamento (saldo usado, método)
+        ...paymentDetailsRef.current, // Adiciona detalhes do pagamento (saldo, método, etc)
         verificationCode: verificationCode,
       };
 
-      // Se o método for CARTAO, adiciona os dados do cartão ao objeto da venda
       if (paymentDetailsRef.current?.paymentMethod === "CARTAO") {
         if (!creditCardFormData) {
           toast.error("Dados do cartão não encontrados. Tente novamente.");
@@ -164,7 +172,6 @@ const CartPage = () => {
         startLoading();
         const response = await saleServices.createSale(saleData, token);
 
-        // Processa a resposta do backend
         const paymentMethod = response.paymentMethod?.toUpperCase();
         
         if (paymentMethod === "CARTAO" && response.status === "approved") {
@@ -181,7 +188,6 @@ const CartPage = () => {
           setPaymentGeneratedMethod(paymentMethod);
           setIsPayModalVisible(true);
         } else {
-          // Caso de sucesso para pagamento integral com saldo ou outros métodos
           toast.success("Compra finalizada com sucesso!");
           await clearCart();
           navigate("/meus-pedidos");
@@ -194,10 +200,9 @@ const CartPage = () => {
         const friendlyMessage = translateMercadoPagoError(rawBackendError);
         toast.error(friendlyMessage);
 
-        // Se o erro foi no cartão, reabre o modal para o usuário tentar novamente
         if (paymentDetailsRef.current?.paymentMethod === "CARTAO") {
           setCreditCardFormData(null);
-          setCreditCardModalKey((prevKey) => prevKey + 1); // Força remontagem do modal
+          setCreditCardModalKey((prevKey) => prevKey + 1);
           setIsCreditCardModalOpen(true);
         }
       } finally {
@@ -218,7 +223,6 @@ const CartPage = () => {
     ]
   );
   
-  // Lógica para iniciar o checkout
   const handleCheckout = () => {
     if (
       !shippingAddress.street ||
@@ -241,7 +245,6 @@ const CartPage = () => {
     setIsPaymentModalVisible(true);
   };
     
-  // Continua o checkout após o login
   useEffect(() => {
     if (isCheckoutPending && user && token && !hasProcessedOrder.current) {
       hasProcessedOrder.current = true;
@@ -250,7 +253,6 @@ const CartPage = () => {
     }
   }, [isCheckoutPending, user, token]);
 
-  // Funções de controle dos modais
   const handleAuthModalClose = () => {
     setIsAuthModalVisible(false);
     if (!user) {
@@ -464,7 +466,6 @@ const CartPage = () => {
         />
       )}
 
-      {/* MODAL DE CARTÃO DE CRÉDITO */}
       <CreditCardModal
         key={creditCardModalKey}
         isOpen={isCreditCardModalOpen}
@@ -473,11 +474,13 @@ const CartPage = () => {
         onPaymentDataSubmit={handleCreditCardDataSubmitted}
       />
 
+      {/* ATUALIZADO: Passa a prop 'verificationMethod' para o modal de verificação */}
       <VerificationModal
         isOpen={isVerificationModalOpen}
         onClose={() => setIsVerificationModalOpen(false)}
         onSubmit={processSale}
         isLoading={isSubmitting}
+        verificationMethod={chosenVerificationMethod}
       />
 
       {isPayModalVisible && (

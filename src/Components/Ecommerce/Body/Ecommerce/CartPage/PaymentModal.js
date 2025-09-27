@@ -1,6 +1,8 @@
+// src/Components/Ecommerce/Body/Ecommerce/CartPage/PaymentModal.js
 import React, { useState, useMemo, useEffect } from "react";
 import "./PaymentModal.css";
-import { FaBarcode, FaLandmark, FaCreditCard } from "react-icons/fa"; // Ícone de cartão importado
+// Ícones de verificação e cartão importados
+import { FaBarcode, FaLandmark, FaCreditCard, FaEnvelope, FaWhatsapp } from "react-icons/fa"; 
 import { FaPix } from "react-icons/fa6";
 import { useAuth } from "../../../../../Context/AuthContext";
 import clientServices from "../../../../../dbServices/clientServices";
@@ -12,10 +14,11 @@ const PaymentModal = ({ isVisible, onClose, onSubmit, orderSummary }) => {
   const [isLoadingBalance, setIsLoadingBalance] = useState(true);
   const [usePlatformBalance, setUsePlatformBalance] = useState(false);
   const [balanceToUseInput, setBalanceToUseInput] = useState("");
-
-  // Define "PIX" como o método de pagamento padrão inicial
   const [paymentMethod, setPaymentMethod] = useState("PIX");
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  // NOVO ESTADO: para controlar o método de verificação, com 'EMAIL' como padrão
+  const [verificationMethod, setVerificationMethod] = useState("EMAIL"); 
 
   // Efeito para buscar o saldo da carteira do usuário quando o modal se torna visível
   useEffect(() => {
@@ -125,9 +128,9 @@ const PaymentModal = ({ isVisible, onClose, onSubmit, orderSummary }) => {
     const paymentDetails = {
       usedPlatformBalance: usePlatformBalance && actualBalanceToUse > 0,
       platformBalanceWithdrawn: usePlatformBalance ? actualBalanceToUse : 0,
-      // Se o pagamento for integral com saldo, o método é 'PLATFORM_BALANCE'
-      // Caso contrário, usa o método secundário selecionado (PIX, CARTAO, etc.)
       paymentMethod: isFullPaymentWithBalance ? "PLATFORM_BALANCE" : paymentMethod,
+      // ADICIONADO: Inclui o método de verificação escolhido no objeto
+      verificationMethod: verificationMethod, 
     };
     
     // Chama a função `onSubmit` passada pelo `CartPage`
@@ -170,7 +173,7 @@ const PaymentModal = ({ isVisible, onClose, onSubmit, orderSummary }) => {
                 </span>
                 <span>
                   {formatCurrency(
-                    isFullPaymentWithBalance ? 0 : remainingAmount
+                    isFullPaymentWithBalance ? orderTotal : remainingAmount // Mostra o total se for pago com saldo
                   )}
                 </span>
               </div>
@@ -234,7 +237,6 @@ const PaymentModal = ({ isVisible, onClose, onSubmit, orderSummary }) => {
               )}
             </div>
             
-            {/* Seção de pagamento secundário, mostrada apenas se o saldo não cobrir o total */}
             {!isFullPaymentWithBalance && (
               <div className="secondary-payment-section">
                 <h4>Pagar o restante com</h4>
@@ -257,7 +259,6 @@ const PaymentModal = ({ isVisible, onClose, onSubmit, orderSummary }) => {
                     <FaBarcode size={24} />
                     <span>Boleto</span>
                   </div>
-                  {/* NOVA OPÇÃO DE CARTÃO DE CRÉDITO */}
                   <div
                     className={`method-box ${
                       paymentMethod === "CARTAO" ? "active" : ""
@@ -280,7 +281,6 @@ const PaymentModal = ({ isVisible, onClose, onSubmit, orderSummary }) => {
               </div>
             )}
 
-            {/* Mensagem mostrada quando o saldo cobre o valor total da compra */}
             {isFullPaymentWithBalance && (
               <div className="full-payment-message">
                 <p>
@@ -289,6 +289,31 @@ const PaymentModal = ({ isVisible, onClose, onSubmit, orderSummary }) => {
                 </p>
               </div>
             )}
+
+            {/* NOVA SEÇÃO: Escolha do método de verificação */}
+            <div className="verification-method-section">
+                <h4>Enviar código de verificação por</h4>
+                <div className="payment-methods">
+                   <div
+                    className={`method-box ${
+                      verificationMethod === "EMAIL" ? "active" : ""
+                    }`}
+                    onClick={() => setVerificationMethod("EMAIL")}
+                  >
+                    <FaEnvelope size={24} />
+                    <span>E-mail</span>
+                  </div>
+                  <div
+                    className={`method-box ${
+                      verificationMethod === "WHATSAPP" ? "active" : ""
+                    }`}
+                    onClick={() => setVerificationMethod("WHATSAPP")}
+                  >
+                    <FaWhatsapp size={24} />
+                    <span>WhatsApp</span>
+                  </div>
+                </div>
+            </div>
           </div>
         </div>
         <div className="payment-modal-footer">
