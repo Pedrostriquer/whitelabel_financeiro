@@ -54,7 +54,7 @@ const Footer = () => {
         <div className="footer-column">
           <h3 className="footer-title fonte-principal">Entre em Contato</h3>
 
-          {/* LÓGICA CORRIGIDA PARA EXIBIR OS TELEFONES DO ARRAY */}
+          {/* Lógica para exibir os telefones do array */}
           {footerData.phones &&
             footerData.phones.map(
               (phone, index) =>
@@ -71,7 +71,28 @@ const Footer = () => {
             </a>
           )}
 
-          {footerData.addressLink && (
+          {/* MODIFICADO: Lógica para exibir múltiplos endereços */}
+          {footerData.addresses &&
+            footerData.addresses
+              .filter(address => address.show && address.link) // Filtra para mostrar apenas os selecionados e com link
+              .map((address, index) => (
+                <a
+                  key={index}
+                  href={address.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="footer-link"
+                >
+                  <i
+                    className="fas fa-map-marker-alt"
+                    style={{ marginRight: "8px" }}
+                  ></i>
+                  {address.title || "Nosso Endereço"}
+                </a>
+              ))}
+          
+          {/* Fallback para o endereço antigo, caso a migração ainda não tenha ocorrido */}
+          {!footerData.addresses && footerData.addressLink && (
             <a
               href={footerData.addressLink}
               target="_blank"
