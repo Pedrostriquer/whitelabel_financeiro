@@ -17,3 +17,7 @@ code {
   font-family: 'Headline';
   src: url('../public/fonts/Headline.ttf') format('truetype');
 }
+
+html, body, #root {
+  overscroll-behavior: none;
+}

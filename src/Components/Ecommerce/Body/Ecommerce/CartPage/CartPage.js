@@ -1,4 +1,5 @@
-// src/Components/Ecommerce/Body/Ecommerce/CartPage/CartPage.js
+// src/Components/Ecommerce/Body/Ecommerce/CartPage/CartPage.js (VERSÃO ANTERIOR RESTAURADA)
+
 import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useCart } from "../../../../../Context/CartContext";
 import { useAuth } from "../../../../../Context/AuthContext";
@@ -149,21 +150,8 @@ const CartPage = () => {
         navigate("/meus-pedidos");
       } else if (response.pixDetails || response.boletoDetails) {
         toast.success("Pedido criado! Finalize o pagamento.");
-        
-        const rawDetails = response.pixDetails || response.boletoDetails;
-        let finalDetails = rawDetails;
-
-        if (paymentMethod === "PIX" && rawDetails.mercadoPagoResponseObject) {
-            const transactionData = rawDetails.mercadoPagoResponseObject?.point_of_interaction?.transaction_data;
-            
-            finalDetails = {
-                ...rawDetails,
-                qrCodeBase64Image: transactionData?.qr_code_base64,
-                qrCodePayload: transactionData?.qr_code,
-            };
-        }
-
-        setPaymentGeneratedDetails(finalDetails);
+        const details = response.pixDetails || response.boletoDetails;
+        setPaymentGeneratedDetails(details);
         setPaymentGeneratedValue(response.sale.totalValue - response.sale.platformBalanceWithdrawn);
         setPaymentGeneratedMethod(paymentMethod);
         setIsPayModalVisible(true);
