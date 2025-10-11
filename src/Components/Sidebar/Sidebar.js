@@ -11,6 +11,9 @@ export default function Sidebar({ navItems = [], loading = false }) {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
+  // Estado para o pop-up de ajuda
+  const [isHelpPopupVisible, setHelpPopupVisible] = useState(false);
+
   const [hoveredLink, setHoveredLink] = useState("");
   const [openSubMenu, setOpenSubMenu] = useState("");
   const location = useLocation();
@@ -278,21 +281,45 @@ export default function Sidebar({ navItems = [], loading = false }) {
         </ul>
 
         <div style={style.sidebarFooter}>
-          <div
-            style={
-              hoveredLink === "Logout"
-                ? { ...style.navLink, ...style.navLinkActive }
-                : style.navLink
-            }
-            onMouseEnter={() => setHoveredLink("Logout")}
-            onMouseLeave={() => setHoveredLink("")}
-            onClick={handleLogout}
-          >
-            <i
-              className="fa-solid fa-right-from-bracket"
-              style={style.navLinkIcon}
-            ></i>
-            <span style={linkTextStyle}>Sair</span>
+           {isHelpPopupVisible && (
+            <div style={style.helpPopup}>
+              <p style={style.popupText}>Precisa de alguma ajuda com a plataforma?</p>
+              <a 
+                href="https://api.whatsapp.com/send?phone=5508000004998" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                style={style.whatsappButton}
+              >
+                <i className="fa-brands fa-whatsapp" style={{ marginRight: '8px' }}></i>
+                <span>WhatsApp</span>
+              </a>
+            </div>
+          )}
+
+          <div style={style.footerContent}>
+            <div
+              style={
+                hoveredLink === "Logout"
+                  ? { ...style.navLink, ...style.navLinkActive, flex: 1 }
+                  : { ...style.navLink, flex: 1 }
+              }
+              onMouseEnter={() => setHoveredLink("Logout")}
+              onMouseLeave={() => setHoveredLink("")}
+              onClick={handleLogout}
+            >
+              <i
+                className="fa-solid fa-right-from-bracket"
+                style={style.navLinkIcon}
+              ></i>
+              <span style={linkTextStyle}>Sair</span>
+            </div>
+
+            <button 
+              style={style.helpButton}
+              onClick={() => setHelpPopupVisible(!isHelpPopupVisible)}
+            >
+              <i className="fa-solid fa-question-circle"></i>
+            </button>
           </div>
         </div>
       </nav>

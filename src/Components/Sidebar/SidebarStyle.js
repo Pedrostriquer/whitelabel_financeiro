@@ -148,11 +148,67 @@ const style = {
     pointerEvents: "none",
   },
   sidebarFooter: {
+    position: "relative", // Necessário para posicionar o pop-up
     paddingTop: "10px",
     marginTop: "auto",
     borderTop: `1px solid ${colors.activeBg}`,
   },
-
+  // --- NOVOS ESTILOS PARA O FOOTER E AJUDA ---
+  footerContent: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  helpButton: {
+    background: "transparent",
+    border: "none",
+    color: colors.text,
+    fontSize: "1.6rem",
+    cursor: "pointer",
+    width: "50px",
+    height: "50px",
+    borderRadius: "6px",
+    marginLeft: "10px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    transition: "background-color 0.3s ease",
+  },
+  helpPopup: {
+    position: "absolute",
+    bottom: "calc(100% + 10px)", // Posiciona acima do footer
+    left: "0",
+    width: "100%",
+    backgroundColor: "#ffffff",
+    color: "#333",
+    padding: "20px",
+    borderRadius: "8px",
+    boxShadow: "0 -4px 15px rgba(0,0,0,0.2)",
+    textAlign: "center",
+    marginBottom: "10px",
+    zIndex: 1100,
+    boxSizing: "border-box",
+  },
+  popupText: {
+    margin: "0 0 15px 0",
+    fontSize: "1rem",
+    color: "#122C4F",
+  },
+  whatsappButton: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#25D366",
+    color: "#fff",
+    padding: "10px 20px",
+    borderRadius: "50px",
+    textDecoration: "none",
+    fontWeight: "bold",
+    fontSize: "1rem",
+    border: "none",
+    cursor: "pointer",
+    transition: "background-color 0.3s ease",
+  },
   // --- ESTILOS PARA MOBILE ---
   mobileMenuIcon: {
     position: "fixed",
