@@ -1,8 +1,6 @@
-// /src/Components/Register/RegisterStyle.js
-
 const colors = {
-  primary: "#007bff",
-  primaryDark: "#0056b3",
+  primary: '#122C4F',      // Cor primária alinhada com a tela de Login
+  primaryDark: '#0e223c', // Um tom mais escuro
   background: "#f0f2f5",
   white: "#fff",
   textDark: "#333",
@@ -21,19 +19,38 @@ const style = {
     justifyContent: "center",
     minHeight: "100vh",
     backgroundColor: colors.background,
-    padding: "40px 20px",
+    padding: "10px 20px",
     fontFamily: "'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif",
     boxSizing: "border-box",
   },
   registerContainer: {
     width: "100%",
     maxWidth: "850px",
-    backgroundColor: colors.white,
     borderRadius: "10px",
     boxShadow: `0 10px 30px ${colors.shadow}`,
-    padding: "40px 50px",
+    padding: "0", 
     boxSizing: "border-box",
     transition: "height 0.4s ease-in-out",
+    overflow: 'hidden',
+  },
+  headerPanel: {
+    background: `linear-gradient(135deg, ${colors.primary}, ${colors.primaryDark})`,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '0px 0px 10px 0px',
+  },
+  logoWrapper: {
+    transform: 'scale(0.75)', 
+    lineHeight: 0, 
+  },
+  formWrapper: {
+    padding: '20px 30px 20px 30px',
+    backgroundColor: colors.white,
+    borderTopLeftRadius: '15px',
+    borderTopRightRadius: '15px',
+    marginTop: '-10px',
+    position: 'relative',
   },
   form: {
     width: "100%",
@@ -46,7 +63,7 @@ const style = {
     alignItems: "center",
     marginBottom: "40px",
     width: "80%",
-    margin: "0 auto 40px auto",
+    margin: "0 auto 0px auto",
   },
   progressLine: {
     position: "absolute",
@@ -112,12 +129,14 @@ const style = {
   },
   formRow: {
     display: "flex",
+    flexWrap: "wrap",
     gap: "20px",
     marginBottom: "20px",
   },
   formField: {
     flex: 1,
     position: "relative",
+    minWidth: "250px",
   },
   docTypeToggle: { display: "flex", gap: "10px", marginBottom: "5px" },
   docLabel: { fontSize: "0.9rem", color: colors.textLight, cursor: "pointer" },
@@ -139,21 +158,8 @@ const style = {
     outline: "none",
     color: colors.textLight,
   },
-  nameFieldContainer: {
-    position: "relative",
-    display: "flex",
-    alignItems: "center",
-    width: "100%",
-  },
-  nameSpinner: {
-    position: "absolute",
-    right: "15px",
-    animation: "spin 1s linear infinite",
-    fontSize: "1rem",
-    color: colors.primary,
-  },
   validateCpfButton: {
-    padding: "12px 20px",
+    padding: "6px 10px",
     backgroundColor: colors.primary,
     color: colors.white,
     border: "none",
@@ -184,7 +190,7 @@ const style = {
     color: colors.textLight,
     backgroundColor: colors.white,
   },
-  contactGroup: { display: "flex", gap: "10px", minWidth: 300 },
+  contactGroup: { display: "flex", gap: "10px" },
   countryCodeSelect: {
     flex: "0 0 120px",
     padding: "12px 10px",
@@ -216,7 +222,7 @@ const style = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: "30px",
+    marginTop: "20px",
   },
   navButton: {
     padding: "12px 30px",
@@ -246,16 +252,22 @@ const style = {
     minWidth: "150px",
     minHeight: "48px",
   },
-  successButton: {
-    backgroundColor: colors.success,
-    cursor: "default",
-  },
   errorMessage: {
     color: colors.error,
     fontSize: "0.9rem",
     textAlign: "center",
     marginBottom: "15px",
+    marginTop: "15px",
     minHeight: "20px",
+  },
+  loginLink: {
+      fontSize: "0.9rem",
+      color: colors.textLight,
+  },
+  loginLinkA: {
+      color: colors.primary,
+      fontWeight: 'bold',
+      textDecoration: 'none',
   },
 };
 
