@@ -8,7 +8,7 @@ const LoginIcon = () => (
     height="150" 
     viewBox="0 0 375 374.999991" 
     preserveAspectRatio="xMidYMid meet"
-    style={{ marginBottom: '25px' }}
+    style={{ marginBottom: '2px' }}
     className="login-icon-svg" // Adicionamos uma classe para o CSS
   >
     {/* A classe 'logo-path' será usada para aplicar a animação */}
