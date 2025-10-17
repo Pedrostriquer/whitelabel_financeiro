@@ -71,25 +71,36 @@ const Footer = () => {
             </a>
           )}
 
-          {/* MODIFICADO: Lógica para exibir múltiplos endereços */}
+          {/* --- LÓGICA MODIFICADA PARA ENDEREÇOS --- */}
           {footerData.addresses &&
             footerData.addresses
-              .filter(address => address.show && address.link) // Filtra para mostrar apenas os selecionados e com link
-              .map((address, index) => (
-                <a
-                  key={index}
-                  href={address.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="footer-link"
-                >
-                  <i
-                    className="fas fa-map-marker-alt"
-                    style={{ marginRight: "8px" }}
-                  ></i>
-                  {address.title || "Nosso Endereço"}
-                </a>
-              ))}
+              .filter(address => address.show) // 1. Filtra apenas se deve ser exibido
+              .map((address, index) => 
+                // 2. Verifica se existe um link para decidir o que renderizar
+                address.link ? (
+                  <a
+                    key={index}
+                    href={address.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="footer-link"
+                  >
+                    <i
+                      className="fas fa-map-marker-alt"
+                      style={{ marginRight: "8px" }}
+                    ></i>
+                    {address.title || "Nosso Endereço"}
+                  </a>
+                ) : (
+                  <p key={index} className="footer-text"> {/* Renderiza como texto simples se não houver link */}
+                    <i
+                      className="fas fa-map-marker-alt"
+                      style={{ marginRight: "8px" }}
+                    ></i>
+                    {address.title || "Nosso Endereço"}
+                  </p>
+                )
+            )}
           
           {/* Fallback para o endereço antigo, caso a migração ainda não tenha ocorrido */}
           {!footerData.addresses && footerData.addressLink && (
