@@ -4,13 +4,13 @@ import { db } from "../../../../Firebase/config";
 import IntroSection from "./IntroSection/IntroSection";
 import ProblemSolution from "./ProblemSolution/ProblemSolution";
 import HowItWorks from "./HowItWorks/HowItWorks";
+import FaqSection from "./FaqSection/FaqSection"; // IMPORTADO
 import GemCashSimulator from "./GemCashSimulator/GemCashSimulator";
 import Modal from "../AuthModal/Modal";
 import { useAuth } from "../../../../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-// Estrutura de dados padrão para garantir que a aplicação não quebre
-// se os dados do Firestore estiverem incompletos.
+// Estrutura de dados padrão atualizada
 const defaultGemCashData = {
   intro: { title: "Carregando...", subtitle: "Carregando..." },
   problemSolution: {
@@ -25,6 +25,7 @@ const defaultGemCashData = {
     mainTitle: "Carregando...",
     details: [],
   },
+  faq: [], // ADICIONADO
 };
 
 const GemCash = () => {
@@ -45,6 +46,7 @@ const GemCash = () => {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const firestoreData = docSnap.data();
+          // Lógica de atualização de estado modificada
           setPageData({
             intro: { ...defaultGemCashData.intro, ...firestoreData.intro },
             problemSolution: {
@@ -55,9 +57,11 @@ const GemCash = () => {
               ...defaultGemCashData.howItWorks,
               ...firestoreData.howItWorks,
             },
+            faq: firestoreData.faq || defaultGemCashData.faq, // ADICIONADO
           });
         } else {
           console.log("Documento não encontrado, usando dados padrão.");
+          setPageData(defaultGemCashData); // Garante que o estado seja o padrão
         }
       } catch (error) {
         console.error("Erro ao buscar dados da página:", error);
@@ -80,12 +84,7 @@ const GemCash = () => {
         withGem: simulationResult.withGem,
         fromSite: true,
       }).toString();
-      
-      // ===== CORREÇÃO APLICADA AQUI =====
-      // A rota foi ajustada para corresponder à definida no App.js
       navigate(`/plataforma/comprar-gemcash?${queryParams}`);
-      // ===================================
-
     } else {
       alert("Houve um problema ao recuperar os dados da simulação. Por favor, tente novamente.");
     }
@@ -127,11 +126,14 @@ const GemCash = () => {
         data={pageData.howItWorks}
         onCtaClick={scrollToSimulator}
       />
+      {/* SEÇÃO DE FAQ RENDERIZADA AQUI */}
+
       <GemCashSimulator
         ref={simulatorRef}
         onFinalizePurchase={handleFinalizePurchase}
         onSimulationChange={setSimulationResult}
       />
+      <FaqSection faqData={pageData.faq} />
       {isModalOpen && (
         <Modal
           onClose={handleAuthSuccessAndRedirect}
