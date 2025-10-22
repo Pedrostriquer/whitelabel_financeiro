@@ -7,9 +7,8 @@ import useWindowSize from "../../hooks/useWindowSize.js";
 const STATUS_MAP = {
   1: { text: "Pendente", styleKey: "statusPendente" },
   2: { text: "Pago", styleKey: "statusPago" },
-  3: { text: "Processando", styleKey: "statusProcessando" },
-  4: { text: "Cancelado", styleKey: "statusRecusado" },
-  5: { text: "Recusado", styleKey: "statusRecusado" },
+  3: { text: "Cancelado", styleKey: "statusRecusado" },
+  4: { text: "Recusado", styleKey: "statusRecusado" },
 };
 
 const getStatusBadge = (status) => {

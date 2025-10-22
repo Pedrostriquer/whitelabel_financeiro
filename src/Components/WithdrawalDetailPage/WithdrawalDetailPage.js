@@ -7,10 +7,9 @@ import { useAuth } from "../../Context/AuthContext.js";
 
 const STATUS_MAP = {
   1: { text: "Pendente", style: { backgroundColor: "#ffc107", color: "#333" } },
-  2: { text: "Processando", style: { backgroundColor: "#17a2b8" } },
-  3: { text: "Pago", style: { backgroundColor: "#28a745" } },
-  4: { text: "Cancelado", style: { backgroundColor: "#dc3545" } },
-  5: { text: "Recusado", style: { backgroundColor: "#dc3545" } },
+  2: { text: "Pago", style: { backgroundColor: "#28a745" } },
+  3: { text: "Cancelado", style: { backgroundColor: "#dc3545" } },
+  4: { text: "Recusado", style: { backgroundColor: "#dc3545" } },
 };
 
 export default function WithdrawalDetailPage() {
@@ -49,7 +48,7 @@ export default function WithdrawalDetailPage() {
         setIsCanceling(true);
         try {
             await withdrawServices.cancelarSaque(token, withdrawal.id);
-            setWithdrawal({ ...withdrawal, status: 4 });
+            setWithdrawal({ ...withdrawal, status: 3 });
             alert("Saque cancelado com sucesso!");
         } catch (err) {
             alert(err.message || "Não foi possível cancelar o saque.");
