@@ -16,6 +16,7 @@ import MainLayout from "./Components/MainLayout/MainLayout";
 import UserPage from "./Components/UserPage/UserPage";
 import ForgotPassword from "./Components/Login/ForgotPassword";
 import RedefinePassword from "./Components/RedefinePassword/RedefinePassword";
+import RedefinePasswordMobile from "./Components/RedefinePassword/RedefinePasswordMobile";
 import ContractDetailPage from "./Components/ContractDetailPage/ContractDetailPage";
 import WithdrawalDetailPage from "./Components/WithdrawalDetailPage/WithdrawalDetailPage";
 import ExtratosPage from "./Components/ExtractPage/ExtractPage";
@@ -88,6 +89,10 @@ function App() {
                   <Route
                     path="/redefine-password"
                     element={<RedefinePassword />}
+                  />
+                  <Route
+                    path="/redefine-password-mobile"
+                    element={<RedefinePasswordMobile />}
                   />
                   <Route
                     path="/minuta"
