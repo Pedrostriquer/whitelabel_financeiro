@@ -44,13 +44,15 @@ const Header = () => {
   }, [isMenuOpen]);
 
 
+  // <-- MUDANÇA FEITA AQUI -->
   const menuItems = [
     { name: "HOME", path: "/" },
-    { name: "GEMAS PRECIOSAS", path: "/gemas-preciosas" },
     { name: "GEMCASH", path: "/gemcash" },
+    { name: "GEMAS PRECIOSAS", path: "/gemas-preciosas" },
     { name: "JOIAS", path: "/joias" },
     { name: "BLOG", path: "/blog" },
   ];
+  // <-- FIM DA MUDANÇA -->
 
   const handleLinkClick = () => {
     setIsMenuOpen(false);
