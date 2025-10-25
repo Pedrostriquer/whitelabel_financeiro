@@ -2,14 +2,20 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { Link } from 'react-router-dom';
 import './BannerHome.css';
 
-const BannerHome = ({ slides, speed, showArrows, width, height, onReady }) => {
+// A prop 'showArrows' global foi removida, pois agora é lida de cada slide
+const BannerHome = ({ slides, speed, width, height, onReady }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     // Ref para armazenar as referências dos elementos <video> do DOM
     const videoRefs = useRef([]);
 
     // Memo para garantir que estamos trabalhando apenas com slides válidos e completos
-    const validSlides = useMemo(() => 
-        (slides || []).filter(slide => slide && slide.src && slide.src.trim() !== ''), 
+    const validSlides = useMemo(() =>
+        (slides || []).filter(slide =>
+            slide &&
+            slide.src &&
+            slide.src.trim() !== '' &&
+            (slide.isVisible ?? true) // <-- SÓ INCLUI SLIDES MARCADOS COMO VISÍVEIS
+        ),
     [slides]);
 
     // Efeito para garantir que o array de refs tenha o tamanho correto
@@ -31,7 +37,6 @@ const BannerHome = ({ slides, speed, showArrows, width, height, onReady }) => {
     };
 
     // EFEITO 1: CONTROLA O PLAY/PAUSE E REINÍCIO DOS VÍDEOS
-    // Este efeito é acionado sempre que o slide ativo (currentIndex) muda.
     useEffect(() => {
         videoRefs.current.forEach((video, index) => {
             if (video) {
@@ -53,7 +58,6 @@ const BannerHome = ({ slides, speed, showArrows, width, height, onReady }) => {
     }, [currentIndex, validSlides]); // Depende do slide atual
 
     // EFEITO 2: TIMER INTELIGENTE PARA A TROCA AUTOMÁTICA DE SLIDES
-    // Gerencia a troca automática baseada na configuração de cada slide.
     useEffect(() => {
         const currentSlide = validSlides[currentIndex];
         // Não faz nada se não houver um slide válido ou se houver apenas um slide.
@@ -78,7 +82,7 @@ const BannerHome = ({ slides, speed, showArrows, width, height, onReady }) => {
         } 
         // CASO B: IMAGEM OU VÍDEO COM DURAÇÃO FIXA
         else {
-            // Usa a duração específica do slide, ou um fallback para a velocidade global (do Firebase)
+            // Usa a duração específica do slide, ou um fallback para a velocidade global
             const duration = currentSlide.duration || speed || 5000;
             if (duration > 0) {
                 const timer = setTimeout(goToNext, duration);
@@ -89,7 +93,7 @@ const BannerHome = ({ slides, speed, showArrows, width, height, onReady }) => {
     }, [currentIndex, goToNext, validSlides, speed]);
 
     
-    // Se não houver slides, informa que está "pronto" e não renderiza nada
+    // Se não houver slides (ou todos estiverem desabilitados), informa que está "pronto" e não renderiza nada
     if (!validSlides || validSlides.length === 0) {
         if (onReady) onReady();
         return null;
@@ -106,16 +110,23 @@ const BannerHome = ({ slides, speed, showArrows, width, height, onReady }) => {
                     muted 
                     playsInline 
                     preload="auto"
-                    // autoPlay e loop foram removidos, pois agora são controlados via JavaScript
                 />
             );
         }
         return <img src={slide.src} alt="Banner" className="home-banner-slide-media" />;
     };
 
+    // Lógica de exibição das setas
+    // Pega o slide atual
+    const currentSlide = validSlides[currentIndex];
+    // Verifica a propriedade 'showArrows' do slide atual. Usa '?? true' como fallback
+    const shouldShowArrows = (currentSlide?.showArrows ?? true) && validSlides.length > 1;
+
     return (
         <div className="home-banner-container" style={{ maxWidth: `${width}px`, height: `${height}px` }}>
-            {showArrows && validSlides.length > 1 && (
+            
+            {/* Usa a nova variável 'shouldShowArrows' para decidir se renderiza */}
+            {shouldShowArrows && (
                 <>
                     <div className="home-banner-arrow left-arrow" onClick={goToPrevious}>&#10094;</div>
                     <div className="home-banner-arrow right-arrow" onClick={goToNext}>&#10095;</div>
