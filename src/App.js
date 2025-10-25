@@ -43,6 +43,7 @@ import DepositAccounts from "./Components/DepositAccounts/DepositAccounts";
 // --- CORREÇÃO MERCADO PAGO ---
 // 1. Importe APENAS a função 'initMercadoPago'
 import { initMercadoPago } from "@mercadopago/sdk-react";
+import GemCashCatalog from "./Components/GemCashCatalog/GemCashCatalog";
 
 // 2. Chame a função de inicialização AQUI, fora do componente.
 // Lembre-se de ter a variável REACT_APP_MERCADO_PAGO_PUBLIC_KEY no seu arquivo .env
@@ -86,6 +87,7 @@ function App() {
                   <Route path="/plataforma/login" element={<Login />} />
                   <Route path="/plataforma/register" element={<Register />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/catalogo-gemcash" element={<GemCashCatalog />} />
                   <Route
                     path="/redefine-password"
                     element={<RedefinePassword />}
