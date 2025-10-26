@@ -5,6 +5,8 @@ import React, {
   forwardRef,
 } from "react";
 import contractServices from "../../../../../dbServices/contractServices";
+import simulationRequestersServices from "../../../../../dbServices/simulationRequestersServices"; // Importação do serviço de requesters
+import LeadCaptureModal from "./LeadCaptureModal"; // Componente do modal
 import "./GemCashSimulator.css";
 
 // Função auxiliar para formatar valores como moeda BRL
@@ -45,21 +47,26 @@ const GemCashSimulator = forwardRef(
     const [duration, setDuration] = useState("");
     const [availableMonths, setAvailableMonths] = useState([]);
     const [withGem, setWithGem] = useState(false);
-    const [isLoading, setIsLoading] = useState(true); // Para carregar regras iniciais
-    const [isSimulating, setIsSimulating] = useState(false); // Para o processo de simulação
-    const [simulationResult, setSimulationResult] = useState(null); // Estado local para controlar a UI
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSimulating, setIsSimulating] = useState(false);
+    const [simulationResult, setSimulationResult] = useState(null);
+
+    // Estados para controlar o modal e a captura de lead
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [leadCaptured, setLeadCaptured] = useState(false);
 
     useEffect(() => {
+      const hasCaptured = localStorage.getItem('leadCaptured') === 'true';
+      setLeadCaptured(hasCaptured);
+
       const fetchRules = async () => {
         setIsLoading(true);
         try {
           const settings = await contractServices.getContractSettings();
           const months = await contractServices.obterMesesDisponiveis();
-
           const minValue = settings?.minimumValue || 3000;
           setMinPurchaseValue(minValue);
           setInvestValue(minValue);
-
           if (Array.isArray(months) && months.length > 0) {
             setAvailableMonths(months);
             setDuration(months[0].toString());
@@ -73,7 +80,7 @@ const GemCashSimulator = forwardRef(
       fetchRules();
     }, []);
 
-    const handleSimulate = useCallback(async () => {
+    const executeSimulation = useCallback(async () => {
       if (!duration || investValue < minPurchaseValue) {
         setSimulationResult(null);
         onSimulationChange(null);
@@ -86,10 +93,9 @@ const GemCashSimulator = forwardRef(
           months: Number(duration),
           withGem,
         };
-        // Utiliza a chamada de API pública que não requer token
         const simulation = await contractServices.simulateContract(simulationData);
-        setSimulationResult(simulation); // Atualiza o estado local para exibir o resultado
-        onSimulationChange(simulation); // Envia o resultado para o componente pai (GemCash.js)
+        setSimulationResult(simulation);
+        onSimulationChange(simulation);
       } catch (error) {
         console.error("Erro ao realizar a simulação:", error);
         setSimulationResult(null);
@@ -99,7 +105,56 @@ const GemCashSimulator = forwardRef(
       }
     }, [investValue, duration, minPurchaseValue, withGem, onSimulationChange]);
 
-    // Limpa a simulação anterior se o usuário alterar qualquer parâmetro
+    const handleSimulateClick = () => {
+      if (leadCaptured) {
+        executeSimulation();
+      } else {
+        setIsModalOpen(true);
+      }
+    };
+
+    const handleModalSubmit = async (formData) => {
+      setIsModalOpen(false);
+      
+      try {
+        // Obter IP e dados de geolocalização
+        const geoResponse = await fetch('http://ip-api.com/json');
+        if (!geoResponse.ok) throw new Error('Falha ao obter dados de geolocalização');
+        const geoData = await geoResponse.json();
+
+        // Preparar o payload com os dados exatos que a API espera
+        const apiPayload = {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          fromCity: geoData.city || "Não disponível" // Garante um valor padrão
+        };
+        
+        // Chamar o serviço para enviar os dados para o backend (não bloqueia a UI)
+        // Usamos .then/.catch aqui para não precisar de await e deixar o log de erro
+        // ser gerenciado pelo serviço.
+        simulationRequestersServices.createRequester(apiPayload);
+
+        // A lógica abaixo continua imediatamente, sem esperar a chamada da API terminar
+
+        // Salva no localStorage para não pedir novamente
+        localStorage.setItem('leadCaptured', 'true');
+        setLeadCaptured(true);
+        
+        // Executa a simulação para o usuário
+        executeSimulation();
+
+      } catch (error) {
+        console.error("Ocorreu um erro no processo de submissão do lead. A simulação ainda será exibida.", error);
+        // Mesmo com erro (ex: falha ao buscar IP), garante que a experiência do usuário continue
+        
+        // Garante que o localStorage seja setado mesmo com falha no processo de captura
+        localStorage.setItem('leadCaptured', 'true');
+        setLeadCaptured(true);
+        executeSimulation();
+      }
+    };
+
     useEffect(() => {
       setSimulationResult(null);
       onSimulationChange(null);
@@ -115,136 +170,144 @@ const GemCashSimulator = forwardRef(
     };
 
     return (
-      <section className="sim-section" ref={ref}>
-        <div className="sim-container">
-          <div className="sim-header">
-            <h2 className="sim-main-title fonte-principal">
-              FAÇA UMA SIMULAÇÃO GEMCASH
-            </h2>
-            <p className="sim-subtitle">
-              Ajuste os valores e veja o potencial de valorização do seu
-              patrimônio em tempo real.
-            </p>
-          </div>
-          <div className="sim-layout">
-            <div className="sim-controls-card">
-              <div className="sim-control-group">
-                <label className="sim-label">Valor do Aporte</label>
-                <div className="sim-input-wrapper">
-                  <span>R$</span>
+      <>
+        <LeadCaptureModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSubmit={handleModalSubmit}
+        />
+        
+        <section className="sim-section" ref={ref}>
+          <div className="sim-container">
+            <div className="sim-header">
+              <h2 className="sim-main-title fonte-principal">
+                FAÇA UMA SIMULAÇÃO GEMCASH
+              </h2>
+              <p className="sim-subtitle">
+                Ajuste os valores e veja o potencial de valorização do seu
+                patrimônio em tempo real.
+              </p>
+            </div>
+            <div className="sim-layout">
+              <div className="sim-controls-card">
+                <div className="sim-control-group">
+                  <label className="sim-label">Valor do Aporte</label>
+                  <div className="sim-input-wrapper">
+                    <span>R$</span>
+                    <input
+                      type="text"
+                      value={formattedDisplayValue}
+                      onChange={handleValueChange}
+                      className="sim-input"
+                      disabled={isLoading}
+                    />
+                  </div>
                   <input
-                    type="text"
-                    value={formattedDisplayValue}
-                    onChange={handleValueChange}
-                    className="sim-input"
+                    type="range"
+                    min={minPurchaseValue}
+                    max="200000"
+                    step="500"
+                    value={investValue}
+                    onChange={(e) => setInvestValue(Number(e.target.value))}
+                    className="sim-slider"
                     disabled={isLoading}
                   />
+                  {investValue < minPurchaseValue && !isLoading && (
+                    <p className="error-message">
+                      O valor mínimo para aporte é de{" "}
+                      {formatCurrency(minPurchaseValue)}.
+                    </p>
+                  )}
                 </div>
-                <input
-                  type="range"
-                  min={minPurchaseValue}
-                  max="200000"
-                  step="500"
-                  value={investValue}
-                  onChange={(e) => setInvestValue(Number(e.target.value))}
-                  className="sim-slider"
-                  disabled={isLoading}
-                />
-                {investValue < minPurchaseValue && !isLoading && (
-                  <p className="error-message">
-                    O valor mínimo para aporte é de{" "}
-                    {formatCurrency(minPurchaseValue)}.
-                  </p>
-                )}
-              </div>
-              <div className="sim-control-group">
-                <label className="sim-label">Prazo do Contrato</label>
-                <div className="sim-input-wrapper">
-                  <select
-                    value={duration}
-                    onChange={(e) => setDuration(e.target.value)}
-                    className="sim-select"
-                    disabled={isLoading || availableMonths.length === 0}
-                  >
-                    {isLoading ? (
-                      <option>Carregando...</option>
-                    ) : (
-                      availableMonths.map((m) => (
-                        <option key={m} value={m}>
-                          {m} meses
-                        </option>
-                      ))
-                    )}
-                  </select>
+                <div className="sim-control-group">
+                  <label className="sim-label">Prazo do Contrato</label>
+                  <div className="sim-input-wrapper">
+                    <select
+                      value={duration}
+                      onChange={(e) => setDuration(e.target.value)}
+                      className="sim-select"
+                      disabled={isLoading || availableMonths.length === 0}
+                    >
+                      {isLoading ? (
+                        <option>Carregando...</option>
+                      ) : (
+                        availableMonths.map((m) => (
+                          <option key={m} value={m}>
+                            {m} meses
+                          </option>
+                        ))
+                      )}
+                    </select>
+                  </div>
                 </div>
+                <div className="sim-checkbox-group">
+                  <input
+                    type="checkbox"
+                    id="withGem"
+                    checked={withGem}
+                    onChange={(e) => setWithGem(e.target.checked)}
+                  />
+                  <label htmlFor="withGem">Desejo receber a gema física.</label>
+                </div>
+                <button
+                  className="sim-button"
+                  onClick={handleSimulateClick}
+                  disabled={isSimulating || isLoading || investValue < minPurchaseValue}
+                >
+                  {isSimulating ? "Calculando..." : "Simular Agora"}
+                </button>
               </div>
-              <div className="sim-checkbox-group">
-                <input
-                  type="checkbox"
-                  id="withGem"
-                  checked={withGem}
-                  onChange={(e) => setWithGem(e.target.checked)}
-                />
-                <label htmlFor="withGem">Desejo receber a gema física.</label>
-              </div>
-              <button
-                className="sim-button"
-                onClick={handleSimulate}
-                disabled={isSimulating || isLoading || investValue < minPurchaseValue}
-              >
-                {isSimulating ? "Calculando..." : "Simular Agora"}
-              </button>
-            </div>
 
-            <div className="sim-summary-card">
-              <h3 className="summary-title fonte-principal">
-                Resumo da Simulação
-              </h3>
-              <div className="summary-content">
-                {isSimulating ? (
-                  <SkeletonLoader />
-                ) : !simulationResult ? (
-                  <div className="start-prompt">
-                    <i className="fas fa-calculator"></i>
-                    <p>Seus resultados aparecerão aqui.</p>
-                  </div>
-                ) : (
-                  <div className="results-wrapper" key={simulationResult.finalAmount}>
-                    <ValueDisplay
-                      label="Valorização Mensal"
-                      value={simulationResult.monthlyPercentage}
-                    />
-                    <ValueDisplay
-                      label="Ganho Mensal Estimado"
-                      value={simulationResult.monthlyGain}
-                      isCurrency
-                    />
-                    <ValueDisplay
-                      label="Ganho Total Estimado"
-                      value={simulationResult.totalGain}
-                      isCurrency
-                    />
-                    <div className="summary-item summary-total">
-                      <span className="summary-label">Valor Final Estimado</span>
-                      <span className="summary-value">
-                        {formatCurrency(simulationResult.finalAmount)}
-                      </span>
+              <div className="sim-summary-card">
+                <h3 className="summary-title fonte-principal">
+                  Resumo da Simulação
+                </h3>
+                <div className="summary-content">
+                  {isSimulating ? (
+                    <SkeletonLoader />
+                  ) : !simulationResult ? (
+                    <div className="start-prompt">
+                      <i className="fas fa-calculator"></i>
+                      <p>Seus resultados aparecerão aqui.</p>
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    <div className="results-wrapper" key={simulationResult.finalAmount}>
+                      <ValueDisplay
+                        label="Valorização Mensal"
+                        value={simulationResult.monthlyPercentage}
+                      />
+                      <ValueDisplay
+                        label="Ganho Mensal Estimado"
+                        value={simulationResult.monthlyGain}
+                        isCurrency
+                      />
+                      <ValueDisplay
+                        label="Ganho Total Estimado"
+                        value={simulationResult.totalGain}
+                        isCurrency
+                      />
+                      <div className="summary-item summary-total">
+                        <span className="summary-label">Valor Final Estimado</span>
+                        <span className="summary-value">
+                          {formatCurrency(simulationResult.finalAmount)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <button
+                  className="proceed-button"
+                  disabled={!simulationResult || isSimulating}
+                  onClick={onFinalizePurchase}
+                >
+                  <span>Ir Para Compra</span>
+                  <i className="fas fa-arrow-right"></i>
+                </button>
               </div>
-              <button
-                className="proceed-button"
-                disabled={!simulationResult || isSimulating}
-                onClick={onFinalizePurchase} // Chama a função do pai (GemCash.js) para iniciar o fluxo de compra
-              >
-                <span>Ir Para Compra</span>
-                <i className="fas fa-arrow-right"></i>
-              </button>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </>
     );
   }
 );
