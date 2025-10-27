@@ -2,10 +2,8 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { Link } from 'react-router-dom';
 import './BannerHome.css';
 
-// A prop 'showArrows' global foi removida, pois agora é lida de cada slide
 const BannerHome = ({ slides, speed, width, height, onReady }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
-    // Ref para armazenar as referências dos elementos <video> do DOM
     const videoRefs = useRef([]);
 
     // Memo para garantir que estamos trabalhando apenas com slides válidos e completos
@@ -14,11 +12,11 @@ const BannerHome = ({ slides, speed, width, height, onReady }) => {
             slide &&
             slide.src &&
             slide.src.trim() !== '' &&
-            (slide.isVisible ?? true) // <-- SÓ INCLUI SLIDES MARCADOS COMO VISÍVEIS
+            (slide.isVisible ?? true) // Filtra slides marcados como invisíveis
         ),
     [slides]);
 
-    // Efeito para garantir que o array de refs tenha o tamanho correto
+    // Efeito para garantir que o array de refs de vídeo tenha o tamanho correto
     useEffect(() => {
         videoRefs.current = videoRefs.current.slice(0, validSlides.length);
     }, [validSlides]);
@@ -36,15 +34,14 @@ const BannerHome = ({ slides, speed, width, height, onReady }) => {
         setCurrentIndex(isFirstSlide ? validSlides.length - 1 : currentIndex - 1);
     };
 
-    // EFEITO 1: CONTROLA O PLAY/PAUSE E REINÍCIO DOS VÍDEOS
+    // Efeito para controlar o play/pause e reinício dos vídeos
     useEffect(() => {
         videoRefs.current.forEach((video, index) => {
             if (video) {
                 // Se o vídeo corresponde ao slide atual, ele deve tocar do início.
                 if (index === currentIndex) {
-                    video.currentTime = 0; // REINICIA o vídeo para o segundo 0
+                    video.currentTime = 0; // Reinicia o vídeo
                     video.play().catch(error => {
-                        // O erro 'AbortError' acontece se o usuário navegar rápido, é seguro ignorar.
                         if (error.name !== 'AbortError') {
                             console.error("Erro ao tentar dar play no vídeo:", error);
                         }
@@ -55,16 +52,17 @@ const BannerHome = ({ slides, speed, width, height, onReady }) => {
                 }
             }
         });
-    }, [currentIndex, validSlides]); // Depende do slide atual
+    }, [currentIndex, validSlides]);
 
-    // EFEITO 2: TIMER INTELIGENTE PARA A TROCA AUTOMÁTICA DE SLIDES
+    // Efeito para o timer inteligente que troca os slides automaticamente
     useEffect(() => {
         const currentSlide = validSlides[currentIndex];
-        // Não faz nada se não houver um slide válido ou se houver apenas um slide.
+        // Não faz nada se não houver um slide válido ou se houver apenas um.
         if (!currentSlide || validSlides.length <= 1) return;
 
-        // CASO A: VÍDEO COM A OPÇÃO "EXIBIR ATÉ O FINAL"
-        if (currentSlide.type === 'video' && currentSlide.playUntilEnd) {
+        // A opção "playUntilEnd" só deve funcionar se o vídeo NÃO estiver em loop.
+        // Um vídeo em loop nunca dispara o evento 'ended', então o loop tem prioridade.
+        if (currentSlide.type === 'video' && currentSlide.playUntilEnd && !currentSlide.loopVideo) {
             const videoElement = videoRefs.current[currentIndex];
             if (videoElement) {
                 // Função que será chamada quando o vídeo terminar
@@ -74,58 +72,60 @@ const BannerHome = ({ slides, speed, width, height, onReady }) => {
                 // Adiciona o listener para o evento 'ended'
                 videoElement.addEventListener('ended', handleVideoEnd);
                 
-                // Função de limpeza: remove o listener quando o componente desmontar ou o slide mudar
+                // Função de limpeza para remover o listener
                 return () => {
-                    videoElement.removeEventListener('ended', handleVideoEnd);
+                    if (videoElement) {
+                       videoElement.removeEventListener('ended', handleVideoEnd);
+                    }
                 };
             }
         } 
-        // CASO B: IMAGEM OU VÍDEO COM DURAÇÃO FIXA
+        // Caso padrão: imagem ou vídeo com duração fixa (ou vídeo em loop)
         else {
             // Usa a duração específica do slide, ou um fallback para a velocidade global
             const duration = currentSlide.duration || speed || 5000;
             if (duration > 0) {
                 const timer = setTimeout(goToNext, duration);
-                // Função de limpeza: cancela o timer se o componente desmontar ou o slide mudar
+                // Função de limpeza para cancelar o timer
                 return () => clearTimeout(timer);
             }
         }
     }, [currentIndex, goToNext, validSlides, speed]);
 
     
-    // Se não houver slides (ou todos estiverem desabilitados), informa que está "pronto" e não renderiza nada
+    // Se não houver slides válidos, não renderiza nada.
     if (!validSlides || validSlides.length === 0) {
         if (onReady) onReady();
         return null;
     }
     
-    // Função que renderiza a mídia, agora passando o índice para a ref do vídeo
+    // Função que renderiza a mídia (imagem ou vídeo)
     const renderSlideMedia = (slide, index) => {
         if (slide.type === 'video') {
             return (
                 <video 
-                    ref={el => videoRefs.current[index] = el} // Associa o elemento <video> à nossa ref
+                    ref={el => videoRefs.current[index] = el}
                     className="home-banner-slide-media" 
                     src={slide.src} 
                     muted 
                     playsInline 
                     preload="auto"
+                    // Adiciona a propriedade 'loop' com base no dado vindo do admin
+                    loop={slide.loopVideo === true}
                 />
             );
         }
         return <img src={slide.src} alt="Banner" className="home-banner-slide-media" />;
     };
 
-    // Lógica de exibição das setas
-    // Pega o slide atual
+    // Lógica para decidir se as setas de navegação devem ser exibidas
     const currentSlide = validSlides[currentIndex];
-    // Verifica a propriedade 'showArrows' do slide atual. Usa '?? true' como fallback
     const shouldShowArrows = (currentSlide?.showArrows ?? true) && validSlides.length > 1;
 
     return (
         <div className="home-banner-container" style={{ maxWidth: `${width}px`, height: `${height}px` }}>
             
-            {/* Usa a nova variável 'shouldShowArrows' para decidir se renderiza */}
+            {/* Renderiza as setas condicionalmente */}
             {shouldShowArrows && (
                 <>
                     <div className="home-banner-arrow left-arrow" onClick={goToPrevious}>&#10094;</div>
@@ -135,13 +135,15 @@ const BannerHome = ({ slides, speed, width, height, onReady }) => {
 
             <div className="home-banner-slides-container">
                 {validSlides.map((slide, index) => (
-                    <div className={`home-banner-slide ${index === currentIndex ? 'active' : ''}`} key={slide.id}>
+                    <div className={`home-banner-slide ${index === currentIndex ? 'active' : ''}`} key={slide.id || index}>
+                        {/* Lógica de link: se não tiver overlay, o link envolve a mídia inteira */}
                         {(slide.overlay?.show === false && slide.link) ? (
                             <Link to={slide.link}>{renderSlideMedia(slide, index)}</Link>
                         ) : (
                             renderSlideMedia(slide, index)
                         )}
                         
+                        {/* Renderiza o conteúdo sobreposto (overlay) se ele estiver ativo e tiver um título */}
                         {(slide.overlay?.show !== false && slide.overlay?.title) && (
                            <div className="home-banner-overlay-content">
                                 <div className="home-banner-overlay-text-wrapper">
@@ -150,6 +152,7 @@ const BannerHome = ({ slides, speed, width, height, onReady }) => {
                                         <h2 className="home-banner-overlay-title fonte-principal">{slide.overlay.title}</h2>
                                     </div>
                                     {slide.overlay.subtitle && <p className="home-banner-overlay-subtitle">{slide.overlay.subtitle}</p>}
+                                    {/* O botão só aparece se tiver texto E link */}
                                     {slide.overlay.buttonText && slide.overlay.buttonLink && (
                                         <Link to={slide.overlay.buttonLink} className="home-banner-overlay-button">{slide.overlay.buttonText}</Link>
                                     )}
