@@ -69,38 +69,42 @@ const Home = () => {
   return (
     <>
       {/* Seção do Banner */}
-      <div style={{width: "100%", background: "#f0f0f0"}}>
-        {banner && (
-          <BannerHome
-            slides={banner.slides || []}
-            showArrows={banner.showArrows}
-            width={banner.width}
-            height={banner.height}
-          />
-        )}
-      </div>
+      {/* Verifica se o banner deve ser exibido antes de renderizar */}
+      {banner && banner.showBanner && (
+        <div style={{width: "100%", background: "#f0f0f0"}}>
+            <BannerHome
+                slides={banner.slides || []}
+                width={banner.width}
+                height={banner.height}
+            />
+        </div>
+      )}
 
       {/* Seção "Sobre" */}
       {aboutSection && <AboutSection aboutData={aboutSection} />}
 
-      {/* Renderização dinâmica das Seções de Destaque */}
-      {featureSections && Object.keys(featureSections).map((key, index) => {
-          const sectionData = featureSections[key];
-          // Garante que a seção só seja renderizada se tiver dados válidos.
-          if (!sectionData || !sectionData.title) return null;
+      {/* Renderização dinâmica das Seções de Destaque - COM ATUALIZAÇÃO */}
+      {featureSections && Object.entries(featureSections)
+          // 1. Filtra para pegar apenas as seções marcadas como visíveis
+          .filter(([key, sectionData]) => sectionData.isVisible)
+          // 2. Ordena o array com base no campo 'order'
+          .sort(([keyA, sectionA], [keyB, sectionB]) => (sectionA.order || 0) - (sectionB.order || 0))
+          // 3. Mapeia o array filtrado e ordenado para renderizar os componentes
+          .map(([key, sectionData], index) => {
+              if (!sectionData || !sectionData.title) return null;
 
-          return (
-            <FeatureSection 
-              key={key}
-              title={sectionData.title}
-              text={sectionData.text}
-              buttonText={sectionData.buttonText}
-              mediaSrc={sectionData.mediaSrc}
-              mediaType={sectionData.mediaType}
-              buttonLink={featureSectionLinks[key] || '/'} // Usa o link do nosso objeto estático.
-              layout={index % 2 === 0 ? 'default' : 'reverse'} // Alterna o layout automaticamente.
-            />
-          );
+              return (
+                <FeatureSection 
+                  key={key}
+                  title={sectionData.title}
+                  text={sectionData.text}
+                  buttonText={sectionData.buttonText}
+                  mediaSrc={sectionData.mediaSrc}
+                  mediaType={sectionData.mediaType}
+                  buttonLink={featureSectionLinks[key] || '/'} // Usa o link do nosso objeto estático.
+                  layout={index % 2 === 0 ? 'default' : 'reverse'} // Alterna o layout automaticamente.
+                />
+              );
       })}
 
       {/* Seção de FAQ (só renderiza se houver perguntas) */}
