@@ -1,12 +1,13 @@
-// src/Components/GemCashCatalog/GemCashCatalogStyle.js
+// src/Components/GemCashCatalog/GemCashCatalogStyle.js (Com cor e fonte atualizadas)
 
 const style = {
-  // --- Estrutura Principal ---
+  // --- Estrutura Principal e Cabeçalho ---
   catalogContainer: {
     backgroundColor: "#f8fafc",
     minHeight: "100vh",
     padding: "clamp(2rem, 8vw, 6rem) clamp(1rem, 5vw, 4rem)",
     boxSizing: "border-box",
+    fontFamily: "'Poppins', sans-serif", // FONTE ALTERADA
   },
   header: {
     textAlign: "center",
@@ -15,18 +16,17 @@ const style = {
   title: {
     fontSize: "clamp(2.2rem, 5vw, 3.5rem)",
     fontWeight: 700,
-    color: "#1e293b",
+    color: "#122C4F", // COR ALTERADA
     lineHeight: "1.2",
     marginBottom: "1rem",
   },
   subtitle: {
     fontSize: "clamp(1rem, 2.5vw, 1.2rem)",
-    color: "#64748b",
-    maxWidth: "600px",
+    // color: "#64748b",
+    maxWidth: "800px",
     margin: "0 auto",
+    fontSize: "1.4rem",
   },
-
-  // --- Barra de Busca ---
   searchBar: {
     maxWidth: "700px",
     margin: "0 auto 4rem auto",
@@ -53,181 +53,129 @@ const style = {
   // --- Grade de Produtos ---
   productGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-    gap: "2.5rem",
+    gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+    gap: "4rem",
   },
 
   // --- Card de Produto ---
   productCard: {
     backgroundColor: "white",
-    borderRadius: "1rem",
+    borderRadius: "16px",
     boxShadow: "0 10px 30px rgba(0,0,0,0.07)",
-    overflow: "hidden",
+    overflow: "visible",
+    position: "relative",
     display: "flex",
     flexDirection: "column",
     transition: "transform 0.3s ease, box-shadow 0.3s ease",
-    cursor: "pointer",
+  },
+  cardTitleContainer: {
+    position: "absolute",
+    top: 0,
+    left: "65%",
+    transform: "translate(-50%, -50%)",
+    backgroundColor: "#122C4F", // COR ALTERADA
+    color: "white",
+    padding: "4px 24px",
+    borderRadius: "8px",
+    zIndex: 2,
+    whiteSpace: 'nowrap',
+    boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+  },
+  cardTitle: {
+    fontSize: "1.1rem",
+    fontWeight: 600,
+    margin: 0,
+    color: "white",
+    lineHeight: '1.2'
   },
   cardImage: {
     width: "100%",
-    height: "220px",
+    height: "250px",
     objectFit: "cover",
     backgroundColor: "#f1f5f9",
+    borderRadius: "12px 12px 0 0",
+    position: "relative",
+    zIndex: 1,
+  },
+  cardValueBox: {
+    position: "absolute",
+    top: "250px",
+    left: "35%",
+    transform: "translate(-50%, -50%)",
+    backgroundColor: "#122C4F", // COR ALTERADA
+    color: "white",
+    padding: "7px 28px",
+    borderRadius: "10px",
+    zIndex: 3,
+    fontSize: "1.25rem",
+    fontWeight: 'bold',
+    boxShadow: "0 4px 15px rgba(0,0,0,0.15)",
   },
   cardContent: {
-    padding: "1.5rem",
+    padding: "2.5rem 1.2rem 1.5rem",
     display: "flex",
     flexDirection: "column",
     flexGrow: 1,
-  },
-  cardTitle: {
-    fontSize: "1.25rem",
-    fontWeight: 600,
-    color: "#1e293b",
-    marginBottom: "0.5rem",
+    textAlign: 'center',
   },
   cardDescription: {
-    fontSize: "0.95rem",
+    fontSize: "1.4rem",
     color: "#475569",
     lineHeight: 1.6,
     flexGrow: 1,
+    marginBottom: "1.3rem",
+    minHeight: '80px',
   },
-
-  // --- Modal de Detalhes (NOVO) ---
-  modalBackdrop: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    backdropFilter: "blur(8px)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1000,
-    padding: "1rem",
-    boxSizing: "border-box",
-  },
-  modalContent: {
-    background: "white",
-    borderRadius: "1rem",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
-    width: "100%",
-    maxWidth: "800px",
-    maxHeight: "90vh",
-    overflowY: "auto",
-    position: "relative",
-    display: "flex",
-    flexDirection: "column",
-  },
-  modalCloseButton: {
-    position: "absolute",
-    top: "1rem",
-    right: "1rem",
-    background: "#f1f5f9",
+  cardSimulateButton: {
+    backgroundColor: "#122C4F", // COR ALTERADA
+    color: "white",
     border: "none",
-    borderRadius: "50%",
-    width: "40px",
-    height: "40px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    cursor: "pointer",
-    color: "#475569",
-    fontSize: "1.2rem",
-    zIndex: 10,
-  },
-  modalImageGallery: {
-    position: "relative",
-    width: "100%",
-    height: "400px",
-    backgroundColor: "#f8fafc",
-  },
-  modalImage: {
-    width: "100%",
-    height: "100%",
-    objectFit: "contain",
-    cursor: "zoom-in",
-  },
-  galleryArrow: {
-    position: "absolute",
-    top: "50%",
-    transform: "translateY(-50%)",
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
-    border: "1px solid #e2e8f0",
-    borderRadius: "50%",
-    width: "44px",
-    height: "44px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    cursor: "pointer",
-    color: "#1e293b",
-    fontSize: "1.2rem",
-    transition: "all 0.2s",
-  },
-  galleryArrowLeft: { left: "1rem" },
-  galleryArrowRight: { right: "1rem" },
-  galleryCounter: {
-    position: "absolute",
-    bottom: "1rem",
-    left: "50%",
-    transform: "translateX(-50%)",
-    backgroundColor: "rgba(29, 41, 59, 0.7)",
-    color: "white",
-    padding: "0.25rem 0.75rem",
-    borderRadius: "1rem",
-    fontSize: "0.85rem",
-  },
-  modalInfo: {
-    padding: "clamp(1.5rem, 5vw, 2.5rem)",
-  },
-  modalTitle: {
-    fontSize: "clamp(1.5rem, 4vw, 2rem)",
-    fontWeight: 700,
-    color: "#1e293b",
-    marginBottom: "1rem",
-  },
-  modalDescription: {
-    fontSize: "1rem",
-    color: "#334155",
-    lineHeight: 1.7,
-  },
-
-  // --- Lightbox de Imagem (NOVO) ---
-  lightboxBackdrop: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.85)",
-    backdropFilter: "blur(5px)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 2000,
-    padding: "1rem",
-    boxSizing: "border-box",
-    cursor: "zoom-out",
-  },
-  lightboxImage: {
-    maxWidth: "90%",
-    maxHeight: "90%",
-    boxShadow: "0 0 50px rgba(0,0,0,0.5)",
     borderRadius: "8px",
-  },
-  lightboxClose: {
-    position: "absolute",
-    top: "1.5rem",
-    right: "1.5rem",
-    color: "white",
-    fontSize: "2rem",
+    padding: "14px 20px",
+    fontSize: "1rem",
+    fontWeight: 600,
     cursor: "pointer",
+    transition: "background-color 0.3s, transform 0.2s",
+    width: "100%",
   },
 
-  // --- Estados (Loading, Erro, Sem Resultados) ---
+  // --- Ações Gerais e Estados ---
+  generalActionsContainer: {
+    textAlign: "center",
+    marginTop: "5rem",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '2rem',
+  },
+  simulateOthersButton: {
+    backgroundColor: "#122C4F", // COR ALTERADA
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    padding: "20px 32px",
+    fontSize: "1.9rem",
+    fontWeight: 550,
+    cursor: "pointer",
+    transition: "all 0.3s",
+    maxWidth: '550px',
+    width: '100%',
+    textTransform: 'uppercase',
+    letterSpacing: '1px',
+  },
+  consultorButton: {
+    backgroundColor: "#25D366",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    padding: "16px 32px",
+    fontSize: "1.4rem",
+    fontWeight: 700,
+    cursor: "pointer",
+    transition: "all 0.3s",
+    maxWidth: '400px',
+    width: '100%',
+  },
   stateContainer: {
     display: "flex",
     flexDirection: "column",
@@ -250,12 +198,7 @@ const style = {
     fontSize: "1.1rem",
     fontWeight: 500,
   },
-  keyframes: `
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-    `,
+  keyframes: `@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`,
 };
 
 export default style;
