@@ -119,7 +119,7 @@ const GemCashSimulator = forwardRef(
       const handleModalSubmit = async (formData) => {
           setIsModalOpen(false);
           try {
-              const geoResponse = await fetch("http://ip-api.com/json");
+              const geoResponse = await fetch("https://ip-api.com/json");
               if (!geoResponse.ok) throw new Error("Falha ao obter dados de geolocalização");
               const geoData = await geoResponse.json();
               const apiPayload = { name: formData.name, email: formData.email, phone: formData.phone, fromCity: geoData.city || "Não disponível" };
