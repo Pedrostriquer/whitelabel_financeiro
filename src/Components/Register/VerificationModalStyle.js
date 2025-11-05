@@ -1,7 +1,9 @@
-// src/components/Contratos/VerificationModalStyle.js (Código Atualizado)
+// Cores da sua identidade visual
+const PRIMARY_COLOR = '#122C4F';
+const PRIMARY_DARK = '#0e223c';
+const SUCCESS_COLOR = '#28a745';
 
 const style = {
-    // Animações para uma entrada triunfal!
     keyframes: `
         @keyframes fadeIn {
             from { opacity: 0; }
@@ -30,59 +32,78 @@ const style = {
         zIndex: 1000,
         animation: 'fadeIn 0.3s ease-out forwards',
     },
+    // O conteúdo principal é o container flex para o layout dividido
     modalContent: {
         background: '#ffffff',
-        padding: '30px 35px',
         borderRadius: '16px',
         boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
         width: '100%',
-        maxWidth: '450px',
-        textAlign: 'center',
-        borderTop: '4px solid #007bff',
+        maxWidth: '700px', // Largura ajustada para o layout dividido
+        display: 'flex',
+        overflow: 'hidden',
         animation: 'slideIn 0.4s ease-out forwards',
     },
-    modalHeader: {
+
+    // PAINEL ESQUERDO: com o gradiente e a logo da sua marca
+    modalInfoPanel: {
+        background: `linear-gradient(135deg, ${PRIMARY_COLOR}, ${PRIMARY_DARK})`,
+        color: 'white',
+        padding: '40px',
+        width: '40%',
         display: 'flex',
         flexDirection: 'column',
+        justifyContent: 'center',
         alignItems: 'center',
+        textAlign: 'center',
+    },
+    logoWrapper: {
+        transform: 'scale(0.8)', // Ajusta o tamanho da logo para caber bem no painel
         marginBottom: '20px',
+        lineHeight: 0,
     },
-    modalIcon: {
-        fontSize: '2.5rem',
-        color: '#007bff',
-        marginBottom: '10px',
+    
+    // PAINEL DIREITO: com o formulário
+    modalFormPanel: {
+        padding: '40px',
+        width: '60%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
     },
+    
     modalTitle: {
         margin: 0,
         fontSize: '1.5rem',
         fontWeight: '600',
-        color: '#333',
+        color: 'white', // Título branco para contrastar com o fundo azul
     },
     modalBody: {
-        padding: '10px 0',
         color: '#555',
         lineHeight: '1.6',
+        textAlign: 'left',
     },
     modalInput: {
         width: '100%',
-        padding: '15px',
+        padding: '10px 5px',
         fontSize: '2rem',
         textAlign: 'center',
         letterSpacing: '0.5em',
-        border: '2px solid #ddd',
-        borderRadius: '8px',
-        marginTop: '20px',
+        border: 'none',
+        borderBottom: '2px solid #ddd',
+        borderRadius: '0',
+        marginTop: '30px',
+        marginBottom: '10px',
         boxSizing: 'border-box',
-        transition: 'border-color 0.2s, box-shadow 0.2s',
+        transition: 'border-color 0.3s',
+        backgroundColor: 'transparent',
+        outline: 'none',
     },
-    // Você pode adicionar um estado de foco no seu componente para aplicar este estilo
     modalInputFocus: {
-        borderColor: '#007bff',
-        boxShadow: '0 0 0 3px rgba(0, 123, 255, 0.2)',
+        borderColor: PRIMARY_COLOR, // Borda usa a cor da sua marca no foco
     },
     modalFooter: {
         display: 'flex',
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
         gap: '15px',
         marginTop: '30px',
     },
@@ -93,20 +114,21 @@ const style = {
         fontSize: '1rem',
         cursor: 'pointer',
         fontWeight: '600',
-        transition: 'transform 0.2s, filter 0.2s',
+        transition: 'all 0.2s ease-in-out',
         minWidth: '120px',
     },
     modalButtonCancel: {
-        background: '#f0f2f5',
+        background: 'transparent',
         color: '#555',
-        border: '1px solid #ddd',
+    },
+    buttonHoverCancel: {
+        backgroundColor: '#f0f2f5',
     },
     modalButtonConfirm: {
-        background: 'linear-gradient(45deg, #28a745, #218838)',
+        background: `linear-gradient(45deg, ${SUCCESS_COLOR}, #218838)`,
         color: 'white',
-        boxShadow: '0 4px 15px rgba(40, 167, 69, 0.3)',
+        boxShadow: `0 4px 15px rgba(40, 167, 69, 0.3)`,
     },
-    // Estilos para Hover e Disabled nos botões
     buttonHover: {
         transform: 'translateY(-2px)',
         filter: 'brightness(1.1)',
@@ -114,6 +136,9 @@ const style = {
     buttonDisabled: {
         opacity: 0.6,
         cursor: 'not-allowed',
+        transform: 'none',
+        filter: 'none',
+        boxShadow: 'none',
     },
     spinner: {
         display: 'inline-block',
