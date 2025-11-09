@@ -113,47 +113,36 @@ const GemCashSimulator = forwardRef(
       }
     };
 
-    const handleModalSubmit = async (formData) => {
+    // --- INÍCIO DA ALTERAÇÃO ---
+    const handleModalSubmit = (formData) => {
       setIsModalOpen(false);
+
+      // A chamada para a API de geolocalização ('http://ip-api.com/json') foi removida.
       
-      try {
-        // Obter IP e dados de geolocalização
-        const geoResponse = await fetch('http://ip-api.com/json');
-        if (!geoResponse.ok) throw new Error('Falha ao obter dados de geolocalização');
-        const geoData = await geoResponse.json();
+      // Prepara o payload com os dados do formulário e a cidade fixa.
+      const apiPayload = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        fromCity: "Não encontrado", // Valor fixo conforme solicitado.
+      };
+      
+      // Envia os dados do lead para o backend em segundo plano (fire-and-forget).
+      // A UI não espera essa chamada terminar.
+      simulationRequestersServices.createRequester(apiPayload)
+        .catch(error => {
+            // Adiciona um log caso a chamada falhe, mas não interfere na experiência do usuário.
+            console.error("Falha ao enviar dados do lead em segundo plano:", error);
+        });
 
-        // Preparar o payload com os dados exatos que a API espera
-        const apiPayload = {
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          fromCity: geoData.city || "Não disponível" // Garante um valor padrão
-        };
-        
-        // Chamar o serviço para enviar os dados para o backend (não bloqueia a UI)
-        // Usamos .then/.catch aqui para não precisar de await e deixar o log de erro
-        // ser gerenciado pelo serviço.
-        simulationRequestersServices.createRequester(apiPayload);
-
-        // A lógica abaixo continua imediatamente, sem esperar a chamada da API terminar
-
-        // Salva no localStorage para não pedir novamente
-        localStorage.setItem('leadCaptured', 'true');
-        setLeadCaptured(true);
-        
-        // Executa a simulação para o usuário
-        executeSimulation();
-
-      } catch (error) {
-        console.error("Ocorreu um erro no processo de submissão do lead. A simulação ainda será exibida.", error);
-        // Mesmo com erro (ex: falha ao buscar IP), garante que a experiência do usuário continue
-        
-        // Garante que o localStorage seja setado mesmo com falha no processo de captura
-        localStorage.setItem('leadCaptured', 'true');
-        setLeadCaptured(true);
-        executeSimulation();
-      }
+      // Salva no localStorage para não pedir novamente
+      localStorage.setItem('leadCaptured', 'true');
+      setLeadCaptured(true);
+      
+      // Executa a simulação para o usuário imediatamente
+      executeSimulation();
     };
+    // --- FIM DA ALTERAÇÃO ---
 
     useEffect(() => {
       setSimulationResult(null);
