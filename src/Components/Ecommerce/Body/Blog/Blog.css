@@ -37,29 +37,20 @@
 
 /* --- Estrutura dos Posts (Layout de Blog Padrão) --- */
 .blog-main-content { padding: 60px 20px; }
-
-/* **ALTERAÇÃO**: A classe `.blog-timeline` foi renomeada e seu `max-width` aumentado. */
 .blog-posts-container {
-    max-width: 950px; /* Posts mais largos */
+    max-width: 950px;
     margin: 0 auto;
 }
-
-/* **ALTERAÇÃO**: O seletor `.blog-timeline::before` foi removido. */
-
-/* **ALTERAÇÃO**: A classe `.timeline-item` foi renomeada e simplificada. */
 .blog-post-wrapper {
-    margin-bottom: 50px; /* Aumentei um pouco a margem para mais respiro */
+    margin-bottom: 50px;
     opacity: 0;
     transform: translateY(30px);
     animation: fadeInSlideUp 0.8s ease-out forwards;
 }
-
-/* **ALTERAÇÃO**: A classe `.is-visible` agora é usada para ativar a animação. */
 .blog-post-wrapper.is-visible {
     opacity: 1;
     transform: translateY(0);
 }
-
 @keyframes fadeInSlideUp {
     to {
         opacity: 1;
@@ -67,22 +58,28 @@
     }
 }
 
-/* **ALTERAÇÃO**: O seletor `.timeline-item::before` foi removido. */
-
-
 /* --- Card de Postagem --- */
 .blog-post-card { background-color: var(--blog-white); border-radius: 16px; box-shadow: var(--blog-card-shadow); overflow: hidden; transition: transform var(--blog-transition), box-shadow var(--blog-transition); }
 .blog-post-card:hover { transform: translateY(-5px); box-shadow: var(--blog-card-shadow-hover); }
-.post-image-container { height: 350px; /* Aumentei a altura da imagem para posts mais largos */ overflow: hidden; background-color: var(--blog-light-blue); }
+.post-image-container { height: 350px; overflow: hidden; background-color: var(--blog-light-blue); }
 .post-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
 .blog-post-card:hover .post-image { transform: scale(1.05); }
-.post-content-wrapper { padding: 30px; } /* Aumentei o padding interno */
+.post-content-wrapper { padding: 30px; }
 .post-header { margin-bottom: 15px; }
 .post-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .post-tag { background-color: #e9ecef; color: var(--blog-primary-color); padding: 4px 10px; border-radius: 6px; font-size: 0.75em; font-weight: 600; }
 .post-meta { font-size: 0.8em; color: #999; margin: 0; }
-.post-title { font-family: 'Helnore', serif; font-size: 1.8em; color: var(--blog-primary-color); margin: 0 0 15px 0; line-height: 1.3; } /* Aumentei um pouco o título */
-.post-excerpt { position: relative; color: var(--blog-text-color); line-height: 1.8; max-height: 110px; overflow: hidden; transition: max-height 0.7s ease-in-out; }
+.post-title { font-family: 'Helnore', serif; font-size: 1.8em; color: var(--blog-primary-color); margin: 0 0 15px 0; line-height: 1.3; }
+.post-excerpt {
+    position: relative;
+    color: var(--blog-text-color);
+    line-height: 1.8;
+    max-height: 110px;
+    overflow: hidden;
+    transition: max-height 0.7s ease-in-out;
+    /* ✨ AQUI ESTÁ A ÚNICA MUDANÇA NECESSÁRIA ✨ */
+    white-space: pre-wrap; 
+}
 .post-excerpt p { margin: 0; }
 .post-excerpt::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 40px; background: linear-gradient(to bottom, transparent, var(--blog-white)); pointer-events: none; transition: opacity 0.3s ease; }
 .blog-post-card.is-expanded .post-excerpt { max-height: 1000px; }
@@ -142,7 +139,6 @@
 
 /* --- RESPONSIVIDADE --- */
 @media (max-width: 768px) {
-    /* **ALTERAÇÃO**: `.blog-timeline` foi renomeado para `.blog-posts-container` */
     .blog-posts-container {
         max-width: 100%;
     }
@@ -152,7 +148,6 @@
 }
 @media (max-width: 480px) {
     .blog-hero-title { font-size: 2.5em; }
-    /* **ALTERAÇÃO**: Estilos da timeline removidos pois não existem mais. */
 }
 
 /* Adicione este CSS ao seu arquivo Blog.css */
