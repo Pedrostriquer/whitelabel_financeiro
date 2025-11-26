@@ -1,18 +1,16 @@
-// src/App.js (Versão Corrigida)
+// src/App.js
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
+
+// --- COMPONENTES DA PLATAFORMA ---
 import Dashboard from "./Components/Dashboard/Dashboard";
 import Wallet from "./Components/Wallet/Wallet";
-import OrdensVenda from "./Components/Ordens/OrdensVenda";
-import OrdensCompra from "./Components/Ordens/OrdensCompra";
+import OrdensVenda from "./Components/Ordens/OrdensVenda"; // Mantido caso use futuramente
+import OrdensCompra from "./Components/Ordens/OrdensCompra"; // Mantido caso use futuramente
 import ContratosPage from "./Components/ContratosPage/ContratosPage";
 import Login from "./Components/Login/Login";
 import Register from "./Components/Register/Register";
-import { AuthProvider } from "./Context/AuthContext";
-import { LoadProvider } from "./Context/LoadContext";
-import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
-import MainLayout from "./Components/MainLayout/MainLayout";
 import UserPage from "./Components/UserPage/UserPage";
 import ForgotPassword from "./Components/Login/ForgotPassword";
 import RedefinePassword from "./Components/RedefinePassword/RedefinePassword";
@@ -23,10 +21,21 @@ import ExtratosPage from "./Components/ExtractPage/ExtractPage";
 import MyGeanCashesPage from "./Components/MyGeanCashesPage/MyGeanCashesPage";
 import { NotificationsPage } from "./Components/Notifications/Notifications";
 import { NotificationDetailPage } from "./Components/Notifications/NotificationDetail";
-import Container from "./Components/Ecommerce/Container/Container";
+import ContractComponent from "./Components/ContractComponent/ContractComponent";
+import DepositAccounts from "./Components/DepositAccounts/DepositAccounts";
+import GemCashCatalog from "./Components/GemCashCatalog/GemCashCatalog";
+
+// --- CONTEXTOS ---
+import { AuthProvider } from "./Context/AuthContext";
+import { LoadProvider } from "./Context/LoadContext";
+import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
+import MainLayout from "./Components/MainLayout/MainLayout";
 import { CartProvider } from "./Context/CartContext";
 import { FavoritesProvider } from "./Context/FavoritesContext";
 import { PromotionsProvider } from "./Context/PromotionsContext";
+
+// --- COMPONENTES DO E-COMMERCE ---
+import Container from "./Components/Ecommerce/Container/Container";
 import Home from "./Components/Ecommerce/Body/Home/Home";
 import GemCash from "./Components/Ecommerce/Body/GemCash/GemCash";
 import GemasBrilhantes from "./Components/Ecommerce/Body/Ecommerce/GemasBrilhantes";
@@ -35,21 +44,24 @@ import Personalizadas from "./Components/Ecommerce/Body/Personalizadas/Personali
 import CartPage from "./Components/Ecommerce/Body/Ecommerce/CartPage/CartPage";
 import FavoritesPage from "./Components/Ecommerce/Body/Ecommerce/FavoritesPage/FavoritesPage";
 import MyOrdersPage from "./Components/Ecommerce/Body/Ecommerce/MyOrders/MyOrdersPage";
-import Blog from "./Components/Ecommerce/Body/Blog/Blog";
 import OrderDetailPage from "./Components/Ecommerce/Body/Ecommerce/MyOrders/OrderDetailPage";
-import ContractComponent from "./Components/ContractComponent/ContractComponent";
-import DepositAccounts from "./Components/DepositAccounts/DepositAccounts";
 
-// --- CORREÇÃO MERCADO PAGO ---
-// 1. Importe APENAS a função 'initMercadoPago'
+// --- BLOG (ALTERADO/NOVO) ---
+import Blog from "./Components/Ecommerce/Body/Blog/Blog";
+import BlogPost from "./Components/Ecommerce/Body/Blog/BlogPost"; // Novo componente do Post Completo
+
+// --- MERCADO PAGO ---
 import { initMercadoPago } from "@mercadopago/sdk-react";
-import GemCashCatalog from "./Components/GemCashCatalog/GemCashCatalog";
 
-// 2. Chame a função de inicialização AQUI, fora do componente.
-// Lembre-se de ter a variável REACT_APP_MERCADO_PAGO_PUBLIC_KEY no seu arquivo .env
-initMercadoPago(process.env.REACT_APP_MERCADO_PAGO_PUBLIC_KEY);
-// --- FIM DA CORREÇÃO ---
+// Inicialização do Mercado Pago
+// Verifica se a chave existe para evitar erros em desenvolvimento
+if (process.env.REACT_APP_MERCADO_PAGO_PUBLIC_KEY) {
+    initMercadoPago(process.env.REACT_APP_MERCADO_PAGO_PUBLIC_KEY);
+} else {
+    console.warn("A chave REACT_APP_MERCADO_PAGO_PUBLIC_KEY não está definida no .env");
+}
 
+// --- DADOS MOCKADOS (MANTIDOS DO ORIGINAL) ---
 const mockClientData = {
   name: "João da Silva",
   cpfCnpj: "123.456.789-00",
@@ -81,9 +93,8 @@ function App() {
           <CartProvider>
             <FavoritesProvider>
               <PromotionsProvider>
-                {/* O MercadoPagoProvider foi removido daqui */}
                 <Routes>
-                  {/* === ROTAS PÚBLICAS === */}
+                  {/* === ROTAS PÚBLICAS DA PLATAFORMA === */}
                   <Route path="/plataforma/login" element={<Login />} />
                   <Route path="/plataforma/register" element={<Register />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -106,7 +117,8 @@ function App() {
                     }
                   />
 
-                  {/* === ROTAS DO ECOMMERCE (PÚBLICAS) === */}
+                  {/* === ROTAS DO E-COMMERCE (PÚBLICAS) === */}
+                  {/* O Container envolve o cabeçalho e rodapé do site */}
                   <Route element={<Container />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/home" element={<Home />} />
@@ -120,18 +132,25 @@ function App() {
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/favorites" element={<FavoritesPage />} />
 
+                    {/* --- ROTAS DO BLOG --- */}
                     <Route path="/blog" element={<Blog />} />
+                    {/* Rota dinâmica: ID primeiro, depois o Slug (nome) */}
+                    <Route path="/blog/:id/:slug" element={<BlogPost />} />
                   </Route>
+
+                  {/* Rotas de Pedidos (Fora do Container principal do site?) - Mantido do original */}
                   <Route path="/meus-pedidos" element={<MyOrdersPage />} />
                   <Route
                     path="/meus-pedidos/:id"
                     element={<OrderDetailPage />}
                   />
 
-                  {/* ROTA PRINCIPAL: Redireciona a raiz do domínio para o ecommerce */}
+                  {/* ROTA PRINCIPAL: Redireciona a raiz vazia para o ecommerce */}
+                  {/* Nota: Como já existe uma rota path="/" dentro do Container acima, esta aqui atua como fallback */}
                   <Route path="/" element={<Navigate to="/" />} />
 
-                  {/* === ROTAS PROTEGIDAS (PRECISAM DE LOGIN) === */}
+                  {/* === ROTAS PROTEGIDAS (ÁREA DO CLIENTE) === */}
+                  {/* Exige login (Token válido) */}
                   <Route element={<ProtectedRoute />}>
                     <Route element={<MainLayout />}>
                       <Route
@@ -175,7 +194,7 @@ function App() {
                     </Route>
                   </Route>
 
-                  {/* ROTA CATCH-ALL: Se nenhuma rota for encontrada, redireciona para o ecommerce */}
+                  {/* ROTA CATCH-ALL: Qualquer rota desconhecida volta para o início */}
                   <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
               </PromotionsProvider>
