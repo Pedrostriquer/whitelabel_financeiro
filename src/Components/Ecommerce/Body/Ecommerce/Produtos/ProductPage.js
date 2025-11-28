@@ -58,9 +58,7 @@ const MediaGallery = ({ media, productName }) => {
     }
   };
 
-  // NOVO: Handler para fechar o modal ao clicar no overlay
   const handleOverlayClick = (e) => {
-    // Verifica se o elemento clicado é o próprio overlay (e não um filho, como a imagem)
     if (e.target === e.currentTarget) {
       setIsZoomModalOpen(false);
     }
@@ -80,6 +78,14 @@ const MediaGallery = ({ media, productName }) => {
           onMouseLeave={handleMouseLeave}
           onClick={handleImageClick}
         >
+          {/* --- SELO BLACK FRIDAY ADICIONADO AQUI --- */}
+          <img 
+            src="/img/Design sem nome (5).png" 
+            alt="Black Friday" 
+            className="black-friday-seal-detail" 
+          />
+          {/* ----------------------------------------- */}
+
           {selectedMedia.type === "video" ? (
             <video key={selectedMedia.url} src={selectedMedia.url} autoPlay muted loop controls className="main-media-item" />
           ) : (
@@ -121,7 +127,6 @@ const MediaGallery = ({ media, productName }) => {
       </div>
 
       {isTouchDevice() && isZoomModalOpen && (
-        // O handler de clique foi adicionado aqui
         <div className="zoom-modal-overlay" onClick={handleOverlayClick}>
           <button className="zoom-modal-close-btn" onClick={() => setIsZoomModalOpen(false)}>×</button>
           <TransformWrapper 
@@ -129,7 +134,7 @@ const MediaGallery = ({ media, productName }) => {
             minScale={1} 
             maxScale={3}
             pinch={{ step: 1 }}
-            doubleClick={{ step: 3 }} // <-- NOVO: Habilita zoom com clique duplo
+            doubleClick={{ step: 3 }}
           >
             <TransformComponent wrapperClass="zoom-wrapper" contentClass="zoom-content">
               <img src={selectedMedia.url} alt={`${productName} - Zoom`} />
@@ -140,10 +145,6 @@ const MediaGallery = ({ media, productName }) => {
     </>
   );
 };
-
-// ===================================================================
-// O RESTO DO SEU CÓDIGO PERMANECE IGUAL
-// ===================================================================
 
 const ProductInfo = ({ product }) => {
   const { addToCartMultiple, cartItems } = useCart();
