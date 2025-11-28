@@ -46,6 +46,27 @@
   cursor: crosshair; 
 }
 
+/* --- ESTILO NOVO: Selo Black Friday Detalhes --- */
+.black-friday-seal-detail {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 120px; /* Maior que no card */
+  height: auto;
+  z-index: 5;
+  pointer-events: none;
+  object-fit: contain;
+}
+
+/* Ajuste para telas menores */
+@media (max-width: 600px) {
+  .black-friday-seal-detail {
+    width: 80px;
+    bottom: 15px;
+    right: 15px;
+  }
+}
+
 @media (hover: none) {
   .main-media-container {
     cursor: pointer;

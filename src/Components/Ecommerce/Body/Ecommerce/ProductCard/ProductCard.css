@@ -67,6 +67,18 @@
   transform: scale(1.0);
 }
 
+/* --- Selo Black Friday --- */
+.black-friday-seal {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 80px; /* Ajuste o tamanho aqui conforme necessário */
+  height: auto;
+  z-index: 5;
+  pointer-events: none;
+  object-fit: contain;
+}
+
 /* --- Overlay e Badges --- */
 .product-overlay {
   position: absolute;
