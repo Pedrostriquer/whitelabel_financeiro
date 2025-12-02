@@ -9,10 +9,11 @@ import { FaFilter, FaTimes } from "react-icons/fa";
 const ShopHeader = () => (
     <header className="shop-intro-header">
         <div className="shop-intro-content">
-            <h1 className="shop-intro-title">Curadoria Exclusiva de Gemas Brilhantes</h1>
+            <h1 className="shop-intro-title">Curadoria Exclusiva de Gemas Preciosas e Joias de Alto Padrão!</h1>
             <p className="shop-intro-text">
-                Explore nossa curadoria exclusiva de gemas brilhantes e certificadas.
-                Cada pedra é selecionada por especialistas que avaliam rigorosamente seu brilho, pureza e autenticidade. Nosso compromisso é oferecer gemas que não apenas encantam pela beleza, mas também carregam valor de mercado sólido e duradouro.
+            Explore nossa curadoria exclusiva de gemas preciosas e joias de alto padrão e certificadas. 
+            Cada pedra é selecionada por especialistas que avaliam rigorosamente seu brilho, pureza e autenticidade com avalições laboratórios como GIA, IGI, IGL, Gemolab entre outros de grande credibilidade.
+            Nosso compromisso é oferecer gemas e joias que não apenas encantam pela beleza, mas também carregam valor de mercado sólido e duradouro.
             </p>
         </div>
     </header>

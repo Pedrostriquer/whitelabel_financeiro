@@ -78,14 +78,6 @@ const MediaGallery = ({ media, productName }) => {
           onMouseLeave={handleMouseLeave}
           onClick={handleImageClick}
         >
-          {/* --- SELO BLACK FRIDAY ADICIONADO AQUI --- */}
-          <img 
-            src="/img/Design sem nome (5).png" 
-            alt="Black Friday" 
-            className="black-friday-seal-detail" 
-          />
-          {/* ----------------------------------------- */}
-
           {selectedMedia.type === "video" ? (
             <video key={selectedMedia.url} src={selectedMedia.url} autoPlay muted loop controls className="main-media-item" />
           ) : (
