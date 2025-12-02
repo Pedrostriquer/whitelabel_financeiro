@@ -226,13 +226,6 @@ const ProductCard = ({ product }) => {
             <FaHeart />
           </button>
           
-          {/* IMAGEM DO SELO BLACK FRIDAY */}
-          <img 
-            src="/img/Design sem nome (5).png" 
-            alt="Selo Black Friday" 
-            className="black-friday-seal" 
-          />
-
           {onSale && discountPercentage > 0 && (
             <div className="discount-badge">
               <FaTags /> {discountPercentage}% OFF
