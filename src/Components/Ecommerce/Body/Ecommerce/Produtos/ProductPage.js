@@ -3,8 +3,10 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import productServices from "../../../../../dbServices/productServices";
 import { useCart } from "../../../../../Context/CartContext";
+// 1. ADICIONE A IMPORTAÇÃO DO CONTEXTO DE PROMOÇÕES
+import { usePromotions } from "../../../../../Context/PromotionsContext"; 
 import "./ProductPage.css";
-import { FaGem, FaShieldAlt, FaCreditCard, FaSearchPlus } from "react-icons/fa";
+import { FaGem, FaShieldAlt, FaCreditCard, FaSearchPlus, FaTags } from "react-icons/fa"; // Adicionei FaTags
 import { gsap } from "gsap";
 import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
 
@@ -20,6 +22,7 @@ const isVideoUrl = (url) => {
 };
 
 const MediaGallery = ({ media, productName }) => {
+  // ... (Mantenha o código do MediaGallery exatamente igual, sem alterações)
   const [selectedMedia, setSelectedMedia] = useState(media?.[0]);
   const [isZoomModalOpen, setIsZoomModalOpen] = useState(false);
   const [showLens, setShowLens] = useState(false);
@@ -140,11 +143,32 @@ const MediaGallery = ({ media, productName }) => {
 
 const ProductInfo = ({ product }) => {
   const { addToCartMultiple, cartItems } = useCart();
+  // 2. USE O HOOK DE PROMOÇÕES
+  const { getPromotionForProduct } = usePromotions(); 
   const navigate = useNavigate();
   const buttonRef = useRef(null);
   
   const [qtt, setQtt] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
+
+  // --- LÓGICA DE PROMOÇÃO (IGUAL AO PRODUCT CARD) ---
+  const promotion = getPromotionForProduct(product.id);
+  const onSale = !!promotion;
+  let salePrice = product.value;
+  let discountPercentage = 0;
+
+  if (onSale) {
+    if (promotion.discountType === "Percentage") {
+      salePrice = product.value * (1 - promotion.discountValue / 100);
+      discountPercentage = promotion.discountValue;
+    } else if (promotion.discountType === "FixedValue") {
+      salePrice = product.value - promotion.discountValue;
+      discountPercentage = Math.round(
+        (promotion.discountValue / product.value) * 100
+      );
+    }
+  }
+  // ---------------------------------------------------
 
   useEffect(() => {
     gsap.registerPlugin(MorphSVGPlugin);
@@ -170,6 +194,7 @@ const ProductInfo = ({ product }) => {
     setIsAdding(true);
     addToCartMultiple(product, qtt);
 
+    // ... (Animação GSAP mantém igual) ...
     const button = buttonRef.current;
     const morph = button.querySelector(".morph path"); 
     if (!button || !morph) return;
@@ -245,10 +270,16 @@ const ProductInfo = ({ product }) => {
     }
   };
 
+  // 3. FORMATAÇÃO DOS PREÇOS (ORIGINAL E VENDA)
   const formattedPrice = new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
-  }).format(product.value);
+  }).format(product.value); // Preço original formatado
+
+  const formattedSalePrice = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(salePrice); // Preço de venda formatado
 
   const isOutOfStock = product.stock <= 0;
   const canAddToCart = maxQuantityToAdd > 0 && !isOutOfStock;
@@ -256,9 +287,28 @@ const ProductInfo = ({ product }) => {
   return (
     <div className="product-details-container">
       <h1 className="product-page-title">{product.name}</h1>
+      
+      {/* 4. EXIBIÇÃO CONDICIONAL DO PREÇO */}
       <div className="price-section">
-        <span className="product-value">{formattedPrice}</span>
+        {onSale ? (
+          <div className="price-promo-container">
+            <div className="price-row-top">
+                <span className="product-value-original" style={{ textDecoration: 'line-through', color: '#999', fontSize: '0.9em', marginRight: '10px' }}>
+                    {formattedPrice}
+                </span>
+                <span className="discount-badge-page" style={{ background: '#27ae60', color: '#fff', padding: '2px 8px', borderRadius: '4px', fontSize: '0.8em', fontWeight: 'bold' }}>
+                    {discountPercentage}% OFF
+                </span>
+            </div>
+            <span className="product-value-sale" style={{ color: '#C5A95C', fontWeight: 'bold', fontSize: '1.5em' }}>
+                {formattedSalePrice}
+            </span>
+          </div>
+        ) : (
+          <span className="product-value">{formattedPrice}</span>
+        )}
       </div>
+
       <p className="product-page-description">{product.description}</p>
 
       {isOutOfStock ? (
@@ -272,6 +322,7 @@ const ProductInfo = ({ product }) => {
       )}
 
       <div className="actions-container">
+        {/* ... (Resto do JSX igual) ... */}
         <div className="qtt-controller">
           <div className="qtt-controller-view">{qtt}</div>
           <div className="controllers">
@@ -313,6 +364,7 @@ const ProductInfo = ({ product }) => {
 };
 
 const ProductSpecs = ({ product }) => {
+  // ... (Mantenha o ProductSpecs igual)
   const { info } = product;
   if (!info || (!info.material && !info.stones?.length)) return null;
 
@@ -371,6 +423,7 @@ const ProductSpecs = ({ product }) => {
 };
 
 const ProductPage = () => {
+    // ... (Mantenha o ProductPage igual)
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);

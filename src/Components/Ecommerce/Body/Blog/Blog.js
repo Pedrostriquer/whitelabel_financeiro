@@ -36,6 +36,27 @@ const BlogPostCard = ({ post, openAuthModal }) => {
     const slug = createSlug(post.title);
     const postUrl = `${window.location.origin}/blog/${post.id}/${slug}`;
 
+    // --- FUNÇÃO PARA LIMPAR O HTML DO EXCERPT ---
+    const getExcerpt = (htmlContent) => {
+        if (!htmlContent) return "";
+        
+        // Cria um elemento temporário para extrair apenas o texto
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = htmlContent;
+        
+        // Pega o texto limpo
+        let plainText = tempDiv.textContent || tempDiv.innerText || "";
+
+        // Remove códigos de produto internos se houver (ex: [[PRODUCT...]]) para não aparecerem no card
+        plainText = plainText.replace(/\[\[.*?\]\]/g, "");
+
+        // Aplica o limite
+        return plainText.length > 180 
+            ? plainText.substring(0, 180) + '...' 
+            : plainText;
+    };
+    // --------------------------------------------
+
     useEffect(() => {
         if (post.likes && currentUserId) {
             setIsLiked(post.likes.includes(currentUserId));
@@ -160,7 +181,7 @@ const BlogPostCard = ({ post, openAuthModal }) => {
                 <h3 className="card-title">{post.title}</h3>
                 
                 <p className="card-excerpt">
-                    {post.text && post.text.length > 180 ? post.text.substring(0, 180) + '...' : post.text}
+                    {getExcerpt(post.text)}
                 </p>
 
                 <div className="card-footer">
