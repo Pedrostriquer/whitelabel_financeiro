@@ -48,8 +48,8 @@ const Header = () => {
   const menuItems = [
     { name: "HOME", path: "/" },
     { name: "GEMCASH", path: "/gemcash" },
-    { name: "GEMAS PRECIOSAS", path: "/gemas-preciosas" },
-    { name: "JOIAS", path: "/joias" },
+    { name: "NOSSO CATÁLOGO", path: "/gemas-preciosas" },
+    { name: "ATELIÊ", path: "/joias" },
     { name: "BLOG", path: "/blog" },
   ];
   // <-- FIM DA MUDANÇA -->
