@@ -47,7 +47,7 @@ const Header = () => {
     { name: "GEMCASH", path: "/gemcash" },
     { name: "PEDRAS PRECIOSAS", path: "/gemas-preciosas" },
     { name: "JOIAS", path: "/joias-exclusivas" },
-    { name: "ATELIÊ", path: "/joias" },
+    { name: "PERSONALIZE", path: "/joias" },
     { name: "BLOG", path: "/blog" },
   ];
 
