@@ -1,3 +1,5 @@
+// src/Components/Ecommerce/Body/Ecommerce/GemasBrilhantes.js
+
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import "./GemasBrilhantes.css";
 import ProductCard from "./ProductCard/ProductCard";
@@ -5,16 +7,12 @@ import FilterSidebar from "./FilterSidebar/FilterSidebar";
 import productServices from "../../../../dbServices/productServices";
 import { FaFilter, FaTimes } from "react-icons/fa";
 
-// --- Sub-componente: Header da Página ---
-const ShopHeader = () => (
+// --- Sub-componente: Header da Página (Agora recebe Props) ---
+const ShopHeader = ({ title, description }) => (
     <header className="shop-intro-header">
         <div className="shop-intro-content">
-            <h1 className="shop-intro-title">Curadoria Exclusiva de Gemas Preciosas e Joias de Alto Padrão!</h1>
-            <p className="shop-intro-text">
-            Explore nossa curadoria exclusiva de gemas preciosas e joias de alto padrão e certificadas. 
-            Cada pedra é selecionada por especialistas que avaliam rigorosamente seu brilho, pureza e autenticidade com avalições laboratórios como GIA, IGI, IGL, Gemolab entre outros de grande credibilidade.
-            Nosso compromisso é oferecer gemas e joias que não apenas encantam pela beleza, mas também carregam valor de mercado sólido e duradouro.
-            </p>
+            <h1 className="shop-intro-title">{title}</h1>
+            <p className="shop-intro-text">{description}</p>
         </div>
     </header>
 );
@@ -23,7 +21,7 @@ const ShopHeader = () => (
 const LoadingSpinner = () => (
     <div className="spinner-container">
         <div className="loading-spinner"></div>
-        <p>Carregando Gemas Preciosas...</p>
+        <p>Carregando catálogo...</p>
     </div>
 );
 
@@ -50,7 +48,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 
 
 // --- Componente Principal: GemasBrilhantes ---
-const GemasBrilhantes = () => {
+// Recebe defaultItemType (1 para Joias, 2 para Pedras), título e descrição
+const GemasBrilhantes = ({ defaultItemType = 'Todos', pageTitle, pageDescription }) => {
     // --- ESTADOS ---
     const [apiProducts, setApiProducts] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -66,15 +65,12 @@ const GemasBrilhantes = () => {
 
     // Estado unificado para TODOS os filtros
     const [filters, setFilters] = useState({
-        // Filtros de BACKEND
         searchTerm: '',
-        itemType: 'Todos',
+        itemType: defaultItemType, // Inicia com o valor passado via prop
         categories: [],
         sort: 'date_desc',
         justPromotions: false,
-        stoneTypes: [], // Agora é um array para seleção múltipla
-        
-        // Filtros de FRONTEND (para os campos que a API ainda não suporta)
+        stoneTypes: [],
         color: '',
         cut: '',
         clarity: '',
@@ -82,9 +78,13 @@ const GemasBrilhantes = () => {
         maxPrice: '',
     });
 
+    // Sincroniza o itemType caso o usuário mude de rota sem desmontar o componente
+    useEffect(() => {
+        setFilters(prev => ({ ...prev, itemType: defaultItemType }));
+    }, [defaultItemType]);
+
     // --- LÓGICA DE DADOS ---
 
-    // Busca os produtos da API sempre que o objeto de filtros muda
     const fetchProducts = useCallback(async (pageToFetch) => {
         setLoading(true);
         try {
@@ -101,12 +101,10 @@ const GemasBrilhantes = () => {
         }
     }, [filters]);
 
-    // Dispara a busca à API
     useEffect(() => {
-        fetchProducts(1); // Sempre volta para a página 1 ao aplicar novo filtro
+        fetchProducts(1); 
     }, [fetchProducts]);
 
-    // Aplica filtros que a API ainda não suporta
     const displayedProducts = useMemo(() => {
         let items = [...apiProducts];
 
@@ -129,7 +127,6 @@ const GemasBrilhantes = () => {
         return items;
     }, [apiProducts, filters.color, filters.cut, filters.clarity, filters.minPrice, filters.maxPrice]);
 
-    // Busca dados iniciais para os filtros (roda apenas uma vez)
     useEffect(() => {
         const fetchInitialData = async () => {
             try {
@@ -161,7 +158,6 @@ const GemasBrilhantes = () => {
         });
     };
     
-    // Handler para seleção múltipla de tipos de gema
     const handleStoneTypeToggle = (stoneTypeName) => {
         setFilters(prev => {
             const newStoneTypes = prev.stoneTypes.includes(stoneTypeName)
@@ -180,8 +176,12 @@ const GemasBrilhantes = () => {
     
     const clearFilters = () => {
         setFilters({
-            searchTerm: '', itemType: 'Todos', categories: [], sort: 'date_desc', justPromotions: false,
-            stoneTypes: [], // Reseta o array de tipos de gema
+            searchTerm: '', 
+            itemType: defaultItemType, 
+            categories: [], 
+            sort: 'date_desc', 
+            justPromotions: false,
+            stoneTypes: [], 
             color: '', cut: '', clarity: '', minPrice: '', maxPrice: '',
         });
     };
@@ -189,7 +189,7 @@ const GemasBrilhantes = () => {
     // --- RENDERIZAÇÃO ---
     return (
         <div className="shop-page-wrapper">
-            <ShopHeader />
+            <ShopHeader title={pageTitle} description={pageDescription} />
             <div className="shop-body">
                 <aside className="sidebar-desktop-wrapper">
                     <FilterSidebar 
@@ -228,7 +228,7 @@ const GemasBrilhantes = () => {
                 
                 <main className="product-main-content">
                     <header className="content-header">
-                        <input type="text" placeholder="Buscar por sua joia..." className="shop-search-input" value={filters.searchTerm} onChange={(e) => handleFilterChange('searchTerm', e.target.value)} />
+                        <input type="text" placeholder="Buscar..." className="shop-search-input" value={filters.searchTerm} onChange={(e) => handleFilterChange('searchTerm', e.target.value)} />
                         <div className="header-controls">
                             <span className="results-count">{totalResults} resultados</span>
                             <select className="sort-select" value={filters.sort} onChange={(e) => handleFilterChange('sort', e.target.value)}>
@@ -246,7 +246,7 @@ const GemasBrilhantes = () => {
                                     displayedProducts.map((product) => <ProductCard key={product.id} product={product} />)
                                 ) : (
                                     <div className="no-products-found">
-                                        <h3>Nenhuma Joia Encontrada</h3>
+                                        <h3>Nenhum Item Encontrado</h3>
                                         <p>Tente ajustar seus filtros ou pesquisar novamente.</p>
                                     </div>
                                 )}

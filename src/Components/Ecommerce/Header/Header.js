@@ -28,31 +28,28 @@ const Header = () => {
     }
   }, []);
 
-  // --- MUDANÇA AQUI ---
-  // Este useEffect adiciona/remove uma classe no <body> para impedir a rolagem
-  // quando o menu mobile está aberto.
+  // Bloqueio de scroll quando o menu mobile está aberto
   useEffect(() => {
     if (isMenuOpen) {
       document.body.classList.add('body-no-scroll');
     } else {
       document.body.classList.remove('body-no-scroll');
     }
-    // Função de limpeza para garantir que a classe seja removida se o componente for desmontado
     return () => {
       document.body.classList.remove('body-no-scroll');
     };
   }, [isMenuOpen]);
 
 
-  // <-- MUDANÇA FEITA AQUI -->
+  // Itens do menu atualizados para incluir Pedras e Joias separadamente
   const menuItems = [
     { name: "HOME", path: "/" },
     { name: "GEMCASH", path: "/gemcash" },
-    { name: "NOSSO CATÁLOGO", path: "/gemas-preciosas" },
+    { name: "PEDRAS PRECIOSAS", path: "/gemas-preciosas" },
+    { name: "JOIAS", path: "/joias-exclusivas" },
     { name: "ATELIÊ", path: "/joias" },
     { name: "BLOG", path: "/blog" },
   ];
-  // <-- FIM DA MUDANÇA -->
 
   const handleLinkClick = () => {
     setIsMenuOpen(false);
@@ -124,7 +121,10 @@ const Header = () => {
           <ul>
             {menuItems.map((item) => (
               <li key={item.name}>
-                <NavLink to={item.path} className={({ isActive }) => (isActive ? "active-link" : "")}>
+                <NavLink 
+                  to={item.path} 
+                  className={({ isActive }) => (isActive ? "active-link" : "")}
+                >
                   {item.name}
                 </NavLink>
               </li>
@@ -132,7 +132,10 @@ const Header = () => {
           </ul>
         </nav>
 
-        <nav className={`mobile-nav-overlay ${isMenuOpen ? "open" : ""}`} style={{ top: `${headerHeight}px`, height: `calc(100vh - ${headerHeight}px)` }}>
+        <nav 
+          className={`mobile-nav-overlay ${isMenuOpen ? "open" : ""}`} 
+          style={{ top: `${headerHeight}px`, height: `calc(100vh - ${headerHeight}px)` }}
+        >
           <ul>
             {menuItems.map((item) => (
               <li key={item.name}>
@@ -142,7 +145,7 @@ const Header = () => {
               </li>
             ))}
           </ul>
-          {/* Adicionamos um container para os botões de autenticação para melhor estilização */}
+          
           {!isAuthenticated && (
             <div className="mobile-auth-container">
               <button className="mobile-auth-btn mobile-auth-login" onClick={() => { openAuthModal(); handleLinkClick(); }}>
@@ -153,6 +156,7 @@ const Header = () => {
               </button>
             </div>
           )}
+          
           <button className="platform-button-mobile" onClick={() => { handlePlatformRedirect(); handleLinkClick(); }}>
             {isAuthenticated ? "Sua Plataforma" : "Conheça nossa plataforma"}
           </button>

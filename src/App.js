@@ -118,15 +118,40 @@ function App() {
                   />
 
                   {/* === ROTAS DO E-COMMERCE (PÚBLICAS) === */}
-                  {/* O Container envolve o cabeçalho e rodapé do site */}
                   <Route element={<Container />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/home" element={<Home />} />
                     <Route path="/gemcash" element={<GemCash />} />
+                    
+                    {/* ROTA DE PEDRAS (ItemType=2) - Mantendo o path original */}
                     <Route
                       path="/gemas-preciosas"
-                      element={<GemasBrilhantes />}
+                      element={
+                        <GemasBrilhantes 
+                          defaultItemType={2} 
+                          pageTitle="Pedras Preciosas Certificadas" 
+                          pageDescription="Cada gema da nossa curadoria é rigorosamente avaliada e certificada por laboratórios reconhecidos nacional e internacionalmente.
+Selecionamos apenas pedras que atendem aos mais altos padrões de brilho, pureza e autenticidade.
+Beleza excepcional aliada a valor real e duradouro.
+" 
+                        />
+                      }
                     />
+
+                    {/* ROTA DE JOIAS (ItemType=1) - Nova Rota */}
+                    <Route
+                      path="/joias-exclusivas"
+                      element={
+                        <GemasBrilhantes 
+                          defaultItemType={1} 
+                          pageTitle="Joias de Alto Padrão" 
+                          pageDescription="Transforme momentos especiais em joias únicas.
+Criamos peças exclusivas com design sofisticado e gemas certificadas de alta qualidade.
+Joias personalizadas que eternizam histórias e valorizam com o tempo." 
+                        />
+                      }
+                    />
+
                     <Route path="/product/:id" element={<ProductPage />} />
                     <Route path="/joias" element={<Personalizadas />} />
                     <Route path="/cart" element={<CartPage />} />
@@ -134,23 +159,19 @@ function App() {
 
                     {/* --- ROTAS DO BLOG --- */}
                     <Route path="/blog" element={<Blog />} />
-                    {/* Rota dinâmica: ID primeiro, depois o Slug (nome) */}
                     <Route path="/blog/:id/:slug" element={<BlogPost />} />
                   </Route>
 
-                  {/* Rotas de Pedidos (Fora do Container principal do site?) - Mantido do original */}
+                  {/* Rotas de Pedidos */}
                   <Route path="/meus-pedidos" element={<MyOrdersPage />} />
                   <Route
                     path="/meus-pedidos/:id"
                     element={<OrderDetailPage />}
                   />
 
-                  {/* ROTA PRINCIPAL: Redireciona a raiz vazia para o ecommerce */}
-                  {/* Nota: Como já existe uma rota path="/" dentro do Container acima, esta aqui atua como fallback */}
                   <Route path="/" element={<Navigate to="/" />} />
 
                   {/* === ROTAS PROTEGIDAS (ÁREA DO CLIENTE) === */}
-                  {/* Exige login (Token válido) */}
                   <Route element={<ProtectedRoute />}>
                     <Route element={<MainLayout />}>
                       <Route
@@ -194,7 +215,7 @@ function App() {
                     </Route>
                   </Route>
 
-                  {/* ROTA CATCH-ALL: Qualquer rota desconhecida volta para o início */}
+                  {/* ROTA CATCH-ALL */}
                   <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
               </PromotionsProvider>
