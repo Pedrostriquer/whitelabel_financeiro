@@ -5,7 +5,7 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
-console.log("API Key Carregada:", process.env.REACT_APP_API_KEY);
+// console.log("API Key Carregada:", process.env.REACT_APP_API_KEY);
 
 // A sua configuração do Firebase, lendo das variáveis de ambiente seguras
 const firebaseConfig = {

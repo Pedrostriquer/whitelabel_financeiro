@@ -220,7 +220,6 @@ const Blog = () => {
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     
     const observer = useRef();
-    const heroBgRef = useRef(null);
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -267,16 +266,6 @@ const Blog = () => {
         if (node) observer.current.observe(node);
     }, [isLoading, hasMore, loadPosts, currentPage]);
 
-    useEffect(() => {
-        const handleScroll = () => {
-            if (heroBgRef.current) {
-                heroBgRef.current.style.transform = `translateY(${window.pageYOffset * 0.3}px)`;
-            }
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
     const filteredPosts = selectedTag === 'Todos' 
         ? posts 
         : posts.filter(p => p.category?.categoryName === selectedTag);
@@ -284,10 +273,12 @@ const Blog = () => {
     return (
         <div className="blog-page-wrapper">
             <section className="blog-hero-section">
-                <div ref={heroBgRef} className="hero-background" style={{ backgroundImage: `url('/ecommerce/img/blog/hero-background.jpg')` }} />
-                <div className="hero-overlay" />
-                <div className="blog-hero-content">
-                    <img src="/img/GEMAS BRILHANTES-78.png" alt="Gemas Brilhantes" className="blog-hero-logo" />
+                <div className="hero-image-container">
+                    <img 
+                        src="/img/Blog Capa.png" 
+                        alt="Capa do Blog" 
+                        className="blog-hero-static-img" 
+                    />
                 </div>
             </section>
 

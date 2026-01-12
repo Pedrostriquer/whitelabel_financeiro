@@ -54,29 +54,47 @@ const BlogPost = () => {
     const heroRef = useRef(null);
 
     useEffect(() => {
+        // Se já temos os dados (veio do clique no Feed), não precisa buscar
         if (post) { setLoading(false); return; }
 
         const fetchPost = async () => {
             setLoading(true);
             try {
-                let searchKeyword = "";
-                const parts = slug.split('-');
-                if (parts.length > 0) searchKeyword = parts[0];
+                // TRUQUE/GAMBIARRA CORRIGIDA:
+                // Em vez de pesquisar pelo slug "invasao" (que falha por falta de acento),
+                // passamos uma string vazia "" para listar todos os posts recentes.
+                // Aumentamos o pageSize para 100 para garantir que o post com ID 83 venha na lista.
                 
                 const response = await blogServices.searchPosts({
-                    status: 2, searchTerm: searchKeyword, pageNumber: 1, pageSize: 50, token: token
+                    status: 2, 
+                    searchTerm: "", // Deixa vazio para trazer a lista geral
+                    pageNumber: 1, 
+                    pageSize: 100, // Traz bastante post para garantir que o nosso ID esteja no meio
+                    token: token
                 });
 
                 if (response.items?.length > 0) {
+                    // Agora o Javascript filtra pelo ID, que é infalível (não depende de acento)
                     const found = response.items.find(item => String(item.id) === String(id));
+                    
                     if (found) {
                         setPost(found);
                         setLikeCount(found.likes ? found.likes.length : 0);
                         setViewCount(found.views ? found.views.length : 0);
-                    } else setError(true);
-                } else setError(true);
-            } catch (err) { setError(true); } finally { setLoading(false); }
+                    } else {
+                        // Se não achou na lista de 100, o post é muito antigo ou não existe
+                        setError(true);
+                    }
+                } else {
+                    setError(true);
+                }
+            } catch (err) { 
+                setError(true); 
+            } finally { 
+                setLoading(false); 
+            }
         };
+        
         if (!post && id) fetchPost();
     }, [id, slug, post, token]);
 
@@ -181,6 +199,7 @@ const BlogPost = () => {
     return (
         <div className="blog-post-page">
             <header className="post-detail-hero">
+                {/* Verifica se post.imageUrls existe antes de tentar acessar */}
                 <div ref={heroRef} className="post-hero-bg" style={{ backgroundImage: `url(${post.imageUrls?.[0] || '/ecommerce/img/blog/hero-background.jpg'})` }} />
                 <div className="post-hero-overlay"></div>
                 <div className="post-hero-content">

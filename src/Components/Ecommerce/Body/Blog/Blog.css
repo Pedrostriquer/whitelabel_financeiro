@@ -17,76 +17,93 @@
     padding-bottom: 60px;
 }
 
-/* --- HERO SECTION (COMPARTILHADO) --- */
-.blog-hero-section, .post-detail-hero {
+/* --- HERO SECTION (Responsivo sem cortes) --- */
+
+/* Container Principal do Hero */
+.blog-hero-section {
     position: relative;
-    height: 45vh;
+    width: 100%;
+    /* REMOVIDO: height: 45vh; -> A altura agora é definida pela imagem */
+    /* REMOVIDO: min-height: ... -> Não queremos altura mínima forçada */
+    height: auto; 
+    background-color: #e6e6e6; /* Cor de fundo só aparece se a imagem falhar */
+    padding: 0;
+    margin: 0;
+    display: flex; /* Garante que não haja espaços extras */
+    align-items: flex-start;
+}
+
+/* Container interno da imagem */
+.hero-image-container {
+    width: 100%;
+    /* Garante que o container abrace a imagem perfeitamente */
+    display: block; 
+    margin: 0;
+    padding: 0;
+}
+
+/* A Imagem em si */
+.blog-hero-static-img {
+    /* OBRIGATÓRIO: Largura total */
+    width: 86%; 
+    
+    /* OBRIGATÓRIO: Altura automática. 
+       Isso é o que garante que a imagem nunca distorça e nunca seja cortada.
+       Ela vai calcular a altura baseada na proporção original da sua imagem horizontal. */
+    height: auto; 
+
+    /* Remove espaços em branco abaixo da imagem (comum em elementos inline) */
+    display: block; 
+    
+    /* REMOVIDO: object-fit: cover; -> Isso que causava o corte */
+}
+
+/* OBS: Não é necessário media query para altura aqui, 
+   pois a imagem vai diminuir naturalmente no celular e 
+   o hero vai ficar mais baixo automaticamente.
+*/
+
+/* --- HERO DO POST INDIVIDUAL (MANTIDO O ESTILO ANTIGO) --- */
+/* Mantivemos este separado para não quebrar a página de leitura do post */
+.post-detail-hero {
+    position: relative;
+    height: 55vh;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
     overflow: hidden;
     text-align: center;
     background-color: var(--blog-primary);
-}
-
-/* Altura maior para a página do post individual */
-.post-detail-hero {
-    height: 55vh;
-    align-items: flex-end;
     padding-bottom: 60px;
 }
 
-.hero-background, .post-hero-bg {
+.post-hero-bg {
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 120%; /* 120% para efeito parallax */
+    top: 0; left: 0; width: 100%; height: 120%;
     background-size: cover;
     background-position: center;
     z-index: 1;
 }
 
-.hero-overlay, .post-hero-overlay {
+.post-hero-overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
     z-index: 2;
+    background: linear-gradient(to bottom, rgba(18, 44, 79, 0.3), rgba(18, 44, 79, 0.9));
 }
 
-.hero-overlay {
-    background: rgba(18, 44, 79, 0.45); /* Overlay da Home */
-    backdrop-filter: blur(2px);
-}
-
-.post-hero-overlay {
-    background: linear-gradient(to bottom, rgba(18, 44, 79, 0.3), rgba(18, 44, 79, 0.9)); /* Overlay do Post */
-}
-
-.blog-hero-content, .post-hero-content {
+.post-hero-content {
     position: relative;
     z-index: 3;
     padding: 0 20px;
     color: white;
     width: 100%;
-}
-
-.blog-hero-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.post-hero-content {
     max-width: 900px;
     margin: 0 auto;
-    text-align: left; /* Texto alinhado esq no post */
+    text-align: left;
 }
 
-.blog-hero-logo {
-    width: 100%;
-    max-width: 850px;
-    height: auto;
-    object-fit: contain;
-    margin-bottom: 15px;
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
-}
+/* ... (O resto do CSS abaixo de .blog-controls-section continua igual) ... */
 
 /* --- CONTROLES DE BUSCA E FILTRO --- */
 .blog-controls-section {
@@ -689,7 +706,7 @@
 
 @media (max-width: 600px) {
     .blog-hero-title { font-size: 2rem; }
-    .blog-hero-section { height: 40vh; }
+    /* .blog-hero-section { height: 10px; } */
     
     /* Ajuste Footer do Card Mobile */
     .card-footer {
