@@ -40,17 +40,24 @@ const BlogPostCard = ({ post, openAuthModal }) => {
     const getExcerpt = (htmlContent) => {
         if (!htmlContent) return "";
         
-        // Cria um elemento temporário para extrair apenas o texto
-        const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = htmlContent;
-        
-        // Pega o texto limpo
-        let plainText = tempDiv.textContent || tempDiv.innerText || "";
+        // 1. Cria um parser para converter a string em um documento DOM real
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlContent, 'text/html');
 
-        // Remove códigos de produto internos se houver (ex: [[PRODUCT...]]) para não aparecerem no card
+        // 2. Remove tags que não devem virar texto (CSS e Scripts)
+        const tagsToRemove = doc.querySelectorAll('style, script, head');
+        tagsToRemove.forEach(tag => tag.remove());
+
+        // 3. Pega o texto limpo apenas do body
+        let plainText = doc.body.textContent || doc.body.innerText || "";
+
+        // 4. Remove os códigos de produto internos [[PRODUCT...]]
         plainText = plainText.replace(/\[\[.*?\]\]/g, "");
 
-        // Aplica o limite
+        // 5. Normaliza espaços (remove quebras de linha e espaços duplos do início)
+        plainText = plainText.replace(/\s+/g, ' ').trim();
+
+        // 6. Aplica o limite de caracteres
         return plainText.length > 180 
             ? plainText.substring(0, 180) + '...' 
             : plainText;
