@@ -56,7 +56,7 @@ const GemCashSimulator = forwardRef(
     const [leadCaptured, setLeadCaptured] = useState(false);
 
     useEffect(() => {
-      const hasCaptured = localStorage.getItem('leadCaptured') === 'true';
+      const hasCaptured = sessionStorage.getItem('leadCaptured') === 'true';
       setLeadCaptured(hasCaptured);
 
       const fetchRules = async () => {
@@ -136,7 +136,7 @@ const GemCashSimulator = forwardRef(
         });
 
       // Salva no localStorage para não pedir novamente
-      localStorage.setItem('leadCaptured', 'true');
+      sessionStorage.setItem('leadCaptured', 'true');
       setLeadCaptured(true);
       
       // Executa a simulação para o usuário imediatamente

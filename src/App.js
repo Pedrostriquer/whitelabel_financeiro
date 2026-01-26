@@ -24,7 +24,7 @@ import { NotificationDetailPage } from "./Components/Notifications/NotificationD
 import ContractComponent from "./Components/ContractComponent/ContractComponent";
 import DepositAccounts from "./Components/DepositAccounts/DepositAccounts";
 import GemCashCatalog from "./Components/GemCashCatalog/GemCashCatalog";
-
+import PopUpManager from "./Components/PopUp/PopUpManager";
 // --- CONTEXTOS ---
 import { AuthProvider } from "./Context/AuthContext";
 import { LoadProvider } from "./Context/LoadContext";
@@ -56,9 +56,11 @@ import { initMercadoPago } from "@mercadopago/sdk-react";
 // Inicialização do Mercado Pago
 // Verifica se a chave existe para evitar erros em desenvolvimento
 if (process.env.REACT_APP_MERCADO_PAGO_PUBLIC_KEY) {
-    initMercadoPago(process.env.REACT_APP_MERCADO_PAGO_PUBLIC_KEY);
+  initMercadoPago(process.env.REACT_APP_MERCADO_PAGO_PUBLIC_KEY);
 } else {
-    console.warn("A chave REACT_APP_MERCADO_PAGO_PUBLIC_KEY não está definida no .env");
+  console.warn(
+    "A chave REACT_APP_MERCADO_PAGO_PUBLIC_KEY não está definida no .env"
+  );
 }
 
 // --- DADOS MOCKADOS (MANTIDOS DO ORIGINAL) ---
@@ -90,6 +92,7 @@ function App() {
     <BrowserRouter>
       <LoadProvider>
         <AuthProvider>
+          <PopUpManager />
           <CartProvider>
             <FavoritesProvider>
               <PromotionsProvider>
@@ -98,7 +101,10 @@ function App() {
                   <Route path="/plataforma/login" element={<Login />} />
                   <Route path="/plataforma/register" element={<Register />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/catalogo-gemcash" element={<GemCashCatalog />} />
+                  <Route
+                    path="/catalogo-gemcash"
+                    element={<GemCashCatalog />}
+                  />
                   <Route
                     path="/redefine-password"
                     element={<RedefinePassword />}
@@ -122,18 +128,18 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/home" element={<Home />} />
                     <Route path="/gemcash" element={<GemCash />} />
-                    
+
                     {/* ROTA DE PEDRAS (ItemType=2) - Mantendo o path original */}
                     <Route
                       path="/gemas-preciosas"
                       element={
-                        <GemasBrilhantes 
-                          defaultItemType={2} 
-                          pageTitle="Pedras Preciosas Certificadas" 
+                        <GemasBrilhantes
+                          defaultItemType={2}
+                          pageTitle="Pedras Preciosas Certificadas"
                           pageDescription="Cada gema da nossa curadoria é rigorosamente avaliada e certificada por laboratórios reconhecidos nacional e internacionalmente.
 Selecionamos apenas pedras que atendem aos mais altos padrões de brilho, pureza e autenticidade.
 Beleza excepcional aliada a valor real e duradouro.
-" 
+"
                         />
                       }
                     />
@@ -142,12 +148,12 @@ Beleza excepcional aliada a valor real e duradouro.
                     <Route
                       path="/joias-exclusivas"
                       element={
-                        <GemasBrilhantes 
-                          defaultItemType={1} 
-                          pageTitle="Joias de Alto Padrão" 
+                        <GemasBrilhantes
+                          defaultItemType={1}
+                          pageTitle="Joias de Alto Padrão"
                           pageDescription="Transforme momentos especiais em joias únicas.
 Criamos peças exclusivas com design sofisticado e gemas certificadas de alta qualidade.
-Joias personalizadas que eternizam histórias e valorizam com o tempo." 
+Joias personalizadas que eternizam histórias e valorizam com o tempo."
                         />
                       }
                     />
