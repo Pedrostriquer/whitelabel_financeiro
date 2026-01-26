@@ -6,6 +6,7 @@
     --text-color: #495057;
     --text-light: #6c757d;
     --success-color: #28a745;
+    --error-color: #dc3545;
     --white: #fff;
 }
 
@@ -142,12 +143,18 @@
     font-size: 1rem;
     background-color: var(--background-light);
     color: var(--text-color);
+    transition: border-color 0.3s ease;
 }
 
 .modal-input:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+.modal-input.input-error {
+    border-color: var(--error-color);
+    background-color: #fff8f8;
 }
 
 input[type="date"].modal-input {
@@ -217,47 +224,35 @@ input[type="date"].modal-input {
     }
 }
 
-/* ... (pode ser antes ou depois da classe .platform-button-mobile) ... */
-
-/* ✨ NOVOS ESTILOS PARA OS BOTÕES DE AUTENTICAÇÃO NO MENU MOBILE ✨ */
 .mobile-auth-btn {
     width: 100%;
     padding: 12px 20px;
     font-family: 'Poppins', sans-serif;
-    font-size: 1.2em; /* Tamanho bom para toque */
+    font-size: 1.2em;
     font-weight: 500;
     border-radius: 25px;
     cursor: pointer;
     border: 2px solid #122C4F;
     transition: all 0.3s ease;
-    background: none; /* Reset do background padrão */
+    background: none;
 }
 
-/* Estilo para o botão "Entrar" (apenas borda) */
 .mobile-auth-login {
     background-color: transparent;
     color: #122C4F;
 }
 
-/* Estilo para o botão "Criar Conta" (com fundo) */
 .mobile-auth-register {
     background-color: #122C4F;
     color: #FFFFFF;
 }
 
-/* ... resto do seu CSS ... */
-
 .modal-spinner {
     animation: spin 1s linear infinite;
 }
 
-/* ================================== */
-/* === Media Queries para Mobile === */
-/* ================================== */
-
 @media (max-width: 768px) {
     .register-flow {
-        /* Reduz o padding interno no mobile */
         padding: 25px 20px;
     }
 
@@ -266,45 +261,38 @@ input[type="date"].modal-input {
     }
 
     .modal-progress-label {
-        /* Esconde os labels da barra de progresso, deixando só os ícones */
         display: none;
     }
 
     .modal-progress-line {
-        /* Ajusta a posição da linha de progresso */
         top: 0;
         margin: 0 -5px;
     }
 
     .modal-form-row {
-        /* Faz os inputs que estavam lado a lado ficarem um em cima do outro */
         flex-direction: column;
         gap: 0;
     }
 
     .modal-form-row .modal-input-group {
-        /* Adiciona espaçamento entre os inputs empilhados */
         margin-bottom: 20px;
     }
 
     .modal-form-row .modal-input-group:last-child {
         margin-bottom: 0;
     }
-    
+
     .state-group {
-        /* Permite que o campo UF ocupe 100% da largura */
         max-width: 100%;
     }
 
     .modal-form-navigation {
-        /* Empilha os botões de Voltar/Avançar */
         flex-direction: column-reverse;
         gap: 15px;
     }
 
     .modal-nav-button,
     .modal-submit-button {
-        /* Faz os botões ocuparem 100% da largura */
         width: 100%;
         text-align: center;
     }

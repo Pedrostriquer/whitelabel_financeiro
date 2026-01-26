@@ -75,6 +75,18 @@ const Register = ({ switchToLogin, onSuccess }) => {
   const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
   const { loginInModal } = useAuth();
 
+  const isOver18 = (dateString) => {
+    if (!dateString) return false;
+    const today = new Date();
+    const birthDate = new Date(dateString);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age >= 18;
+  };
+
   const formatCpf = (v) =>
     v
       .replace(/\D/g, "")
@@ -97,10 +109,20 @@ const Register = ({ switchToLogin, onSuccess }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     let formattedValue = value;
+
     if (name === "document") formattedValue = formatCpf(value);
     else if (name === "phone") formattedValue = formatPhone(value);
     else if (name === "cep") formattedValue = formatCep(value);
+
     setFormData({ ...formData, [name]: formattedValue });
+
+    if (name === "birthDate") {
+      if (value && !isOver18(value)) {
+        setError("Você deve ter pelo menos 18 anos para se cadastrar.");
+      } else {
+        setError("");
+      }
+    }
   };
 
   const fetchAddressFromCep = useCallback(async (cep) => {
@@ -138,14 +160,19 @@ const Register = ({ switchToLogin, onSuccess }) => {
   }, [formData.cep, fetchAddressFromCep]);
 
   const validateStep = (currentStep) => {
-    if (currentStep === 1)
+    if (currentStep === 1) {
       if (
         !formData.name ||
         !formData.document ||
         !formData.phone ||
         !formData.birthDate
-      )
+      ) {
         return "Preencha todos os campos obrigatórios.";
+      }
+      if (!isOver18(formData.birthDate)) {
+        return "Cadastro permitido apenas para maiores de 18 anos.";
+      }
+    }
     if (currentStep === 2)
       if (
         !formData.cep ||
@@ -296,7 +323,11 @@ const Register = ({ switchToLogin, onSuccess }) => {
                   <input
                     type="date"
                     name="birthDate"
-                    className="modal-input"
+                    className={`modal-input ${
+                      error && !isOver18(formData.birthDate)
+                        ? "input-error"
+                        : ""
+                    }`}
                     value={formData.birthDate}
                     onChange={handleInputChange}
                   />
