@@ -24,6 +24,7 @@ const CategoryQuickLinks = ({ onCategorySelect }) => {
     },
     { id: "anel", label: "Anel", img: "/img/anel2.jpeg", search: "Anel" },
     { id: "colar", label: "Colar", img: "/img/colar.png", search: "Colar" },
+    { id: "pulseira", label: "Pulseira", img: "/img/pulseira.png", search: "Pulseira" },
   ];
 
   return (
