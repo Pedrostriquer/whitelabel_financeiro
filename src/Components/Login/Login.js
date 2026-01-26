@@ -8,21 +8,21 @@ import { useLocation } from "react-router-dom";
 import style from "./LoginStyle";
 
 // Importa o componente da logo animada
-import LoginIcon from "./LoginIcon"; 
-
+import LoginIcon from "./LoginIcon";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const { login, loginWithToken } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const tokenFromUrl = params.get('token');
+    const tokenFromUrl = params.get("token");
     if (tokenFromUrl) {
       loginWithToken(tokenFromUrl);
     }
@@ -30,15 +30,21 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage(""); // Limpa erros anteriores
+
     if (!email || !password) {
-      alert("Por favor, preencha todos os campos.");
+      setErrorMessage("Por favor, preencha todos os campos.");
       return;
     }
-    setLoading(true); 
+
+    setLoading(true);
     try {
       await login(email, password, rememberMe);
+    } catch (err) {
+      // Captura a mensagem que veio do throw no AuthContext
+      setErrorMessage(err.message);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -53,7 +59,8 @@ export default function Login() {
         <div style={style.infoPanel}>
           <LoginIcon />
           <p style={style.infoSubtitle}>
-            Acesse sua conta para visualizar suas compras, acompanhar informações e obter vantagens com as Gemas Brilhantes
+            Acesse sua conta para visualizar suas compras, acompanhar
+            informações e obter vantagens com as Gemas Brilhantes
           </p>
         </div>
 
@@ -65,6 +72,27 @@ export default function Login() {
             <p style={style.formSubtitle}>
               Por favor, insira seus dados para continuar.
             </p>
+            {errorMessage && (
+              <div
+                style={{
+                  backgroundColor: "#fee2e2",
+                  color: "#dc2626",
+                  padding: "12px",
+                  borderRadius: "8px",
+                  marginBottom: "20px",
+                  fontSize: "0.9rem",
+                  width: "100%",
+                  textAlign: "center",
+                  border: "1px solid #fecaca",
+                }}
+              >
+                <i
+                  className="fa-solid fa-circle-exclamation"
+                  style={{ marginRight: "8px" }}
+                ></i>
+                {errorMessage}
+              </div>
+            )}
 
             <div style={style.inputGroup}>
               <i className="fa-solid fa-envelope" style={style.inputIcon}></i>
@@ -91,7 +119,9 @@ export default function Login() {
                 disabled={loading}
               />
               <i
-                className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
+                className={`fa-solid ${
+                  showPassword ? "fa-eye-slash" : "fa-eye"
+                }`}
                 style={style.passwordToggleIcon}
                 onClick={togglePasswordVisibility}
               ></i>
@@ -115,10 +145,18 @@ export default function Login() {
 
             <button
               type="submit"
-              style={loading ? { ...style.submitButton, ...style.submitButtonLoading } : style.submitButton}
+              style={
+                loading
+                  ? { ...style.submitButton, ...style.submitButtonLoading }
+                  : style.submitButton
+              }
               disabled={loading}
             >
-              {loading ? <i className="fa-solid fa-spinner" style={style.spinner}></i> : "Entrar"}
+              {loading ? (
+                <i className="fa-solid fa-spinner" style={style.spinner}></i>
+              ) : (
+                "Entrar"
+              )}
             </button>
 
             <p style={style.signupLink}>

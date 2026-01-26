@@ -19,15 +19,17 @@ const Login = ({ switchToRegister, onSuccess }) => {
     }
     setLoading(true);
     try {
+      // loginInModal já foi ajustado no AuthContext para retornar o erro do backend
       const result = await loginInModal(email, password);
+
       if (result.success) {
         onSuccess();
       } else {
-        setError(
-          result.message || "Email ou senha inválidos. Tente novamente."
-        );
+        // Aqui ele vai pegar "Sua conta está bloqueada..." vindo do backend
+        setError(result.message);
       }
     } catch (err) {
+      // Caso ocorra um erro de rede ou 500
       setError("Ocorreu um erro inesperado. Tente novamente.");
     } finally {
       setLoading(false);

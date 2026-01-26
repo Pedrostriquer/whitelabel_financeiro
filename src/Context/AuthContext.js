@@ -172,7 +172,10 @@ export const AuthProvider = ({ children }) => {
       navigate("/plataforma");
     } catch (error) {
       console.error("Falha no login:", error);
-      alert("Email ou senha inválidos!");
+
+      const message =
+        error.response?.data?.message || "Email ou senha inválidos!";
+      throw new Error(message);
     } finally {
       stopLoading();
     }
@@ -201,7 +204,11 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (error) {
       console.error("Falha no login (modal):", error);
-      return { success: false, message: "Email ou senha inválidos." };
+      // Retorna a mensagem real do backend (ex: "Sua conta está bloqueada...")
+      return {
+        success: false,
+        message: error.response?.data?.message || "Email ou senha inválidos.",
+      };
     } finally {
       stopLoading();
     }

@@ -131,3 +131,34 @@
 .modal-switch-link span:hover {
     text-decoration: underline;
 }
+
+.modal-error-message {
+    background-color: #fee2e2; /* Fundo vermelho claro */
+    color: #dc3545;           /* Texto vermelho escuro */
+    font-size: 0.85rem;
+    text-align: center;
+    margin-bottom: 20px;
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #fecaca;
+    font-weight: 500;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Opcional: Adicionar um ícone via CSS se não quiser mexer no JS */
+.modal-error-message::before {
+    content: "\f06a"; /* Ícone de exclamação do FontAwesome */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
