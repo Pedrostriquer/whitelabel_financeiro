@@ -27,6 +27,35 @@ const contractServices = {
     }
   },
 
+  obterRelatorioIR: async (token) => {
+    try {
+      const response = await axios.get(`${BASE_ROUTE}contract/tax-report/pdf`, {
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: "blob", // Importante para lidar com arquivos binários (PDF)
+      });
+
+      // Cria um link temporário para download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `Relatorio_IR_${new Date().getFullYear()}.pdf`
+      );
+      document.body.appendChild(link);
+      link.click();
+
+      // Limpeza
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      return true;
+    } catch (error) {
+      console.error("Erro ao baixar relatório de IR:", error);
+      throw error;
+    }
+  },
+
   obterContrato: async (token, id) => {
     try {
       const response = await axios.get(`${BASE_ROUTE}contract/${id}`, {

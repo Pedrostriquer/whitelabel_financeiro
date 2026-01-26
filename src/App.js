@@ -45,6 +45,7 @@ import CartPage from "./Components/Ecommerce/Body/Ecommerce/CartPage/CartPage";
 import FavoritesPage from "./Components/Ecommerce/Body/Ecommerce/FavoritesPage/FavoritesPage";
 import MyOrdersPage from "./Components/Ecommerce/Body/Ecommerce/MyOrders/MyOrdersPage";
 import OrderDetailPage from "./Components/Ecommerce/Body/Ecommerce/MyOrders/OrderDetailPage";
+import IRReport from "./Components/IRReport/IRReport";
 
 // --- BLOG (ALTERADO/NOVO) ---
 import Blog from "./Components/Ecommerce/Body/Blog/Blog";
@@ -196,6 +197,10 @@ Joias personalizadas que eternizam histórias e valorizam com o tempo."
                       <Route
                         path="plataforma/solicitacao"
                         element={<Wallet />}
+                      />
+                      <Route
+                        path="/plataforma/relatorio-ir"
+                        element={<IRReport />}
                       />
                       <Route
                         path="/plataforma/extrato"
