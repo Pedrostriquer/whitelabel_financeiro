@@ -10,7 +10,6 @@ const popUpService = {
         : {};
       const response = await axios.get(`${BASE_ROUTE}PopUp/all-active`, config);
 
-      console.log(response.data)
       return response.data;
     } catch (error) {
       console.error("Error fetching all active popups:", error);

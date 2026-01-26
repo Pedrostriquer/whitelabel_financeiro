@@ -31,7 +31,7 @@ const PopUpManager = () => {
     const handlePopUpLogic = async () => {
       let currentLocation = "";
       if (websiteRoutes.includes(location.pathname)) {
-        currentLocation = "Website";
+        currentLocation = "Site";
       } else if (platformRoutes.includes(location.pathname)) {
         currentLocation = "Platform";
       }
