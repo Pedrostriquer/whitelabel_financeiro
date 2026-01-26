@@ -14,6 +14,36 @@ const ShopHeader = ({ title, description }) => (
   </header>
 );
 
+const CategoryQuickLinks = ({ onCategorySelect }) => {
+  const quickCategories = [
+    {
+      id: "alianca",
+      label: "Aliança de Casamento",
+      search: "Solitário",
+      img: "/img/alianca.jpeg",
+    },
+    { id: "anel", label: "Anel", img: "/img/anel2.jpeg", search: "Anel" },
+    { id: "colar", label: "Colar", img: "/img/colar.png", search: "Colar" },
+  ];
+
+  return (
+    <div className="category-quick-links">
+      {quickCategories.map((cat) => (
+        <div
+          key={cat.id}
+          className="quick-link-item"
+          onClick={() => onCategorySelect(cat.search)}
+        >
+          <div className="quick-link-img-wrapper">
+            <img src={cat.img} alt={cat.label} />
+          </div>
+          <span className="quick-link-label">{cat.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const LoadingSpinner = () => (
   <div className="spinner-container">
     <div className="loading-spinner"></div>
@@ -143,6 +173,32 @@ const GemasBrilhantes = ({
     setFilters((prev) => ({ ...prev, [filterName]: value }));
   };
 
+  const handleCategoryToggle = (categoryId) => {
+    const currentCategories = filters.categories;
+    const newCategories = currentCategories.includes(categoryId)
+      ? currentCategories.filter((id) => id !== categoryId)
+      : [...currentCategories, categoryId];
+
+    handleFilterChange("categories", newCategories);
+  };
+
+  const handleStoneTypeToggle = (stoneType) => {
+    const currentStoneTypes = filters.stoneTypes;
+    const newStoneTypes = currentStoneTypes.includes(stoneType)
+      ? currentStoneTypes.filter((type) => type !== stoneType)
+      : [...currentStoneTypes, stoneType];
+
+    handleFilterChange("stoneTypes", newStoneTypes);
+  };
+
+  const handleQuickCategorySelect = (categoryName) => {
+    setFilters((prev) => ({
+      ...prev,
+      searchTerm: categoryName,
+    }));
+    window.scrollTo({ top: 500, behavior: "smooth" });
+  };
+
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
     window.scrollTo({ top: 300, behavior: "smooth" });
@@ -167,6 +223,11 @@ const GemasBrilhantes = ({
   return (
     <div className="shop-page-wrapper">
       <ShopHeader title={pageTitle} description={pageDescription} />
+
+      {pageTitle === "Joias de Alto Padrão" && (
+        <CategoryQuickLinks onCategorySelect={handleQuickCategorySelect} />
+      )}
+
       <div className="shop-body">
         <aside className="sidebar-desktop-wrapper">
           <FilterSidebar
@@ -174,6 +235,8 @@ const GemasBrilhantes = ({
             filterOptions={filterOptions}
             filters={filters}
             onFilterChange={handleFilterChange}
+            onCategoryToggle={handleCategoryToggle}
+            onStoneTypeToggle={handleStoneTypeToggle}
             onClearFilters={clearFilters}
           />
         </aside>
@@ -199,6 +262,8 @@ const GemasBrilhantes = ({
                 filterOptions={filterOptions}
                 filters={filters}
                 onFilterChange={handleFilterChange}
+                onCategoryToggle={handleCategoryToggle}
+                onStoneTypeToggle={handleStoneTypeToggle}
                 onClearFilters={clearFilters}
               />
             </div>
