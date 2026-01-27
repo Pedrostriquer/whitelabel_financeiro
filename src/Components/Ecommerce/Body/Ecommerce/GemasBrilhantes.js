@@ -18,7 +18,7 @@ const CategoryQuickLinks = ({ onCategorySelect }) => {
   const quickCategories = [
     {
       id: "alianca",
-      label: "Aliança de Casamento",
+      label: "Anel de Noivado",
       search: "Solitário",
       img: "/img/alianca.jpeg",
     },
