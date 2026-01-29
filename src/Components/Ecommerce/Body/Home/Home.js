@@ -13,7 +13,7 @@ import ReviewsSection from "./ReviewsSection/ReviewsSection";
 // Altere os links aqui sempre que precisar.
 const featureSectionLinks = {
     gemas: '/gemas-preciosas',
-    gemcash: '/gemcash',
+    gemcash: '/gemcapital',
     joias: '/joias'
 };
 
