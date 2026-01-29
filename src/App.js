@@ -128,7 +128,7 @@ function App() {
                   <Route element={<Container />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/home" element={<Home />} />
-                    <Route path="/gemcash" element={<GemCash />} />
+                    <Route path="/gemcapital" element={<GemCash />} />
 
                     {/* ROTA DE PEDRAS (ItemType=2) - Mantendo o path original */}
                     <Route
@@ -187,7 +187,7 @@ Joias personalizadas que eternizam histórias e valorizam com o tempo."
                       />
                       <Route path="/plataforma/" element={<Dashboard />} />
                       <Route
-                        path="/plataforma/comprar-gemcash"
+                        path="/plataforma/comprar-gemcapital"
                         element={<ContratosPage />}
                       />
                       <Route

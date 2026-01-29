@@ -49,7 +49,7 @@ const ContractComponent = ({ clientData, contractData }) => {
         <div className="title-section">
           <h2>
             CONTRATO DE COMPRA E VENDA DE GEMAS PRECIOSAS COM CLÁUSULA DE
-            RECOMPRA - GEMCASH
+            RECOMPRA - GEMCAPITAL
           </h2>
         </div>
       </header>
@@ -89,7 +89,7 @@ const ContractComponent = ({ clientData, contractData }) => {
           <li>
             Considerando que a GEMAS BRILHANTES é pessoa jurídica que atua no
             mercado de minérios, pedras preciosas, joias e mineração, e oferece
-            a seus clientes o produto GemCash, uma modalidade de aquisição de
+            a seus clientes o produto GemCapital, uma modalidade de aquisição de
             gemas preciosas certificadas com um benefício mensal e opção de
             recompra garantida;
           </li>
@@ -123,11 +123,11 @@ const ContractComponent = ({ clientData, contractData }) => {
           </li>
           <li>
             <strong>Comprador / Usuário:</strong> Refere-se ao cliente que
-            adquire Gemas Preciosas através do produto GemCash, conforme
+            adquire Gemas Preciosas através do produto GemCapital, conforme
             qualificado no preâmbulo deste CONTRATO.
           </li>
           <li>
-            <strong>GemCash:</strong> Refere-se ao produto exclusivo da GEMAS
+            <strong>GemCapital:</strong> Refere-se ao produto exclusivo da GEMAS
             BRILHANTES, que combina a aquisição de Gemas Preciosas certificadas
             com a possibilidade de um benefício mensal e opção de recompra
             garantida.
@@ -176,12 +176,12 @@ const ContractComponent = ({ clientData, contractData }) => {
 
       <section className="clauses-section">
         <h3>
-          CLÁUSULA 2ª DO OBJETO DO CONTRATO E CARACTERÍSTICAS DO PRODUTO GEMCASH
+          CLÁUSULA 2ª DO OBJETO DO CONTRATO E CARACTERÍSTICAS DO PRODUTO GEMCAPITAL
         </h3>
         <p>
           <strong>ARTIGO 1º.</strong> O presente CONTRATO tem por objeto a
           compra e venda de Gemas Preciosas certificadas pela GEMAS BRILHANTES
-          ao COMPRADOR, através do produto GemCash, conforme as condições e
+          ao COMPRADOR, através do produto GemCapital, conforme as condições e
           propostas comerciais específicas acordadas no momento da aquisição.
         </p>
         <p>
@@ -229,7 +229,7 @@ const ContractComponent = ({ clientData, contractData }) => {
         </p>
         <p>
           <strong>ARTIGO 7°.</strong> A GEMAS BRILHANTES esclarece que a
-          aquisição de Gemas Preciosas através do GemCash constitui uma compra e
+          aquisição de Gemas Preciosas através do GemCapital constitui uma compra e
           venda de bens reais, e não caracteriza custódia de dinheiro,
           arbitragem de ativos financeiros ou qualquer modalidade de
           investimento financeiro.
@@ -240,7 +240,7 @@ const ContractComponent = ({ clientData, contractData }) => {
         <h3>CLÁUSULA 3ª - DO PREÇO E DAS FORMAS DE PAGAMENTO</h3>
         <p>
           <strong>ARTIGO 8º.</strong> O valor mínimo de aquisição inicial de
-          Gemas Preciosas pelo produto GemCash é de{" "}
+          Gemas Preciosas pelo produto GemCapital é de{" "}
           {formatCurrency(contractData.amount)}, podendo o COMPRADOR optar por
           valores maiores, conforme sua discricionariedade e as propostas
           comerciais da GEMAS BRILHANTES.
@@ -332,7 +332,7 @@ const ContractComponent = ({ clientData, contractData }) => {
         <p>
           d) <strong>Aquisição de Produto Físico (Gemas Brilhantes):</strong>{" "}
           Possibilidade de utilizar o valor da aquisição inicial e/ou das
-          Remunerações Mensais acumuladas para uma nova compra de Gemcash ou de
+          Remunerações Mensais acumuladas para uma nova compra de GemCapital ou de
           outro produto físico, como Gemas Preciosas ou joias personalizadas,
           diretamente da GEMAS BRILHANTES.
         </p>
@@ -413,7 +413,7 @@ const ContractComponent = ({ clientData, contractData }) => {
         <p>
           <strong>ARTIGO 17º.</strong> A GEMAS BRILHANTES garante a
           autenticidade, e Certificação das Gemas Preciosas adquiridas através
-          do produto GemCash.
+          do produto GemCapital.
         </p>
         <p>
           <strong>ARTIGO 18º.</strong> A GEMAS BRILHANTES garante ao COMPRADOR o

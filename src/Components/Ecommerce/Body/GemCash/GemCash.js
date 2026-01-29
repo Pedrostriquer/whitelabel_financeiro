@@ -101,7 +101,7 @@ const GemCash = () => {
         withGem: simulationResult.withGem,
         fromSite: true,
       }).toString();
-      navigate(`/plataforma/comprar-gemcash?${queryParams}`);
+      navigate(`/plataforma/comprar-gemcapital?${queryParams}`);
     } else {
       alert("Houve um problema ao recuperar os dados da simulação. Por favor, tente novamente.");
     }

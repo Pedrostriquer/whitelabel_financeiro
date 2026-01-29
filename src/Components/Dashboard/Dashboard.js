@@ -180,7 +180,7 @@ export default function Dashboard() {
               style={cardHeaderStyle}
               onClick={() => setAreCardsExpanded(!areCardsExpanded)}
             >
-              <h3 style={style.cardHeaderH3}>GEMCASH</h3>
+              <h3 style={style.cardHeaderH3}>GEMCAPITAL</h3>
               <i
                 className="fa-solid fa-chevron-right"
                 style={cardArrowStyle}
@@ -278,10 +278,10 @@ export default function Dashboard() {
         </div>
         <div style={style.mainActionsContainer}>
           <ActionButton
-            title="Comprar GemCash"
+            title="Comprar GemCapital"
             description="Compre uma gema preciosa e receba uma remuneração mensal."
             icon={faChartLine}
-            onClick={() => navigate("/plataforma/comprar-gemcash")}
+            onClick={() => navigate("/plataforma/comprar-gemcapital")}
             primary
           />
           <ActionButton

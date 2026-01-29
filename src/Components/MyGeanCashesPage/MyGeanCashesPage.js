@@ -61,7 +61,7 @@ export default function MyGeanCashesPage() {
       </div>
 
       <div style={style.header}>
-        <h1 style={style.pageTitle}>COMPRAS GEMCASH</h1>
+        <h1 style={style.pageTitle}>COMPRAS GEMCAPITAL</h1>
         <p style={style.pageSubtitle}>
         Visualize, filtre e gerencie todos os seus contratos de compras em um só lugar.
 

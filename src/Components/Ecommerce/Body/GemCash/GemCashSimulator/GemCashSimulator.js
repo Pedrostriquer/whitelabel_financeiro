@@ -170,7 +170,7 @@ const GemCashSimulator = forwardRef(
           <div className="sim-container">
             <div className="sim-header">
               <h2 className="sim-main-title fonte-principal">
-                FAÇA UMA SIMULAÇÃO GEMCASH
+                FAÇA UMA SIMULAÇÃO GEMCAPITAL
               </h2>
               <p className="sim-subtitle">
                 Ajuste os valores e veja o potencial de valorização do seu

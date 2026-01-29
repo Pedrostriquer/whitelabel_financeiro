@@ -140,7 +140,7 @@ const SelectionStep = ({
       </div>
 
       <div style={{ ...style.selectionColumn, marginTop: 100 }}>
-        <h1 style={style.pageTitle}>Simule e Adquira seu GemCash</h1>
+        <h1 style={style.pageTitle}>Simule e Adquira seu GemCapital</h1>
         <p style={style.pageSubtitle}>
           Ajuste os valores e veja o potencial de valorização da sua compra em tempo real.
         </p>

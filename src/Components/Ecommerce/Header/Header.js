@@ -44,7 +44,7 @@ const Header = () => {
   // Itens do menu atualizados para incluir Pedras e Joias separadamente
   const menuItems = [
     { name: "HOME", path: "/" },
-    { name: "GEMCASH", path: "/gemcash" },
+    { name: "GEMCAPITAL", path: "/gemcapital" },
     { name: "PEDRAS PRECIOSAS", path: "/gemas-preciosas" },
     { name: "JOIAS", path: "/joias-exclusivas" },
     { name: "PERSONALIZE", path: "/joias" },
