@@ -1,4 +1,3 @@
-// src/components/ContractComponent.jsx
 import React from "react";
 import "./ContractComponent.css";
 
@@ -49,7 +48,7 @@ const ContractComponent = ({ clientData, contractData }) => {
         <div className="title-section">
           <h2>
             CONTRATO DE COMPRA E VENDA DE GEMAS PRECIOSAS COM CLÁUSULA DE
-            RECOMPRA - GEMCASH
+            RECOMPRA - GEMCAPITAL
           </h2>
         </div>
       </header>
@@ -88,10 +87,10 @@ const ContractComponent = ({ clientData, contractData }) => {
         <ol>
           <li>
             Considerando que a GEMAS BRILHANTES é pessoa jurídica que atua no
-            mercado de minérios, pedras preciosas, joias e mineração, e oferece
-            a seus clientes o produto GemCash, uma modalidade de aquisição de
-            gemas preciosas certificadas com um benefício mensal e opção de
-            recompra garantida;
+            mercado de minérios, pedras preciosas e confecção de joias, e
+            oferece a seus clientes o produto GemCapital, uma modalidade de
+            aquisição de gemas preciosas certificadas com um benefício mensal e
+            opção de recompra garantida;
           </li>
           <li>
             Considerando que o COMPRADOR declara ter plena capacidade civil para
@@ -104,7 +103,7 @@ const ContractComponent = ({ clientData, contractData }) => {
           </li>
         </ol>
         <p>
-          AS PARTES celebram o presente CONTRATO, que se regerá pelas seguintes
+          As PARTES celebram o presente CONTRATO, que se regerá pelas seguintes
           cláusulas e condições:
         </p>
       </section>
@@ -123,11 +122,11 @@ const ContractComponent = ({ clientData, contractData }) => {
           </li>
           <li>
             <strong>Comprador / Usuário:</strong> Refere-se ao cliente que
-            adquire Gemas Preciosas através do produto GemCash, conforme
+            adquire Gemas Preciosas através do produto GemCapital, conforme
             qualificado no preâmbulo deste CONTRATO.
           </li>
           <li>
-            <strong>GemCash:</strong> Refere-se ao produto exclusivo da GEMAS
+            <strong>GemCapital:</strong> Refere-se ao produto exclusivo da GEMAS
             BRILHANTES, que combina a aquisição de Gemas Preciosas certificadas
             com a possibilidade de um benefício mensal e opção de recompra
             garantida.
@@ -158,6 +157,11 @@ const ContractComponent = ({ clientData, contractData }) => {
             estabelecidas neste CONTRATO e na proposta comercial.
           </li>
           <li>
+            <strong>Dia Útil:</strong> Conforme expediente bancário, de
+            segunda-feira a sexta-feira, excluindo-se feriados municipais,
+            estaduais e nacionais na cidade de São Paulo/SP.
+          </li>
+          <li>
             <strong>Custódia:</strong> Modalidade em que a Gema Preciosa
             adquirida permanece sob a guarda e responsabilidade da GEMAS
             BRILHANTES, em local seguro, pelo período contratual.
@@ -176,12 +180,13 @@ const ContractComponent = ({ clientData, contractData }) => {
 
       <section className="clauses-section">
         <h3>
-          CLÁUSULA 2ª DO OBJETO DO CONTRATO E CARACTERÍSTICAS DO PRODUTO GEMCASH
+          CLÁUSULA 2ª DO OBJETO DO CONTRATO E CARACTERÍSTICAS DO PRODUTO
+          GEMCAPITAL
         </h3>
         <p>
           <strong>ARTIGO 1º.</strong> O presente CONTRATO tem por objeto a
           compra e venda de Gemas Preciosas certificadas pela GEMAS BRILHANTES
-          ao COMPRADOR, através do produto GemCash, conforme as condições e
+          ao COMPRADOR, através do produto GemCapital, conforme as condições e
           propostas comerciais específicas acordadas no momento da aquisição.
         </p>
         <p>
@@ -202,7 +207,7 @@ const ContractComponent = ({ clientData, contractData }) => {
           avaliados conforme padrões de mercado e destes laboratórios.
         </p>
         <p>
-          <strong>ARTIGO 5º</strong> A GEMAS BRILHANTES oferece ao COMPRADOR as
+          <strong>ARTIGO 5º.</strong> A GEMAS BRILHANTES oferece ao COMPRADOR as
           seguintes modalidades de posse da Gema Preciosa:
         </p>
         <p>
@@ -229,8 +234,8 @@ const ContractComponent = ({ clientData, contractData }) => {
         </p>
         <p>
           <strong>ARTIGO 7°.</strong> A GEMAS BRILHANTES esclarece que a
-          aquisição de Gemas Preciosas através do GemCash constitui uma compra e
-          venda de bens reais, e não caracteriza custódia de dinheiro,
+          aquisição de Gemas Preciosas através do GemCapital constitui uma
+          compra e venda de bens reais, e não caracteriza custódia de dinheiro,
           arbitragem de ativos financeiros ou qualquer modalidade de
           investimento financeiro.
         </p>
@@ -240,13 +245,13 @@ const ContractComponent = ({ clientData, contractData }) => {
         <h3>CLÁUSULA 3ª - DO PREÇO E DAS FORMAS DE PAGAMENTO</h3>
         <p>
           <strong>ARTIGO 8º.</strong> O valor mínimo de aquisição inicial de
-          Gemas Preciosas pelo produto GemCash é de{" "}
+          Gemas Preciosas pelo produto GemCapital é de{" "}
           {formatCurrency(contractData.amount)}, podendo o COMPRADOR optar por
           valores maiores, conforme sua discricionariedade e as propostas
           comerciais da GEMAS BRILHANTES.
         </p>
         <p>
-          <strong>ARTIGO 9º</strong> O pagamento da aquisição poderá ser
+          <strong>ARTIGO 9º.</strong> O pagamento da aquisição poderá ser
           realizado através de PIX, transferência bancária ou boleto bancário.
           Não será aceita a modalidade de pagamento por cartão de crédito.
         </p>
@@ -284,7 +289,7 @@ const ContractComponent = ({ clientData, contractData }) => {
           Física.
         </p>
         <p>
-          <strong>ARTIGO 13º</strong> A Remuneração Mensal será disponibilizada
+          <strong>ARTIGO 13º.</strong> A Remuneração Mensal será disponibilizada
           ao COMPRADOR a cada mês, e este, com total autonomia, deverá acessar a
           Área do Cliente na Plataforma Digital da GEMAS BRILHANTES no dia 05
           (cinco) de cada mês para registrar sua escolha de recebimento:
@@ -332,8 +337,8 @@ const ContractComponent = ({ clientData, contractData }) => {
         <p>
           d) <strong>Aquisição de Produto Físico (Gemas Brilhantes):</strong>{" "}
           Possibilidade de utilizar o valor da aquisição inicial e/ou das
-          Remunerações Mensais acumuladas para uma nova compra de GemCash ou de
-          outro produto físico, como Gemas Preciosas ou joias personalizadas,
+          Remunerações Mensais acumuladas para uma nova compra de GemCapital ou
+          de outro produto físico, como Gemas Preciosas ou joias personalizadas,
           diretamente da GEMAS BRILHANTES.
         </p>
       </section>
@@ -413,7 +418,7 @@ const ContractComponent = ({ clientData, contractData }) => {
         <p>
           <strong>ARTIGO 17º.</strong> A GEMAS BRILHANTES garante a
           autenticidade, e Certificação das Gemas Preciosas adquiridas através
-          do produto GemCash.
+          do produto GemCapital.
         </p>
         <p>
           <strong>ARTIGO 18º.</strong> A GEMAS BRILHANTES garante ao COMPRADOR o
@@ -421,15 +426,15 @@ const ContractComponent = ({ clientData, contractData }) => {
           termos da alínea "a" do ARTIGO 14º e demais condições aplicáveis.
         </p>
         <p>
-          <strong>ARTIGO 19º</strong> A GEMAS BRILHANTES não se responsabiliza
+          <strong>ARTIGO 19º.</strong> A GEMAS BRILHANTES não se responsabiliza
           por perdas, danos ou extravios da Gema Preciosa que esteja sob Posse
           Física do COMPRADOR. A partir do momento em que a Gema Preciosa é
           entregue fisicamente ao COMPRADOR, esta passa a ser de sua total
           responsabilidade.
         </p>
         <p>
-          <strong>ARTIGO 20º</strong> A responsabilidade da GEMAS BRILHANTES não
-          abrange danos especiais, indiretos, danos de terceiros, lucros
+          <strong>ARTIGO 20º.</strong> A responsabilidade da GEMAS BRILHANTES
+          não abrange danos especiais, indiretos, danos de terceiros, lucros
           cessantes ou quaisquer prejuízos sofridos em decorrência de decisões
           do COMPRADOR de vender, transformar ou manter as Gemas Preciosas após
           o recebimento da posse física. Qualquer responsabilidade estará
@@ -518,7 +523,7 @@ const ContractComponent = ({ clientData, contractData }) => {
           (vinte por cento) como multa por quebra de CONTRATO.
         </p>
         <p>
-          <strong>ARTIGO 29º</strong> A GEMAS BRILHANTES poderá rescindir o
+          <strong>ARTIGO 29º.</strong> A GEMAS BRILHANTES poderá rescindir o
           CONTRATO imediatamente, sem prejuízo das medidas legais cabíveis, em
           caso de:
         </p>
@@ -546,7 +551,7 @@ const ContractComponent = ({ clientData, contractData }) => {
       <section className="clauses-section">
         <h3>CLÁUSULA 9ª - DA CONFIDENCIALIDADE</h3>
         <p>
-          <strong>ARTIGO 31º</strong> As PARTES obrigam-se a manter em sigilo e
+          <strong>ARTIGO 31º.</strong> As PARTES obrigam-se a manter em sigilo e
           a não revelar a terceiros quaisquer Informações Confidenciais
           recebidas ou obtidas em decorrência do CONTRATO, podendo fornecê-las
           aos seus empregados, advogados, consultores e representantes, desde
@@ -569,10 +574,10 @@ const ContractComponent = ({ clientData, contractData }) => {
           CONTRATO.
         </p>
         <p>
-          <strong>ARTIGO 33º</strong> As Informações Confidenciais não incluirão
-          informações que devam ser divulgadas por qualquer uma das PARTES em
-          decorrência de Lei ou ordem exarada por Autoridade Governamental
-          competente.
+          <strong>ARTIGO 33º.</strong> As Informações Confidenciais não
+          incluirão informações que devam ser divulgadas por qualquer uma das
+          PARTES em decorrência de Lei ou ordem exarada por Autoridade
+          Governamental competente.
         </p>
       </section>
 
@@ -641,7 +646,7 @@ const ContractComponent = ({ clientData, contractData }) => {
           Defesa do Consumidor), no que couber.
         </p>
         <p>
-          <strong>ARTIGO 43º</strong> Para dirimir quaisquer conflitos, dúvidas
+          <strong>ARTIGO 43º.</strong> Para dirimir quaisquer conflitos, dúvidas
           ou controvérsias decorrentes do presente CONTRATO, as PARTES elegem o
           foro da Comarca de São Paulo, Estado de São Paulo, renunciando a
           qualquer outro, por mais privilegiado que seja.
