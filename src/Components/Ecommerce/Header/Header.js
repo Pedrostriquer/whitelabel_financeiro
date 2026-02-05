@@ -45,7 +45,7 @@ const Header = () => {
   const menuItems = [
     { name: "HOME", path: "/" },
     { name: "GEMCAPITAL", path: "/gemcapital" },
-    { name: "PEDRAS PRECIOSAS", path: "/gemas-preciosas" },
+    { name: "GEMAS PRECIOSAS", path: "/gemas-preciosas" },
     { name: "JOIAS", path: "/joias-exclusivas" },
     { name: "PERSONALIZE", path: "/joias" },
     { name: "BLOG", path: "/blog" },
