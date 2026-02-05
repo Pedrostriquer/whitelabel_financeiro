@@ -73,7 +73,6 @@ export default function Register() {
   };
   
   const handleValidateDocument = async () => {
-    // ... (nenhuma mudança nesta função)
     if (validationLoading) return;
     setValidationLoading(true);
     setError("");
@@ -110,7 +109,6 @@ export default function Register() {
   };
 
   const fetchAddressFromCep = useCallback(async (cep) => {
-    // ... (nenhuma mudança nesta função)
     const cepOnlyNumbers = cep.replace(/\D/g, "");
     if (cepOnlyNumbers.length !== 8) return;
     setCepLoading(true);
@@ -137,7 +135,6 @@ export default function Register() {
   }, [formData.cep, fetchAddressFromCep]);
 
   const isOfAge = (birthDate) => {
-    // ... (nenhuma mudança nesta função)
     if (!birthDate) return false;
     const today = new Date();
     const birthDateObj = new Date(birthDate);
@@ -158,7 +155,6 @@ export default function Register() {
     if (currentStep === 2) if (!formData.cep || !formData.street || !formData.number || !formData.neighborhood || !formData.city || !formData.state || !formData.country) return "Preencha todos os campos de endereço.";
     if (currentStep === 3) {
       if (formData.password !== formData.confirmPassword) return "As senhas não coincidem!";
-      // ATUALIZADO: Removida a validação de 'securityAnswer', alinhando com a main.
       if (!formData.email || !formData.password) return "Preencha os campos de acesso e segurança.";
     }
     return "";
@@ -208,7 +204,6 @@ export default function Register() {
       balance: 0, verificationCode: verificationCode,
     };
 
-    // ATUALIZADO: Lógica da main para enviar a pergunta/resposta de segurança apenas se ela for preenchida.
     if (formData.securityAnswer) {
       payload.securityQuestion = securityQuestionMap[formData.securityQuestion];
       payload.securityQuestionAnswer = formData.securityAnswer;
@@ -277,7 +272,6 @@ export default function Register() {
                     )}
                   </div>
 
-                  {/* ... O resto dos campos do passo 1 permanecem os mesmos ... */}
                   <div style={style.formRow}>
                     <div style={style.formField}>
                       <label style={style.label}>{isCnpjMode ? "Razão Social / Nome Fantasia" : "Nome Completo"}</label>
@@ -293,8 +287,18 @@ export default function Register() {
                     <div style={style.formField}>
                       <label style={style.label}>Contato (com DDD)</label>
                       <div style={style.contactGroup}>
+                        {/* ATUALIZADO: Lista de países expandida */}
                         <select name="countryCode" style={style.countryCodeSelect} value={formData.countryCode} onChange={handleInputChange}>
-                          <option value="+55">🇧🇷 +55</option> <option value="+1">🇺🇸 +1</option> <option value="+44">🇬🇧 +44</option> <option value="+351">🇵🇹 +351</option>
+                          <option value="+55">🇧🇷 +55</option>
+                          <option value="+1">🇺🇸 +1</option>
+                          <option value="+351">🇵🇹 +351</option>
+                          <option value="+49">🇩🇪 +49</option>
+                          <option value="+31">🇳🇱 +31</option>
+                          <option value="+44">🇬🇧 +44</option>
+                          <option value="+33">🇫🇷 +33</option>
+                          <option value="+34">🇪🇸 +34</option>
+                          <option value="+39">🇮🇹 +39</option>
+                          <option value="+54">🇦🇷 +54</option>
                         </select>
                         <input name="phone" placeholder="(00) 00000-0000" style={{ ...style.input, flex: 1 }} value={formData.phone} onChange={handleInputChange} required />
                       </div>
@@ -308,7 +312,6 @@ export default function Register() {
               )}
 
               {step === 2 && (
-                // ... (nenhuma mudança no passo 2)
                 <>
                   <div style={style.formRow}>
                     <div style={{ ...style.formField, flex: 0.5 }}>
@@ -366,7 +369,6 @@ export default function Register() {
                     </div>
                     <div style={style.formField}>
                       <label style={style.label}>Resposta de Segurança (Opcional)</label>
-                      {/* ATUALIZADO: Removido o 'required' daqui para alinhar com a main */}
                       <input name="securityAnswer" style={style.input} value={formData.securityAnswer} onChange={handleInputChange} />
                     </div>
                   </div>
@@ -381,7 +383,6 @@ export default function Register() {
                   </button>
                 )}
               </div>
-              {/* Mantido o seu link de login que você confirmou estar correto */}
               <p style={{...style.loginLink, ...{ marginTop: "30px", textAlign: "center" }}}>Já tem uma conta? <a href="/plataforma/login" style={{ ...style.loginLinkA }}>Faça login</a></p>
             </form>
           </div>
